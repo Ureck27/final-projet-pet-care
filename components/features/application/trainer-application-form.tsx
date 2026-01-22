@@ -13,6 +13,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import { ImageUpload } from "@/components/ui/image-upload"
 import {
   User,
   GraduationCap,
@@ -282,11 +283,11 @@ export function TrainerApplicationForm({ onSubmit, savedData }: TrainerApplicati
 
                 <div className="space-y-2">
                   <Label>Profile Photo</Label>
-                  <div className="border-2 border-dashed rounded-xl p-6 text-center hover:border-primary/50 transition-smooth cursor-pointer">
-                    <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
-                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 5MB</p>
-                  </div>
+                  <ImageUpload
+                    value={watch("profilePhoto")}
+                    onChange={(value) => setValue("profilePhoto", value)}
+                    placeholder="Upload your profile photo"
+                  />
                 </div>
               </>
             )}

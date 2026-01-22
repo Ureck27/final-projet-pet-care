@@ -31,6 +31,7 @@ export const petSchema = z.object({
   breed: z.string().min(1, "Breed is required"),
   age: z.number().min(0, "Age must be positive"),
   medicalNotes: z.string().optional(),
+  photo: z.string().optional(),
 })
 
 export const bookingSchema = z.object({

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { ImageUpload } from "@/components/ui/image-upload"
 import { Loader2 } from "lucide-react"
 import { useState } from "react"
 import type { Pet } from "@/lib/types"
@@ -39,10 +40,12 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
           breed: pet.breed,
           age: pet.age,
           medicalNotes: pet.medicalNotes || "",
+          photo: pet.photo || "",
         }
       : {
           species: "dog",
           age: 0,
+          photo: "",
         },
   })
 
@@ -124,6 +127,13 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
               rows={3}
             />
           </div>
+
+          <ImageUpload
+            value={watch("photo")}
+            onChange={(value) => setValue("photo", value)}
+            label="Pet Photo (optional)"
+            placeholder="Upload a photo of your pet"
+          />
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
