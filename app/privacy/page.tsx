@@ -4,9 +4,9 @@ import { Eye, CheckCircle2, Lock, Shield } from "lucide-react"
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen dark:bg-slate-950">
       {/* Hero Section */}
-      <section className="border-b border-border bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 px-4 py-16">
+      <section className="border-b border-border bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 dark:from-primary/20 dark:via-secondary/20 dark:to-accent/20 px-4 py-16">
         <div className="container mx-auto text-center">
           <Badge className="mb-4 bg-primary/20 text-primary hover:bg-primary/30">
             <Eye className="mr-2 h-4 w-4" />
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
         <div className="space-y-6 max-w-4xl mx-auto">
           {/* Section 1 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">1</span>
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
 
           {/* Section 2 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">2</span>
@@ -87,7 +87,7 @@ export default function PrivacyPage() {
 
           {/* Section 3 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">3</span>
@@ -110,7 +110,7 @@ export default function PrivacyPage() {
 
           {/* Section 4 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">4</span>
@@ -136,7 +136,7 @@ export default function PrivacyPage() {
 
           {/* Section 5 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">5</span>
@@ -153,7 +153,7 @@ export default function PrivacyPage() {
 
           {/* Section 6 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">6</span>
@@ -176,7 +176,7 @@ export default function PrivacyPage() {
 
           {/* Section 7 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">7</span>
@@ -193,7 +193,7 @@ export default function PrivacyPage() {
 
           {/* Section 8 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">8</span>
@@ -210,7 +210,7 @@ export default function PrivacyPage() {
 
           {/* Section 9 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">9</span>
@@ -227,7 +227,7 @@ export default function PrivacyPage() {
 
           {/* Section 10 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">10</span>
@@ -251,7 +251,7 @@ export default function PrivacyPage() {
       </section>
 
       {/* Footer Info */}
-      <section className="bg-secondary/5 border-t border-border px-4 py-12">
+      <section className="bg-secondary/5 dark:bg-slate-900/50 border-t border-border px-4 py-12">
         <div className="container mx-auto max-w-4xl">
           <Card className="border-2 border-border">
             <CardHeader>

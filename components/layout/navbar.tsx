@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useTheme } from "next-themes"
 import { useAuth } from "@/context/auth-context"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,14 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { PawPrint, Menu, X, Bell, LogOut, User, Settings, Shield } from "lucide-react"
-import { useState } from "react"
+import { PawPrint, Menu, X, Bell, LogOut, User, Settings, Shield, Moon, Sun } from "lucide-react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 
 export function Navbar() {
   const { user, logout } = useAuth()
+  const { theme, setTheme } = useTheme()
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const isAuthPage = ["/login", "/register", "/forgot-password"].includes(pathname)
 
@@ -73,6 +80,21 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {mounted && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="hover:bg-secondary"
+              title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5 text-yellow-500" />
+              ) : (
+                <Moon className="h-5 w-5 text-slate-500" />
+              )}
+            </Button>
+          )}
           {user ? (
             <>
               <Button variant="ghost" size="icon" className="relative">
