@@ -189,29 +189,32 @@ export default function HomePage() {
       </section>
 
       {/* Problem/Solution Section */}
-      <section className="px-4 py-16 bg-gradient-to-b from-secondary/5 to-white">
+      <section className="px-4 py-20 bg-gradient-to-br from-blue-50/40 via-background to-cyan-50/30">
         <div className="container mx-auto">
-          <div className="mb-12 text-center">
-            <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
+          <div className="mb-16 text-center">
+            <Badge variant="outline" className="mb-4 border-blue-200 bg-blue-50 text-blue-700 font-semibold">
               Three Problems. One Solution.
             </Badge>
-            <h2 className="mb-4 text-3xl font-bold text-foreground">The Pet Care Challenge</h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">
+            <h2 className="mb-4 text-4xl font-bold text-foreground">The Pet Care Challenge</h2>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               Paws & Relax solves the three biggest pain points pet owners face
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3 mb-8">
+          <div className="grid gap-8 md:grid-cols-3 mb-8">
             {problemSolution.map((item) => (
-              <Card key={item.number} className="border-border shadow-soft hover:shadow-md hover:border-primary/30 transition-all">
-                <CardContent className="p-6">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
-                    {item.icon && <item.icon className="h-7 w-7 text-primary" />}
+              <Card key={item.number} className="border-2 border-blue-100 shadow-lg hover:shadow-xl hover:border-blue-300 transition-all bg-white">
+                <CardContent className="p-8">
+                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-blue-50">
+                    {item.icon && <item.icon className="h-8 w-8 text-blue-600" />}
                   </div>
-                  <h3 className="mb-2 font-semibold text-red-600">Problem #{item.number}</h3>
-                  <p className="mb-4 text-sm font-medium text-foreground">{item.problem}</p>
-                  <div className="pt-4 border-t">
-                    <p className="text-sm text-green-600 font-medium">✓ {item.solution}</p>
+                  <h3 className="mb-3 text-lg font-bold text-blue-600">Problem #{item.number}</h3>
+                  <p className="mb-6 text-base font-medium text-foreground leading-relaxed">{item.problem}</p>
+                  <div className="pt-6 border-t border-green-100 bg-gradient-to-r from-green-50 to-transparent p-4 -mx-8 -mb-8 rounded-b-lg">
+                    <p className="text-base text-green-700 font-medium flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                      {item.solution}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
