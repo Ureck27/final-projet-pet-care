@@ -1,9 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,25 +9,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar, Clock, Package, User, FileText, Check, ArrowRight, AlertCircle, Zap } from "lucide-react"
+import { Calendar, Clock, Package, FileText, Check, ArrowRight, AlertCircle, Zap } from "lucide-react"
 import { format } from "date-fns"
 import type { Pet, Trainer, User as UserType, CarePackageType } from "@/lib/types"
 import { mockUsers } from "@/lib/mock-data"
-
-const bookingSchema = z.object({
-  packageType: z.enum(["daily", "overnight", "travel", "custom"]),
-  date: z.string().min(1, "Date is required"),
-  time: z.string().min(1, "Time is required"),
-  meetAndGreetDate: z.string().optional(),
-  customInstructions: z.string().optional(),
-  specialNeeds: z.string().optional(),
-  medications: z.string().optional(),
-  emergencyContact: z.string().optional(),
-  emergencyPhone: z.string().optional(),
-})
-
-type BookingFormData = z.infer<typeof bookingSchema>
 
 interface BookingFlowProps {
   open: boolean
@@ -74,62 +56,54 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
   const [selectedPackage, setSelectedPackage] = useState<CarePackageType | null>(null)
   const [totalPrice, setTotalPrice] = useState(0)
   const [showMeetAndGreet, setShowMeetAndGreet] = useState(false)
-  const [bookingSummary, setBookingSummary] = useState<any>(null)
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<BookingFormData>({
-    resolver: zodResolver(bookingSchema),
+  const [formData, setFormData] = useState({
+    date: "",
+    time: "",
+    meetAndGreetDate: "",
+    customInstructions: "",
+    specialNeeds: "",
+    medications: "",
+    emergencyContact: "",
+    emergencyPhone: "",
   })
 
   const trainerUser = mockUsers.find((u) => u.id === trainer.userId)
-  const packageType = watch("packageType")
 
   const handlePackageSelect = (pkg: CarePackageType) => {
     setSelectedPackage(pkg)
-    setValue("packageType", pkg)
-    setTotalPrice(packageDetails[pkg].price)
+    setTotalPrice(packageDetails[pkg as keyof typeof packageDetails].price)
   }
 
   const handleContinue = () => {
     if (step === "package" && selectedPackage) {
       setStep("schedule")
-    } else if (step === "schedule") {
+    } else if (step === "schedule" && formData.date && formData.time) {
       setStep("careplan")
     }
   }
 
-  const onSubmit = async (data: BookingFormData) => {
+  const handleConfirmBooking = () => {
     const summary = {
       petId: pet.id,
       trainerId: trainer.id,
-      packageType: data.packageType,
-      date: data.date,
-      time: data.time,
-      meetAndGreetDate: data.meetAndGreetDate,
-      customInstructions: data.customInstructions,
-      specialNeeds: data.specialNeeds,
-      medications: data.medications,
-      emergencyContact: data.emergencyContact,
-      emergencyPhone: data.emergencyPhone,
+      packageType: selectedPackage,
+      date: formData.date,
+      time: formData.time,
+      meetAndGreetDate: formData.meetAndGreetDate,
+      customInstructions: formData.customInstructions,
+      specialNeeds: formData.specialNeeds,
+      medications: formData.medications,
+      emergencyContact: formData.emergencyContact,
+      emergencyPhone: formData.emergencyPhone,
       totalPrice,
     }
-    setBookingSummary(summary)
-    setStep("confirmation")
+    onConfirm(summary)
+    onOpenChange(false)
+    setStep("package")
+    setSelectedPackage(null)
   }
 
-  const handleConfirmBooking = () => {
-    if (bookingSummary) {
-      onConfirm(bookingSummary)
-      onOpenChange(false)
-      setStep("package")
-      setSelectedPackage(null)
-    }
-  }
+  if (!open) return null
 
   // Step 1: Package Selection
   if (step === "package") {
@@ -147,31 +121,34 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
           </DialogHeader>
 
           <div className="grid gap-4 py-4 sm:grid-cols-2">
-            {(Object.entries(packageDetails) as Array<[CarePackageType, any]>).map(([key, pkg]) => (
-              <Card
-                key={key}
-                className={`cursor-pointer border-2 transition-all ${
-                  selectedPackage === key ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                }`}
-                onClick={() => handlePackageSelect(key)}
-              >
-                <CardHeader>
-                  <CardTitle className="text-lg">{pkg.name}</CardTitle>
-                  <CardDescription>{pkg.duration}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-2xl font-bold text-primary">${pkg.price}</p>
-                  <ul className="space-y-2">
-                    {pkg.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-success" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
+            {(["daily", "overnight", "travel", "custom"] as const).map((key) => {
+              const pkg = packageDetails[key]
+              return (
+                <Card
+                  key={key}
+                  className={`cursor-pointer border-2 transition-all ${
+                    selectedPackage === key ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                  }`}
+                  onClick={() => handlePackageSelect(key)}
+                >
+                  <CardHeader>
+                    <CardTitle className="text-lg">{pkg.name}</CardTitle>
+                    <CardDescription>{pkg.duration}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-2xl font-bold text-primary">${pkg.price}</p>
+                    <ul className="space-y-2">
+                      {pkg.features.map((feature: string, i: number) => (
+                        <li key={i} className="flex items-center gap-2 text-sm">
+                          <Check className="h-4 w-4 text-success" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
 
           <div className="flex justify-end gap-2">
@@ -202,19 +179,29 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(() => handleContinue())} className="space-y-6 py-4">
+          <div className="space-y-6 py-4">
             {/* Service Start Date */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="date">Start Date</Label>
-                <Input id="date" type="date" {...register("date")} className="bg-background" />
-                {errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
+                <Input
+                  id="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="bg-background"
+                />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="time">Start Time</Label>
-                <Input id="time" type="time" {...register("time")} className="bg-background" />
-                {errors.time && <p className="text-xs text-destructive">{errors.time.message}</p>}
+                <Input
+                  id="time"
+                  type="time"
+                  value={formData.time}
+                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                  className="bg-background"
+                />
               </div>
             </div>
 
@@ -243,7 +230,8 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
                   <Input
                     id="meetDate"
                     type="date"
-                    {...register("meetAndGreetDate")}
+                    value={formData.meetAndGreetDate}
+                    onChange={(e) => setFormData({ ...formData, meetAndGreetDate: e.target.value })}
                     className="bg-background"
                   />
                   <p className="text-xs text-muted-foreground">
@@ -280,11 +268,11 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
               <Button type="button" variant="outline" onClick={() => setStep("package")}>
                 Back
               </Button>
-              <Button type="submit">
+              <Button type="button" onClick={handleContinue} disabled={!formData.date || !formData.time}>
                 Continue <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
-          </form>
+          </div>
         </DialogContent>
       </Dialog>
     )
@@ -305,14 +293,15 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
+          <div className="space-y-6 py-4">
             {/* Special Needs */}
             <div className="space-y-2">
               <Label htmlFor="specialNeeds">Special Needs</Label>
               <Textarea
                 id="specialNeeds"
                 placeholder="Any mobility issues, behavioral concerns, or special requirements?"
-                {...register("specialNeeds")}
+                value={formData.specialNeeds}
+                onChange={(e) => setFormData({ ...formData, specialNeeds: e.target.value })}
                 rows={3}
                 className="resize-none"
               />
@@ -324,7 +313,8 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
               <Textarea
                 id="medications"
                 placeholder="List all medications with dosage and frequency (e.g., Aspirin 500mg twice daily)"
-                {...register("medications")}
+                value={formData.medications}
+                onChange={(e) => setFormData({ ...formData, medications: e.target.value })}
                 rows={3}
                 className="resize-none"
               />
@@ -336,7 +326,8 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
               <Textarea
                 id="customInstructions"
                 placeholder="Feeding times, walking routes, favorite toys, preferred activities, training goals..."
-                {...register("customInstructions")}
+                value={formData.customInstructions}
+                onChange={(e) => setFormData({ ...formData, customInstructions: e.target.value })}
                 rows={4}
                 className="resize-none"
               />
@@ -351,7 +342,8 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
                   <Input
                     id="emergency"
                     placeholder="Your name or emergency contact"
-                    {...register("emergencyContact")}
+                    value={formData.emergencyContact}
+                    onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
                     className="bg-background"
                   />
                 </div>
@@ -360,7 +352,8 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
                   <Input
                     id="emergencyPhone"
                     placeholder="24/7 contact number"
-                    {...register("emergencyPhone")}
+                    value={formData.emergencyPhone}
+                    onChange={(e) => setFormData({ ...formData, emergencyPhone: e.target.value })}
                     className="bg-background"
                   />
                 </div>
@@ -379,11 +372,11 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
               <Button type="button" variant="outline" onClick={() => setStep("schedule")}>
                 Back
               </Button>
-              <Button type="submit">
+              <Button type="button" onClick={() => setStep("confirmation")}>
                 Review Booking <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
-          </form>
+          </div>
         </DialogContent>
       </Dialog>
     )
@@ -440,16 +433,16 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Start Date</span>
-                  <span className="font-medium">{bookingSummary?.date}</span>
+                  <span className="font-medium">{formData.date}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Start Time</span>
-                  <span className="font-medium">{bookingSummary?.time}</span>
+                  <span className="font-medium">{formData.time}</span>
                 </div>
-                {bookingSummary?.meetAndGreetDate && (
+                {formData.meetAndGreetDate && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Meet & Greet</span>
-                    <span className="font-medium">{bookingSummary.meetAndGreetDate}</span>
+                    <span className="font-medium">{formData.meetAndGreetDate}</span>
                   </div>
                 )}
               </CardContent>
@@ -494,4 +487,6 @@ export function BookingFlow({ open, onOpenChange, pet, trainer, onConfirm }: Boo
       </Dialog>
     )
   }
+
+  return null
 }
