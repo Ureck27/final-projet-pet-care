@@ -317,6 +317,17 @@ export interface CarePackage {
 }
 
 // Message Types
+export interface Conversation {
+  id: string
+  participantIds: string[]
+  lastMessage?: string
+  lastMessageDate?: Date
+  lastMessageSenderId?: string
+  unreadCount: number
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface Message {
   id: string
   conversationId: string

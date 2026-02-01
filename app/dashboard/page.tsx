@@ -15,11 +15,12 @@ import { TaskDashboard } from "@/components/features/dashboard/task-dashboard"
 import { ActivityTimeline } from "@/components/features/dashboard/activity-timeline"
 import { EmotionDashboard } from "@/components/features/dashboard/emotion-dashboard"
 import { NotificationsCenter } from "@/components/features/dashboard/notifications-center"
+import { MessagesWidget } from "@/components/features/messaging/messages-widget"
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PawPrint, Calendar, Bell, TrendingUp, Plus } from "lucide-react"
+import { PawPrint, Calendar, Bell, TrendingUp, Plus, MessageCircle } from "lucide-react"
 import Link from "next/link"
 
 export default function DashboardPage() {
@@ -95,11 +96,15 @@ export default function DashboardPage() {
 
       {/* Tabbed Interface for different views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
           <TabsTrigger value="mood">Mood</TabsTrigger>
+          <TabsTrigger value="messages">
+            <MessageCircle className="w-4 h-4 mr-1" />
+            Messages
+          </TabsTrigger>
           <TabsTrigger value="notifications">
             Notifications
             {unreadNotifications > 0 && (
@@ -146,6 +151,9 @@ export default function DashboardPage() {
             <div className="space-y-8">
               {/* Calendar */}
               <CalendarView bookings={userBookings} />
+
+              {/* Messages Widget */}
+              <MessagesWidget userId={user.id} />
 
               {/* Quick Actions */}
               <Card className="border-border">
@@ -214,6 +222,11 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        {/* Messages Tab */}
+        <TabsContent value="messages">
+          <MessagesWidget userId={user.id} />
         </TabsContent>
 
         {/* Notifications Tab */}
