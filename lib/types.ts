@@ -60,12 +60,171 @@ export interface PetStatus {
   createdAt: Date
 }
 
+// Task Management Types
+export type TaskType = "walk" | "play" | "meal" | "training" | "medication" | "rest" | "grooming" | "vet-check" | "custom"
+export type TaskFrequency = "daily" | "weekly" | "monthly" | "one-time"
+export type TaskPriority = "high" | "medium" | "low"
+export type TaskStatus = "pending" | "in-progress" | "completed" | "overdue" | "cancelled"
+
+export interface Task {
+  id: string
+  petId: string
+  ownerId?: string
+  caregiverId?: string
+  title: string
+  type: TaskType
+  description?: string
+  priority: TaskPriority
+  status: TaskStatus
+  dueDate: Date
+  frequency?: TaskFrequency
+  recurrencePattern?: string // Cron pattern for recurring tasks
+  timeWindow?: { start: string; end: string } // e.g., "09:00" to "10:00"
+  assignedTo: "owner" | "caregiver" | "both"
+  completionPhoto?: string
+  completionNotes?: string
+  completedAt?: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
+// Daily Activity Types
+export type EmotionType = "happy" | "sad" | "anxious" | "stressed" | "calm" | "playful" | "neutral" | "distressed"
+
+export interface DailyActivity {
+  id: string
+  petId: string
+  caregiverId: string
+  activityType: "walk" | "play" | "meal" | "training" | "rest" | "medication" | "other"
+  title: string
+  description?: string
+  duration?: number // in minutes
+  startTime: Date
+  endTime?: Date
+  photo?: string
+  videoUrl?: string
+  emotion?: EmotionType
+  emotionConfidence?: number // 0-100
+  caregiver Notes?: string
+  location?: { latitude?: number; longitude?: number; address?: string }
+  aiVerified: boolean
+  createdAt: Date
+}
+
+// Notification Types
+export type NotificationType = 
+  | "task-reminder" 
+  | "task-overdue" 
+  | "activity-update" 
+  | "emotion-alert" 
+  | "health-alert" 
+  | "booking-update" 
+  | "message" 
+  | "review" 
+  | "platform-update"
+
+export type NotificationPriority = "critical" | "high" | "medium" | "low"
+
 export interface Notification {
   id: string
   userId: string
+  type: NotificationType
+  priority: NotificationPriority
   title: string
   message: string
+  actionUrl?: string
   read: boolean
+  dismissed?: boolean
+  sentAt: Date
+  readAt?: Date
+  createdAt: Date
+}
+
+export interface NotificationPreferences {
+  userId: string
+  pushNotificationsEnabled: boolean
+  emailEnabled: boolean
+  emailFrequency: "immediate" | "daily-digest" | "weekly-digest"
+  smsEnabled: boolean
+  quietHoursStart?: string // e.g., "22:00"
+  quietHoursEnd?: string // e.g., "07:00"
+  workModeEnabled?: boolean
+  workModeStart?: string
+  workModeEnd?: string
+  notificationTypes: {
+    taskReminders: boolean
+    activityUpdates: boolean
+    behavioralAlerts: boolean
+    healthAlerts: boolean
+    bookingUpdates: boolean
+    messages: boolean
+    systemUpdates: boolean
+  }
+  createdAt: Date
+  updatedAt: Date
+}
+
+// Emotion Detection & Mood Tracking
+export interface MoodEntry {
+  id: string
+  petId: string
+  emotion: EmotionType
+  confidence: number // 0-100
+  photoUrl?: string
+  timestamp: Date
+  caregiverNotes?: string
+}
+
+export interface MoodTrend {
+  petId: string
+  date: Date
+  dominantEmotion: EmotionType
+  emotionBreakdown: Record<EmotionType, number>
+  averageHappiness: number // 0-100
+}
+
+// Care Package Types
+export type CarePackageType = "daily" | "overnight" | "travel" | "custom"
+
+export interface CarePackage {
+  id: string
+  type: CarePackageType
+  name: string
+  description: string
+  basePrice: number
+  visitsPerWeek?: number
+  duration?: string
+  includedServices: string[]
+  features: string[]
+}
+
+// Message Types
+export interface Message {
+  id: string
+  conversationId: string
+  senderId: string
+  receiverId: string
+  content: string
+  attachments?: { type: "photo" | "video"; url: string }[]
+  read: boolean
+  createdAt: Date
+}
+
+// Review Types
+export interface Review {
+  id: string
+  bookingId: string
+  reviewerId: string
+  caregiverId: string
+  rating: number // 1-5
+  title: string
+  comment: string
+  categories?: {
+    professionalism: number
+    communication: number
+    careQuality: number
+    punctuality: number
+  }
   createdAt: Date
 }
 
