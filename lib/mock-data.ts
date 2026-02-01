@@ -1,6 +1,6 @@
 import type { 
   User, Pet, Trainer, Booking, PetStatus, Notification, Task, DailyActivity, 
-  MoodEntry, CarePackage, Message, Review, NotificationPreferences 
+  MoodEntry, CarePackage, Message, Review, NotificationPreferences, CarePlan 
 } from "./types"
 
 export const mockUsers: User[] = [
@@ -104,6 +104,14 @@ export const mockBookings: Booking[] = [
     time: "10:00",
     notes: "Focus on leash training",
     status: "confirmed",
+    packageType: "daily",
+    customInstructions: "Max is very energetic. Prefers morning walks.",
+    meetAndGreetScheduled: new Date("2024-03-10"),
+    meetAndGreetCompleted: true,
+    totalPrice: 45,
+    paymentStatus: "paid",
+    createdAt: new Date("2024-03-08"),
+    updatedAt: new Date("2024-03-10"),
   },
   {
     id: "2",
@@ -114,6 +122,32 @@ export const mockBookings: Booking[] = [
     date: new Date("2024-03-16"),
     time: "14:00",
     status: "pending",
+    packageType: "custom",
+    customInstructions: "Luna is shy. Use slow introduction techniques.",
+    meetAndGreetScheduled: new Date("2024-03-13"),
+    meetAndGreetCompleted: false,
+    totalPrice: 95,
+    paymentStatus: "pending",
+    createdAt: new Date("2024-03-12"),
+    updatedAt: new Date("2024-03-12"),
+  },
+  {
+    id: "3",
+    petId: "3",
+    trainerId: "1",
+    ownerId: "1",
+    service: "Travel Care",
+    date: new Date("2024-04-01"),
+    time: "09:00",
+    status: "confirmed",
+    packageType: "travel",
+    customInstructions: "Buddy needs regular bathroom breaks during travel. Keep him in air-conditioned space.",
+    meetAndGreetScheduled: new Date("2024-03-25"),
+    meetAndGreetCompleted: true,
+    totalPrice: 120,
+    paymentStatus: "paid",
+    createdAt: new Date("2024-03-20"),
+    updatedAt: new Date("2024-03-25"),
   },
 ]
 
@@ -546,3 +580,61 @@ export const services = [
 ]
 
 export const timeSlots = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
+
+// Care Plans
+export const mockCarePlans: CarePlan[] = [
+  {
+    id: "1",
+    bookingId: "1",
+    petId: "1",
+    trainerId: "1",
+    specialNeeds: ["High energy", "Needs regular breaks"],
+    dietaryRequirements: "Grain-free kibble, twice daily",
+    medications: [
+      {
+        name: "Glucosamine",
+        dosage: "500mg",
+        frequency: "Once daily with food",
+        instructions: "Mix with kibble in morning meal",
+      },
+    ],
+    emergencyContacts: [
+      {
+        name: "John Smith",
+        phone: "1234567890",
+        relationship: "Owner",
+      },
+      {
+        name: "Emily Smith",
+        phone: "0987654321",
+        relationship: "Spouse",
+      },
+    ],
+    behavioralNotes: "Max can be reactive to other dogs on leash. Use positive reinforcement.",
+    preferredActivities: ["Fetch", "Running", "Swimming"],
+    restrictions: ["No off-leash in unfenced areas", "Avoid chocolate and grapes"],
+    createdAt: new Date("2024-03-10"),
+    updatedAt: new Date("2024-03-10"),
+  },
+  {
+    id: "2",
+    bookingId: "3",
+    petId: "3",
+    trainerId: "1",
+    specialNeeds: ["Anxiety in new environments", "Needs familiar blanket"],
+    dietaryRequirements: "Sensitive stomach formula, three times daily",
+    medications: [],
+    emergencyContacts: [
+      {
+        name: "John Smith",
+        phone: "1234567890",
+        relationship: "Owner",
+      },
+    ],
+    behavioralNotes: "Buddy is very loyal and responds well to routine. Maintain consistent schedule.",
+    preferredActivities: ["Gentle walks", "Cuddles", "Puzzle toys"],
+    restrictions: ["No loud noises", "Avoid sudden changes", "Keep stress levels low"],
+    createdAt: new Date("2024-03-25"),
+    updatedAt: new Date("2024-03-25"),
+  },
+]

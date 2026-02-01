@@ -44,6 +44,40 @@ export interface Booking {
   time: string
   notes?: string
   status: "pending" | "confirmed" | "completed" | "cancelled"
+  packageType?: CarePackageType
+  customInstructions?: string
+  meetAndGreetScheduled?: Date
+  meetAndGreetCompleted?: boolean
+  totalPrice?: number
+  paymentStatus?: "pending" | "paid" | "refunded"
+  createdAt: Date
+  updatedAt: Date
+}
+
+// Care Plan Types
+export interface CarePlan {
+  id: string
+  bookingId: string
+  petId: string
+  trainerId: string
+  specialNeeds: string[]
+  dietaryRequirements?: string
+  medications?: Array<{
+    name: string
+    dosage: string
+    frequency: string
+    instructions: string
+  }>
+  emergencyContacts: Array<{
+    name: string
+    phone: string
+    relationship: string
+  }>
+  behavioralNotes?: string
+  preferredActivities: string[]
+  restrictions?: string[]
+  createdAt: Date
+  updatedAt: Date
 }
 
 export interface PetStatus {
