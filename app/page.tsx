@@ -5,7 +5,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { 
   PawPrint, Users, Calendar, Shield, Star, ArrowRight, CheckCircle2, Heart, Award,
-  Zap, TrendingUp, Lock, Video, Clock, Smile
+  Zap, TrendingUp, Lock, Video, Clock, Smile, Clock3, Smartphone, Bot, ClipboardList,
+  Search, BarChart3, CheckSquare, UserCheck, BookOpen, Target, Sparkles
 } from "lucide-react"
 
 export default function HomePage() {
@@ -14,36 +15,36 @@ export default function HomePage() {
       number: "1",
       problem: "Busy owners don't have time for daily pet activities",
       solution: "Scheduled care with verified professionals ensures pets stay active and healthy",
-      icon: "⏰"
+      icon: Clock3
     },
     {
       number: "2", 
       problem: "Fragmented pet care across multiple services",
       solution: "One unified platform for walks, training, sitting, and boarding",
-      icon: "📱"
+      icon: Smartphone
     },
     {
       number: "3",
       problem: "No visibility into what happens during the day",
       solution: "AI-verified timeline with emotion detection shows exactly how your pet is doing",
-      icon: "🤖"
+      icon: Bot
     }
   ]
 
   const coreFeatures = [
     {
       icon: Calendar,
-      title: "📅 Daily Activity Management",
+      title: "Daily Activity Management",
       description: "Schedule and track walks, play, training, meals, and rest routines personalized to your pet's needs",
     },
     {
       icon: Users,
-      title: "👨‍⚕️ Professional Care Booking",
+      title: "Professional Care Booking",
       description: "Verified caregivers with credentials, certifications, and proven experience—not just random sitters",
     },
     {
       icon: Video,
-      title: "🤖 AI-Verified Timeline",
+      title: "AI-Verified Timeline",
       description: "Real-time photo/video updates with emotion detection showing your pet's mood and activity verification",
     },
   ]
@@ -52,22 +53,22 @@ export default function HomePage() {
     {
       title: "Create Your Pet Plan",
       description: "Set up your pet's daily routine with walks, meals, play, and training",
-      icon: "📋"
+      icon: ClipboardList
     },
     {
       title: "Book a Caregiver",
       description: "Browse verified professionals and schedule care when you need it",
-      icon: "🔍"
+      icon: Search
     },
     {
       title: "Track Everything",
       description: "Get real-time updates and emotion detection throughout the day",
-      icon: "📊"
+      icon: BarChart3
     },
     {
       title: "Peace of Mind",
       description: "Know exactly what happened—every walk, meal, and play session verified",
-      icon: "✅"
+      icon: CheckSquare
     }
   ]
 
@@ -204,7 +205,9 @@ export default function HomePage() {
             {problemSolution.map((item) => (
               <Card key={item.number} className="border-border shadow-soft hover:shadow-md hover:border-primary/30 transition-all">
                 <CardContent className="p-6">
-                  <div className="mb-4 text-4xl">{item.icon}</div>
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
+                    {item.icon && <item.icon className="h-7 w-7 text-primary" />}
+                  </div>
                   <h3 className="mb-2 font-semibold text-red-600">Problem #{item.number}</h3>
                   <p className="mb-4 text-sm font-medium text-foreground">{item.problem}</p>
                   <div className="pt-4 border-t">
@@ -231,8 +234,10 @@ export default function HomePage() {
                 className="border-border shadow-soft hover:shadow-md hover:border-primary/30 transition-all"
               >
                 <CardContent className="p-6">
-                  <div className="mb-4 text-3xl">{feature.title.substring(0, 3)}</div>
-                  <h3 className="mb-2 font-semibold text-foreground">{feature.title.substring(4)}</h3>
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
+                    <feature.icon className="h-7 w-7 text-primary" />
+                  </div>
+                  <h3 className="mb-2 font-semibold text-foreground">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
                 </CardContent>
               </Card>
@@ -258,10 +263,12 @@ export default function HomePage() {
             {howItWorks.map((step, index) => (
               <Card key={step.title} className="border-border shadow-soft hover:shadow-md transition-all relative">
                 <CardContent className="p-6">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-2xl font-bold text-primary">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
                     {index + 1}
                   </div>
-                  <p className="mb-2 text-3xl">{step.icon}</p>
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    {step.icon && <step.icon className="h-6 w-6 text-primary" />}
+                  </div>
                   <h3 className="mb-2 font-semibold text-foreground">{step.title}</h3>
                   <p className="text-sm text-muted-foreground">{step.description}</p>
                 </CardContent>
@@ -370,7 +377,9 @@ export default function HomePage() {
           <div className="grid gap-6 md:grid-cols-3">
             <Card className="border-border shadow-soft">
               <CardContent className="p-6">
-                <div className="mb-4 text-4xl">🙋‍♀️</div>
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
+                  <UserCheck className="h-7 w-7 text-primary" />
+                </div>
                 <h3 className="mb-2 font-bold text-foreground">Professional Human Caregivers</h3>
                 <p className="text-sm text-muted-foreground">
                   Verified credentials, certifications, background checks, and documented experience—not just animal lovers.
@@ -380,7 +389,9 @@ export default function HomePage() {
 
             <Card className="border-border shadow-soft">
               <CardContent className="p-6">
-                <div className="mb-4 text-4xl">📅</div>
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
+                  <Calendar className="h-7 w-7 text-primary" />
+                </div>
                 <h3 className="mb-2 font-bold text-foreground">Structured Daily Routines</h3>
                 <p className="text-sm text-muted-foreground">
                   Personalized care plans, scheduled activities, health monitoring, and enrichment programs tailored to your pet's needs.
@@ -390,7 +401,9 @@ export default function HomePage() {
 
             <Card className="border-border shadow-soft">
               <CardContent className="p-6">
-                <div className="mb-4 text-4xl">🤖</div>
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
+                  <Bot className="h-7 w-7 text-primary" />
+                </div>
                 <h3 className="mb-2 font-bold text-foreground">AI-Assisted Verification</h3>
                 <p className="text-sm text-muted-foreground">
                   Emotion detection, activity logging, mood tracking, and transparent timeline—proof that care actually happened.
@@ -501,13 +514,15 @@ export default function HomePage() {
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: "👥", title: "Curated Professionals", desc: "Not a marketplace—only vetted caregivers" },
-              { icon: "📅", title: "Complete Ecosystem", desc: "Activity management + booking + tracking" },
-              { icon: "✅", title: "Verified Proof", desc: "AI-verified updates, not just promises" },
-              { icon: "🎯", title: "Unified Platform", desc: "Replace 5+ services with one app" },
+              { icon: Users, title: "Curated Professionals", desc: "Not a marketplace—only vetted caregivers" },
+              { icon: BookOpen, title: "Complete Ecosystem", desc: "Activity management + booking + tracking" },
+              { icon: CheckSquare, title: "Verified Proof", desc: "AI-verified updates, not just promises" },
+              { icon: Target, title: "Unified Platform", desc: "Replace 5+ services with one app" },
             ].map((item) => (
               <Card key={item.title} className="border-border shadow-soft text-center p-6">
-                <div className="mb-4 text-4xl">{item.icon}</div>
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15 mx-auto">
+                  <item.icon className="h-7 w-7 text-primary" />
+                </div>
                 <h3 className="mb-2 font-bold text-foreground">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
               </Card>
