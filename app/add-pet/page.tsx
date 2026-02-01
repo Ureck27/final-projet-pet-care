@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, ArrowLeft, CheckCircle, PawPrint } from "lucide-react"
+import { Loader2, ArrowLeft, CheckCircle, PawPrint, Plus } from "lucide-react"
 import type { Pet } from "@/lib/types"
 import Link from "next/link"
 

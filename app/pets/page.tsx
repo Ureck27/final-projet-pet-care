@@ -52,7 +52,7 @@ export default function PetsPage() {
           icon={PawPrint}
           title="No pets yet"
           description="Start by adding your first pet to get started with PetCare."
-          action={<Button asChild><Link href="/dashboard">Add Your First Pet</Link></Button>}
+          action={<Button asChild><Link href="/add-pet">Add Your First Pet</Link></Button>}
         />
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

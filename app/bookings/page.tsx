@@ -222,7 +222,7 @@ export default function BookingsPage() {
             <h1 className="text-3xl font-bold">My Bookings</h1>
             <p className="text-muted-foreground">Manage your pet care appointments and schedules</p>
           </div>
-          <Button onClick={() => setBookingFlow({ ...bookingFlow, open: true })} className="gap-2">
+          <Button onClick={() => router.push("/new-booking")} className="gap-2">
             <Plus className="h-4 w-4" />
             New Booking
           </Button>
@@ -235,7 +235,7 @@ export default function BookingsPage() {
           title="No bookings yet"
           description="Schedule your first pet care appointment to get started."
           action={
-            <Button onClick={() => router.push("/trainers")}>Browse Professional Caregivers</Button>
+            <Button onClick={() => router.push("/new-booking")}>Schedule an Appointment</Button>
           }
         />
       ) : (
