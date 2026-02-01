@@ -4,9 +4,9 @@ import { FileText, CheckCircle2 } from "lucide-react"
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-secondary/5 dark:from-background dark:to-slate-900/20">
+    <main className="min-h-screen bg-gradient-to-b from-background to-indigo-50/20 dark:from-background dark:to-slate-900/20">
       {/* Hero Section */}
-      <section className="border-b border-border bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 dark:from-primary/20 dark:via-secondary/20 dark:to-accent/20 px-4 py-20">
+      <section className="border-b border-border bg-gradient-to-r from-slate-100/50 via-indigo-100/50 to-blue-100/50 dark:from-primary/20 dark:via-secondary/20 dark:to-accent/20 px-4 py-20">
         <div className="container mx-auto text-center">
           <div className="mb-4 inline-flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
@@ -23,7 +23,7 @@ export default function TermsPage() {
         <div className="mx-auto max-w-4xl space-y-6">
           {/* Section 1 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">1</span>
@@ -40,7 +40,7 @@ export default function TermsPage() {
 
           {/* Section 2 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">2</span>
@@ -63,7 +63,7 @@ export default function TermsPage() {
 
           {/* Section 3 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">3</span>
@@ -93,7 +93,7 @@ export default function TermsPage() {
 
           {/* Section 4 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">4</span>
@@ -116,7 +116,7 @@ export default function TermsPage() {
 
           {/* Section 5 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">5</span>
@@ -149,7 +149,7 @@ export default function TermsPage() {
 
           {/* Section 6 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">6</span>
@@ -172,7 +172,7 @@ export default function TermsPage() {
 
           {/* Sections 7-13 */}
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">7</span>
@@ -187,7 +187,7 @@ export default function TermsPage() {
           </Card>
 
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">8</span>
@@ -209,7 +209,7 @@ export default function TermsPage() {
           </Card>
 
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">9</span>
@@ -223,7 +223,7 @@ export default function TermsPage() {
           </Card>
 
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">10</span>
@@ -237,7 +237,7 @@ export default function TermsPage() {
           </Card>
 
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">11</span>
@@ -251,7 +251,7 @@ export default function TermsPage() {
           </Card>
 
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">12</span>
@@ -265,7 +265,7 @@ export default function TermsPage() {
           </Card>
 
           <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 border-b border-border">
+            <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-blue-100/40 dark:from-primary/10 dark:to-secondary/10 border-b border-indigo-200 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <span className="text-lg font-bold text-primary">13</span>
@@ -289,7 +289,7 @@ export default function TermsPage() {
       </section>
 
       {/* Footer Info */}
-      <section className="bg-secondary/5 dark:bg-slate-900/50 border-t border-border px-4 py-12">
+      <section className="bg-gradient-to-b from-slate-50/50 to-indigo-50/30 dark:bg-slate-900/50 border-t border-border px-4 py-12">
         <div className="container mx-auto max-w-4xl">
           <Card className="border-2 border-border">
             <CardHeader>

@@ -189,10 +189,10 @@ export default function HomePage() {
       </section>
 
       {/* Problem/Solution Section */}
-      <section className="px-4 py-20 bg-gradient-to-br from-blue-50/40 via-background to-cyan-50/30 dark:from-blue-950/20 dark:via-background dark:to-cyan-950/10">
+      <section className="px-4 py-20 bg-gradient-to-br from-sky-50/50 via-background to-amber-50/30 dark:from-blue-950/20 dark:via-background dark:to-cyan-950/10">
         <div className="container mx-auto">
           <div className="mb-16 text-center">
-            <Badge variant="outline" className="mb-4 border-blue-200 bg-blue-50 text-blue-700 font-semibold">
+            <Badge variant="outline" className="mb-4 border-sky-300 bg-sky-50 text-sky-700 font-semibold">
               Three Problems. One Solution.
             </Badge>
             <h2 className="mb-4 text-4xl font-bold text-foreground">The Pet Care Challenge</h2>
@@ -203,15 +203,15 @@ export default function HomePage() {
 
           <div className="grid gap-8 md:grid-cols-3 mb-8">
             {problemSolution.map((item) => (
-              <Card key={item.number} className="border-2 border-blue-100 dark:border-blue-800 shadow-lg hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-700 transition-all bg-white dark:bg-slate-900">
+              <Card key={item.number} className="border-2 border-sky-200 dark:border-blue-800 shadow-lg hover:shadow-xl hover:border-sky-300 dark:hover:border-blue-700 transition-all bg-white/60 dark:bg-slate-900 backdrop-blur-sm">
                 <CardContent className="p-8">
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800">
+                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-sky-200 to-cyan-100 dark:from-blue-900 dark:to-blue-800">
                     {item.icon && <item.icon className="h-8 w-8 text-blue-600" />}
                   </div>
                   <h3 className="mb-3 text-lg font-bold text-blue-600">Problem #{item.number}</h3>
                   <p className="mb-6 text-base font-medium text-foreground leading-relaxed">{item.problem}</p>
-                  <div className="pt-6 border-t border-green-100 dark:border-green-800 bg-gradient-to-r from-green-50 dark:from-green-950/30 to-transparent p-4 -mx-8 -mb-8 rounded-b-lg">
-                    <p className="text-base text-green-700 font-medium flex items-start gap-2">
+                  <div className="pt-6 border-t border-emerald-200 dark:border-green-800 bg-gradient-to-r from-emerald-50 dark:from-green-950/30 to-transparent p-4 -mx-8 -mb-8 rounded-b-lg">
+                    <p className="text-base text-emerald-700 font-medium flex items-start gap-2">
                       <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0" />
                       {item.solution}
                     </p>
@@ -224,7 +224,7 @@ export default function HomePage() {
       </section>
 
       {/* Three Core Features */}
-      <section className="px-4 py-16 bg-white dark:bg-slate-950">
+      <section className="px-4 py-16 bg-gradient-to-b from-white/50 to-amber-50/30 dark:bg-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground">The Paws & Relax Difference</h2>
@@ -250,7 +250,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="px-4 py-16 bg-gradient-to-b from-white to-accent/5 dark:from-slate-950 dark:to-accent/10">
+      <section id="how-it-works" className="px-4 py-16 bg-gradient-to-b from-teal-50/40 to-cyan-50/30 dark:from-slate-950 dark:to-accent/10">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
@@ -288,7 +288,7 @@ export default function HomePage() {
       </section>
 
       {/* Service Packages */}
-      <section className="px-4 py-16 bg-gradient-to-b from-secondary/5 to-white dark:from-secondary/5 dark:to-slate-950">
+      <section className="px-4 py-16 bg-gradient-to-b from-rose-50/30 to-white/50 dark:from-secondary/5 dark:to-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
@@ -306,7 +306,7 @@ export default function HomePage() {
                 key={pkg.type}
                 className="border-border shadow-soft hover:shadow-lg hover:border-primary/30 transition-all overflow-hidden"
               >
-                <div className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/20 dark:to-secondary/20 p-6">
+                <div className="bg-gradient-to-r from-amber-100/50 to-orange-100/50 dark:from-primary/20 dark:to-secondary/20 p-6">
                   <h3 className="mb-2 text-xl font-bold text-foreground">{pkg.type}</h3>
                   <p className="text-sm text-muted-foreground">{pkg.description}</p>
                 </div>
@@ -331,7 +331,7 @@ export default function HomePage() {
       </section>
 
       {/* Timeline Demo Section */}
-      <section className="px-4 py-16 bg-white dark:bg-slate-950">
+      <section className="px-4 py-16 bg-gradient-to-b from-indigo-50/30 to-white/50 dark:bg-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground">Your Pet's Complete Timeline</h2>
@@ -368,7 +368,7 @@ export default function HomePage() {
       </section>
 
       {/* Trust & Safety */}
-      <section className="px-4 py-16 bg-gradient-to-b from-secondary/5 to-white dark:from-secondary/5 dark:to-slate-950">
+      <section className="px-4 py-16 bg-gradient-to-b from-lime-50/30 to-emerald-50/20 dark:from-secondary/5 dark:to-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground">Built on Trust</h2>
@@ -418,7 +418,7 @@ export default function HomePage() {
       </section>
 
       {/* Caregiver Section */}
-      <section className="px-4 py-16 bg-gradient-to-b from-white to-accent/5 dark:from-slate-950 dark:to-accent/10">
+      <section className="px-4 py-16 bg-gradient-to-b from-violet-50/30 to-blue-50/20 dark:from-slate-950 dark:to-accent/10">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
@@ -469,7 +469,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="px-4 py-16 bg-white dark:bg-slate-950">
+      <section className="px-4 py-16 bg-gradient-to-b from-white/50 to-pink-50/30 dark:bg-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground">What Our Users Say</h2>
@@ -509,7 +509,7 @@ export default function HomePage() {
       </section>
 
       {/* Why Choose Paws & Relax */}
-      <section className="px-4 py-16 bg-gradient-to-b from-secondary/5 to-white dark:from-secondary/5 dark:to-slate-950">
+      <section className="px-4 py-16 bg-gradient-to-b from-orange-50/40 to-amber-50/30 dark:from-secondary/5 dark:to-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground">Why Choose Paws & Relax?</h2>

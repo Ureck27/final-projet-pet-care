@@ -5,13 +5,13 @@
 
 /* Modern, vibrant pet care color palette - premium & energetic */
 :root {
-  /* Background: Clean white with warmth */
-  --background: oklch(0.99 0.001 0);
+  /* Background: Warm cream/beige instead of pure white */
+  --background: oklch(0.96 0.01 70);
   /* Text: Deep charcoal for excellent readability */
   --foreground: oklch(0.18 0.05 250);
-  --card: oklch(1 0 0);
+  --card: oklch(0.98 0.008 70);
   --card-foreground: oklch(0.18 0.05 250);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.98 0.008 70);
   --popover-foreground: oklch(0.18 0.05 250);
   /* Primary: Vibrant Teal - trust, energy, modern */
   --primary: oklch(0.55 0.15 200);
@@ -19,8 +19,8 @@
   /* Secondary: Warm Coral/Orange - friendly, approachable, pet-like */
   --secondary: oklch(0.72 0.15 50);
   --secondary-foreground: oklch(0.99 0 0);
-  /* Muted: Light gray */
-  --muted: oklch(0.94 0.01 0);
+  /* Muted: Soft taupe gray */
+  --muted: oklch(0.92 0.01 70);
   --muted-foreground: oklch(0.50 0.03 250);
   /* Accent: Golden Yellow - joy, happiness, warmth */
   --accent: oklch(0.80 0.12 80);
@@ -28,8 +28,8 @@
   /* Soft destructive - softer red */
   --destructive: oklch(0.60 0.13 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.90 0.02 0);
-  --input: oklch(0.95 0.01 0);
+  --border: oklch(0.88 0.01 70);
+  --input: oklch(0.93 0.01 70);
   --ring: oklch(0.55 0.15 200);
   --chart-1: oklch(0.55 0.15 200);
   --chart-2: oklch(0.72 0.15 50);
@@ -40,13 +40,13 @@
   --radius: 1rem;
   --success: oklch(0.62 0.15 140);
   --warning: oklch(0.80 0.12 80);
-  --sidebar: oklch(0.99 0.001 0);
+  --sidebar: oklch(0.96 0.01 70);
   --sidebar-foreground: oklch(0.18 0.05 250);
   --sidebar-primary: oklch(0.55 0.15 200);
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: oklch(0.80 0.12 80);
   --sidebar-accent-foreground: oklch(0.20 0.04 30);
-  --sidebar-border: oklch(0.90 0.02 0);
+  --sidebar-border: oklch(0.88 0.01 70);
   --sidebar-ring: oklch(0.55 0.15 200);
 }
 
