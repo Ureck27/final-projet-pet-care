@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge"
 import { 
   PawPrint, Users, Calendar, Shield, Star, ArrowRight, CheckCircle2, Heart, Award,
   Zap, TrendingUp, Lock, Video, Clock, Smile, Clock3, Smartphone, Bot, ClipboardList,
-  Search, BarChart3, CheckSquare, UserCheck, BookOpen, Target, Sparkles
+  Search, BarChart3, CheckSquare, UserCheck, BookOpen, Target, Sparkles, Utensils, Droplets,
+  Dumbbell, Wind, Coffee, Moon
 } from "lucide-react"
 
 export default function HomePage() {
@@ -344,18 +345,28 @@ export default function HomePage() {
             <CardContent className="p-8">
               <div className="space-y-4">
                 {[
-                  { time: "09:00 AM", activity: "🐕 Walk Completed", mood: "😊 Happy & Energetic", note: "25 minutes at Central Park" },
-                  { time: "10:30 AM", activity: "🍽️ Breakfast Eaten", mood: "😊 Content", note: "Full portion consumed" },
-                  { time: "02:00 PM", activity: "🎓 Training Session", mood: "🎾 Playful & Engaged", note: "Great progress on 'stay' command" },
-                  { time: "04:30 PM", activity: "😴 Afternoon Rest", mood: "😌 Calm & Relaxed", note: "Napping peacefully" },
+                  { time: "08:00 AM", icon: Coffee, activity: "Morning Routine", mood: "😊 Energetic", note: "Breakfast and morning hydration" },
+                  { time: "09:00 AM", icon: PawPrint, activity: "Walk Completed", mood: "😊 Happy & Energetic", note: "25 minutes at Central Park" },
+                  { time: "10:30 AM", icon: Utensils, activity: "Breakfast Eaten", mood: "😊 Content", note: "Full portion consumed with treats" },
+                  { time: "11:00 AM", icon: Dumbbell, activity: "Exercise & Play", mood: "🎾 Playful & Engaged", note: "Interactive games and agility work" },
+                  { time: "12:30 PM", icon: Droplets, activity: "Bath Time", mood: "😌 Calm", note: "Refreshing shower - well-groomed" },
+                  { time: "02:00 PM", icon: Video, activity: "Training Session", mood: "🎓 Focused & Learning", note: "Great progress on 'stay' command" },
+                  { time: "03:30 PM", icon: Utensils, activity: "Snack Time", mood: "😊 Satisfied", note: "Healthy treats and fresh water" },
+                  { time: "04:30 PM", icon: Moon, activity: "Afternoon Rest", mood: "😌 Calm & Relaxed", note: "Napping peacefully in cozy spot" },
+                  { time: "06:00 PM", icon: Wind, activity: "Evening Walk", mood: "😊 Happy", note: "20 minutes exploration and socialization" },
                 ].map((item) => (
                   <div key={item.time} className="flex items-center gap-4 pb-4 border-b last:border-b-0">
-                    <span className="font-bold text-primary min-w-24">{item.time}</span>
+                    <span className="font-bold text-primary min-w-20">{item.time}</span>
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15">
+                        <item.icon className="h-5 w-5 text-primary" />
+                      </div>
+                    </div>
                     <div className="flex-1">
                       <p className="font-semibold text-foreground">{item.activity}</p>
                       <p className="text-sm text-muted-foreground">{item.note}</p>
                     </div>
-                    <Badge variant="secondary">{item.mood}</Badge>
+                    <Badge variant="secondary" className="whitespace-nowrap">{item.mood}</Badge>
                   </div>
                 ))}
               </div>
