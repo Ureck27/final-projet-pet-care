@@ -3,30 +3,109 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { PawPrint, Users, Calendar, Shield, Star, ArrowRight, CheckCircle2, Heart, Award } from "lucide-react"
+import { 
+  PawPrint, Users, Calendar, Shield, Star, ArrowRight, CheckCircle2, Heart, Award,
+  Zap, TrendingUp, Lock, Video, Clock, Smile
+} from "lucide-react"
 
 export default function HomePage() {
-  const features = [
+  const problemSolution = [
     {
-      icon: PawPrint,
-      title: "Pet Management",
-      description: "Keep track of all your pets in one place with detailed profiles and medical records.",
+      number: "1",
+      problem: "Busy owners don't have time for daily pet activities",
+      solution: "Scheduled care with verified professionals ensures pets stay active and healthy",
+      icon: "⏰"
+    },
+    {
+      number: "2", 
+      problem: "Fragmented pet care across multiple services",
+      solution: "One unified platform for walks, training, sitting, and boarding",
+      icon: "📱"
+    },
+    {
+      number: "3",
+      problem: "No visibility into what happens during the day",
+      solution: "AI-verified timeline with emotion detection shows exactly how your pet is doing",
+      icon: "🤖"
+    }
+  ]
+
+  const coreFeatures = [
+    {
+      icon: Calendar,
+      title: "📅 Daily Activity Management",
+      description: "Schedule and track walks, play, training, meals, and rest routines personalized to your pet's needs",
     },
     {
       icon: Users,
-      title: "Verified Caregivers",
-      description: "Connect with background-checked, certified pet trainers you can trust.",
+      title: "👨‍⚕️ Professional Care Booking",
+      description: "Verified caregivers with credentials, certifications, and proven experience—not just random sitters",
     },
     {
-      icon: Calendar,
-      title: "Easy Scheduling",
-      description: "Book sessions and manage appointments with our intuitive calendar system.",
+      icon: Video,
+      title: "🤖 AI-Verified Timeline",
+      description: "Real-time photo/video updates with emotion detection showing your pet's mood and activity verification",
+    },
+  ]
+
+  const howItWorks = [
+    {
+      title: "Create Your Pet Plan",
+      description: "Set up your pet's daily routine with walks, meals, play, and training",
+      icon: "📋"
     },
     {
-      icon: Shield,
-      title: "Safety Guaranteed",
-      description: "Real-time updates and GPS tracking ensure your pet is always safe.",
+      title: "Book a Caregiver",
+      description: "Browse verified professionals and schedule care when you need it",
+      icon: "🔍"
     },
+    {
+      title: "Track Everything",
+      description: "Get real-time updates and emotion detection throughout the day",
+      icon: "📊"
+    },
+    {
+      title: "Peace of Mind",
+      description: "Know exactly what happened—every walk, meal, and play session verified",
+      icon: "✅"
+    }
+  ]
+
+  const servicePackages = [
+    {
+      type: "Daily Care",
+      price: "$45+",
+      description: "Regular daily visits for walks, feeding, and play",
+      features: ["1-3 visits per day", "Activity tracking", "Photo updates", "Emotion detection"],
+    },
+    {
+      type: "Overnight Care",
+      price: "$120+",
+      description: "Caregiver stays in your home overnight",
+      features: ["Evening routine", "Overnight supervision", "Morning care", "24-hour monitoring"],
+    },
+    {
+      type: "Travel Care",
+      price: "$85+",
+      description: "Extended care while you're away",
+      features: ["Full daily routine", "Multiple daily updates", "Mood tracking", "Emergency support"],
+    },
+  ]
+
+  const caregiverBenefits = [
+    "Build your professional reputation",
+    "Flexible scheduling on your terms",
+    "Fair compensation",
+    "Easy mobile app for updates",
+    "Professional community",
+    "Ongoing training and support"
+  ]
+
+  const trustFeatures = [
+    "✓ Verified Professionals Only",
+    "✓ 10,000+ Happy Pets Trusted",
+    "✓ AI-Verified Care",
+    "✓ Real-time Transparency",
   ]
 
   const testimonials = [
@@ -34,40 +113,32 @@ export default function HomePage() {
       name: "Emily R.",
       role: "Pet Owner",
       content:
-        "PetCare has made managing my two dogs so much easier. The trainers are amazing and I feel completely at ease leaving my pets with them!",
+        "I travel for work 3x per month. Paws & Relax gives me complete peace of mind. I can see real proof that Max is happy and cared for—not just promises.",
       rating: 5,
       avatar: "/woman-smiling-dog.png",
     },
     {
-      name: "Michael T.",
-      role: "Certified Trainer",
+      name: "Marcus T.",
+      role: "Certified Dog Trainer",
       content:
-        "Great platform for connecting with pet owners. The scheduling tools are fantastic and the verification process builds real trust.",
+        "As a caregiver, I love this platform. It's so easy to upload activity photos and the AI verification builds trust instantly. My reputation is growing!",
       rating: 5,
-      avatar: "/man-professional-pet-trainer.jpg",
+      avatar: "/man-trainer-profile.jpg",
     },
     {
       name: "Sarah L.",
       role: "Pet Owner",
       content:
-        "I love getting real-time updates when my cat is being cared for. The peace of mind is priceless. Highly recommend!",
+        "The emotion detection feature is amazing. I can see my cat is calm and happy during the day. Finally, a platform that understands what I really need.",
       rating: 5,
       avatar: "/woman-with-cat-smiling.jpg",
     },
   ]
 
-  const trustFeatures = [
-    "All caregivers background-checked",
-    "Insurance coverage included",
-    "24/7 customer support",
-    "Real-time GPS tracking",
-  ]
-
   return (
     <div className="flex flex-col">
-      {/* Hero Section with Background Image */}
+      {/* Hero Section */}
       <section className="relative min-h-[600px] overflow-hidden">
-        {/* Background Image */}
         <div className="absolute inset-0">
           <Image
             src="/happy-golden-retriever-and-tabby-cat-resting-safel.jpg"
@@ -76,36 +147,34 @@ export default function HomePage() {
             className="object-cover"
             priority
           />
-          {/* Improved overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/55" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/65" />
         </div>
 
         <div className="container relative z-10 mx-auto px-4 py-20 md:py-32">
-          <div className="max-w-2xl">
+          <div className="max-w-3xl">
             <Badge className="mb-4 bg-primary/15 text-primary hover:bg-primary/25 border border-primary/20">
               <Shield className="mr-1 h-3 w-3" />
-              Trusted by 10,000+ Pet Owners
+              Professional AI-Powered Pet Care
             </Badge>
-            <h1 className="mb-6 animate-slide-up text-balance text-4xl font-bold tracking-tight text-foreground md:text-6xl">
-              Safe, Loving Care for Your <span className="text-primary">Beloved Pets</span>
+            <h1 className="mb-6 text-balance text-4xl font-bold tracking-tight text-foreground md:text-6xl">
+              One App. One Routine. <span className="text-primary">Total Peace of Mind.</span>
             </h1>
-            <p className="mb-8 animate-fade-in text-pretty text-lg text-muted-foreground md:text-xl">
-              Connect with verified, certified pet caregivers. Real-time updates, GPS tracking, and complete peace of
-              mind for you and your furry family.
+            <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl">
+              All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
+              Professional care meets transparency.
             </p>
             <div className="flex flex-col items-start gap-4 sm:flex-row">
               <Button size="lg" className="shadow-soft bg-primary hover:bg-primary/90" asChild>
                 <Link href="/register">
-                  Get Started Free
+                  Find Your Caregiver
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="bg-white/85 backdrop-blur border-white/50 hover:bg-white/95" asChild>
-                <Link href="/trainers">Find Caregivers</Link>
+                <Link href="#how-it-works">See How It Works</Link>
               </Button>
             </div>
 
-            {/* Trust indicators */}
             <div className="mt-8 flex flex-wrap gap-4">
               {trustFeatures.map((feature) => (
                 <div key={feature} className="flex items-center gap-2 text-sm text-foreground/80 font-medium">
@@ -118,85 +187,52 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Trust & Safety Section */}
-      <section className="relative overflow-hidden border-y border-border bg-gradient-to-b from-white to-secondary/10">
-        <div className="absolute inset-0">
-          <Image
-            src="/professional-pet-caregiver-holding-dog-leash-smili.jpg"
-            alt="Professional certified pet caregiver"
-            fill
-            className="object-cover opacity-15"
-          />
-        </div>
-        <div className="container relative z-10 mx-auto px-4 py-16">
-          <div className="mx-auto max-w-3xl text-center">
+      {/* Problem/Solution Section */}
+      <section className="px-4 py-16 bg-gradient-to-b from-secondary/5 to-white">
+        <div className="container mx-auto">
+          <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
-              <Shield className="mr-1 h-3 w-3" />
-              Trust & Safety
+              Three Problems. One Solution.
             </Badge>
-            <h2 className="mb-4 text-3xl font-bold text-foreground">Your Pet&apos;s Safety is Our Priority</h2>
-            <p className="mb-8 text-muted-foreground">
-              Every caregiver on our platform goes through a rigorous verification process. We ensure your pets are in
-              the safest hands possible.
+            <h2 className="mb-4 text-3xl font-bold text-foreground">The Pet Care Challenge</h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Paws & Relax solves the three biggest pain points pet owners face
             </p>
-            <div className="grid gap-6 md:grid-cols-3">
-              <Card className="border-border shadow-soft hover:shadow-md transition-shadow duration-300">
-                <CardContent className="p-6 text-center">
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/15">
-                    <Shield className="h-7 w-7 text-primary" />
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3 mb-8">
+            {problemSolution.map((item) => (
+              <Card key={item.number} className="border-border shadow-soft hover:shadow-md hover:border-primary/30 transition-all">
+                <CardContent className="p-6">
+                  <div className="mb-4 text-4xl">{item.icon}</div>
+                  <h3 className="mb-2 font-semibold text-red-600">Problem #{item.number}</h3>
+                  <p className="mb-4 text-sm font-medium text-foreground">{item.problem}</p>
+                  <div className="pt-4 border-t">
+                    <p className="text-sm text-green-600 font-medium">✓ {item.solution}</p>
                   </div>
-                  <h3 className="mb-2 font-semibold text-foreground">Background Checked</h3>
-                  <p className="text-sm text-muted-foreground">
-                    All caregivers undergo comprehensive background verification
-                  </p>
                 </CardContent>
               </Card>
-              <Card className="border-border shadow-soft hover:shadow-md transition-shadow duration-300">
-                <CardContent className="p-6 text-center">
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary/15">
-                    <Award className="h-7 w-7 text-secondary" />
-                  </div>
-                  <h3 className="mb-2 font-semibold text-foreground">Certified Professionals</h3>
-                  <p className="text-sm text-muted-foreground">Licensed and trained in animal care and first aid</p>
-                </CardContent>
-              </Card>
-              <Card className="border-border shadow-soft hover:shadow-md transition-shadow duration-300">
-                <CardContent className="p-6 text-center">
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent/15">
-                    <Heart className="h-7 w-7 text-accent-foreground" />
-                  </div>
-                  <h3 className="mb-2 font-semibold text-foreground">Insurance Covered</h3>
-                  <p className="text-sm text-muted-foreground">Full coverage for peace of mind during every visit</p>
-                </CardContent>
-              </Card>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="px-4 py-20 bg-gradient-to-b from-secondary/5 to-white">
+      {/* Three Core Features */}
+      <section className="px-4 py-16 bg-white">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
-            <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
-              Features
-            </Badge>
-            <h2 className="mb-4 text-3xl font-bold text-foreground">Everything You Need</h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">
-              Our platform provides all the tools for pet owners and caregivers to connect and collaborate effectively.
-            </p>
+            <h2 className="mb-4 text-3xl font-bold text-foreground">The Paws & Relax Difference</h2>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {features.map((feature) => (
+
+          <div className="grid gap-8 md:grid-cols-3">
+            {coreFeatures.map((feature) => (
               <Card
                 key={feature.title}
-                className="border-border shadow-soft transition-all duration-300 hover:-translate-y-2 hover:shadow-lg hover:border-primary/30"
+                className="border-border shadow-soft hover:shadow-md hover:border-primary/30 transition-all"
               >
                 <CardContent className="p-6">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10">
-                    <feature.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="mb-2 font-semibold text-foreground">{feature.title}</h3>
+                  <div className="mb-4 text-3xl">{feature.title.substring(0, 3)}</div>
+                  <h3 className="mb-2 font-semibold text-foreground">{feature.title.substring(4)}</h3>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
                 </CardContent>
               </Card>
@@ -205,66 +241,210 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pet Boarding Section with Background */}
-      <section className="relative overflow-hidden py-20 bg-gradient-to-b from-white via-accent/8 to-secondary/10">
-        <div className="absolute inset-0">
-          <Image
-            src="/cozy-home-interior-with-plants-soft-furniture-cat-.jpg"
-            alt="Cozy safe home environment for pets"
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/96 via-white/90 to-white/75" />
-        </div>
-        <div className="container relative z-10 mx-auto px-4">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div>
-              <Badge variant="outline" className="mb-4 border-secondary/30 bg-secondary/5 text-secondary">
-                <PawPrint className="mr-1 h-3 w-3" />
-                Home Care
-              </Badge>
-              <h2 className="mb-4 text-3xl font-bold text-foreground">Your Pet Feels Right at Home</h2>
-              <p className="mb-6 text-muted-foreground">
-                Our caregivers provide loving in-home care, ensuring your pet stays comfortable in a familiar, safe
-                environment. Whether it&apos;s daily walks, overnight stays, or extended boarding.
-              </p>
-              <ul className="mb-8 space-y-3">
-                {[
-                  "Comfortable home environment",
-                  "One-on-one attention",
-                  "Daily photo & video updates",
-                  "Medication administration available",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-muted-foreground font-medium">
-                    <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Button className="bg-secondary hover:bg-secondary/90 shadow-soft" asChild>
-                <Link href="/services">
-                  Explore Services
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-            <div className="hidden lg:block" />
+      {/* How It Works */}
+      <section id="how-it-works" className="px-4 py-16 bg-gradient-to-b from-white to-accent/5">
+        <div className="container mx-auto">
+          <div className="mb-12 text-center">
+            <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
+              4-Step Process
+            </Badge>
+            <h2 className="mb-4 text-3xl font-bold text-foreground">How It Works</h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Get started in 4 simple steps
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-4">
+            {howItWorks.map((step, index) => (
+              <Card key={step.title} className="border-border shadow-soft hover:shadow-md transition-all relative">
+                <CardContent className="p-6">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-2xl font-bold text-primary">
+                    {index + 1}
+                  </div>
+                  <p className="mb-2 text-3xl">{step.icon}</p>
+                  <h3 className="mb-2 font-semibold text-foreground">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground">{step.description}</p>
+                </CardContent>
+                
+                {index < howItWorks.length - 1 && (
+                  <div className="hidden md:block absolute -right-3 top-1/2 transform -translate-y-1/2">
+                    <ArrowRight className="h-6 w-6 text-primary/30" />
+                  </div>
+                )}
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Service Packages */}
+      <section className="px-4 py-16 bg-gradient-to-b from-secondary/5 to-white">
+        <div className="container mx-auto">
+          <div className="mb-12 text-center">
+            <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
+              Flexible Options
+            </Badge>
+            <h2 className="mb-4 text-3xl font-bold text-foreground">Service Packages</h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Choose the plan that works best for your pet's needs
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {servicePackages.map((pkg) => (
+              <Card
+                key={pkg.type}
+                className="border-border shadow-soft hover:shadow-lg hover:border-primary/30 transition-all overflow-hidden"
+              >
+                <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6">
+                  <h3 className="mb-2 text-xl font-bold text-foreground">{pkg.type}</h3>
+                  <p className="text-sm text-muted-foreground">{pkg.description}</p>
+                </div>
+                <CardContent className="p-6">
+                  <p className="mb-6 text-3xl font-bold text-primary">{pkg.price}</p>
+                  <ul className="space-y-2">
+                    {pkg.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <CheckCircle2 className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button className="w-full mt-6" variant="outline" asChild>
+                    <Link href="/register">Learn More</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Timeline Demo Section */}
+      <section className="px-4 py-16 bg-white">
+        <div className="container mx-auto">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-foreground">Your Pet's Complete Timeline</h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              See real proof of everything that happens during the day
+            </p>
+          </div>
+
+          <Card className="border-2 border-primary/20 shadow-lg">
+            <CardContent className="p-8">
+              <div className="space-y-4">
+                {[
+                  { time: "09:00 AM", activity: "🐕 Walk Completed", mood: "😊 Happy & Energetic", note: "25 minutes at Central Park" },
+                  { time: "10:30 AM", activity: "🍽️ Breakfast Eaten", mood: "😊 Content", note: "Full portion consumed" },
+                  { time: "02:00 PM", activity: "🎓 Training Session", mood: "🎾 Playful & Engaged", note: "Great progress on 'stay' command" },
+                  { time: "04:30 PM", activity: "😴 Afternoon Rest", mood: "😌 Calm & Relaxed", note: "Napping peacefully" },
+                ].map((item) => (
+                  <div key={item.time} className="flex items-center gap-4 pb-4 border-b last:border-b-0">
+                    <span className="font-bold text-primary min-w-24">{item.time}</span>
+                    <div className="flex-1">
+                      <p className="font-semibold text-foreground">{item.activity}</p>
+                      <p className="text-sm text-muted-foreground">{item.note}</p>
+                    </div>
+                    <Badge variant="secondary">{item.mood}</Badge>
+                  </div>
+                ))}
+              </div>
+              <Button className="w-full mt-6" asChild>
+                <Link href="/dashboard">View Full Timeline →</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Trust & Safety */}
+      <section className="px-4 py-16 bg-gradient-to-b from-secondary/5 to-white">
+        <div className="container mx-auto">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-foreground">Built on Trust</h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Three layers of protection for your pet
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            <Card className="border-border shadow-soft">
+              <CardContent className="p-6">
+                <div className="mb-4 text-4xl">🙋‍♀️</div>
+                <h3 className="mb-2 font-bold text-foreground">Professional Human Caregivers</h3>
+                <p className="text-sm text-muted-foreground">
+                  Verified credentials, certifications, background checks, and documented experience—not just animal lovers.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border shadow-soft">
+              <CardContent className="p-6">
+                <div className="mb-4 text-4xl">📅</div>
+                <h3 className="mb-2 font-bold text-foreground">Structured Daily Routines</h3>
+                <p className="text-sm text-muted-foreground">
+                  Personalized care plans, scheduled activities, health monitoring, and enrichment programs tailored to your pet's needs.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border shadow-soft">
+              <CardContent className="p-6">
+                <div className="mb-4 text-4xl">🤖</div>
+                <h3 className="mb-2 font-bold text-foreground">AI-Assisted Verification</h3>
+                <p className="text-sm text-muted-foreground">
+                  Emotion detection, activity logging, mood tracking, and transparent timeline—proof that care actually happened.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Caregiver Section */}
+      <section className="px-4 py-16 bg-gradient-to-b from-white to-accent/5">
+        <div className="container mx-auto">
+          <div className="mb-12 text-center">
+            <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
+              For Caregivers
+            </Badge>
+            <h2 className="mb-4 text-3xl font-bold text-foreground">Build Your Professional Reputation</h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Join our vetted network of pet care professionals
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {caregiverBenefits.map((benefit) => (
+              <div key={benefit} className="flex items-start gap-3">
+                <Star className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+                <p className="font-medium text-foreground">{benefit}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 text-center">
+            <Button size="lg" variant="outline" asChild>
+              <Link href="/apply">Become a Caregiver</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
       <section className="border-y border-border bg-gradient-to-r from-primary/8 via-secondary/8 to-accent/8 px-4 py-16">
         <div className="container mx-auto">
           <div className="grid gap-8 text-center md:grid-cols-4">
             {[
               { value: "10K+", label: "Happy Pets" },
               { value: "500+", label: "Verified Caregivers" },
-              { value: "50K+", label: "Sessions Completed" },
-              { value: "4.9", label: "Average Rating" },
+              { value: "50K+", label: "Care Sessions" },
+              { value: "4.9", label: "Star Rating" },
             ].map((stat) => (
               <div key={stat.label}>
-                <p className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{stat.value}</p>
+                <p className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  {stat.value}
+                </p>
                 <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
               </div>
             ))}
@@ -272,21 +452,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="px-4 py-20 bg-gradient-to-b from-white to-accent/5">
+      {/* Testimonials */}
+      <section className="px-4 py-16 bg-white">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
-            <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
-              Testimonials
-            </Badge>
             <h2 className="mb-4 text-3xl font-bold text-foreground">What Our Users Say</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              Join thousands of satisfied pet owners and caregivers on our platform.
+              Join thousands of satisfied pet owners and caregivers
             </p>
           </div>
+
           <div className="grid gap-6 md:grid-cols-3">
             {testimonials.map((testimonial) => (
-              <Card key={testimonial.name} className="border-border shadow-soft hover:shadow-md transition-shadow duration-300">
+              <Card key={testimonial.name} className="border-border shadow-soft hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="mb-4 flex gap-1">
                     {[...Array(testimonial.rating)].map((_, i) => (
@@ -300,7 +478,7 @@ export default function HomePage() {
                       alt={testimonial.name}
                       width={40}
                       height={40}
-                      className="rounded-full border-2 border-primary/20"
+                      className="rounded-full border-2 border-primary/20 object-cover"
                     />
                     <div>
                       <p className="font-semibold text-foreground">{testimonial.name}</p>
@@ -314,20 +492,45 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Why Choose Paws & Relax */}
+      <section className="px-4 py-16 bg-gradient-to-b from-secondary/5 to-white">
+        <div className="container mx-auto">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-foreground">Why Choose Paws & Relax?</h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              { icon: "👥", title: "Curated Professionals", desc: "Not a marketplace—only vetted caregivers" },
+              { icon: "📅", title: "Complete Ecosystem", desc: "Activity management + booking + tracking" },
+              { icon: "✅", title: "Verified Proof", desc: "AI-verified updates, not just promises" },
+              { icon: "🎯", title: "Unified Platform", desc: "Replace 5+ services with one app" },
+            ].map((item) => (
+              <Card key={item.title} className="border-border shadow-soft text-center p-6">
+                <div className="mb-4 text-4xl">{item.icon}</div>
+                <h3 className="mb-2 font-bold text-foreground">{item.title}</h3>
+                <p className="text-sm text-muted-foreground">{item.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-secondary px-4 py-20">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0 bg-[url('/subtle-paw-print-pattern.jpg')] bg-repeat" />
         </div>
         <div className="container relative z-10 mx-auto text-center">
-          <h2 className="mb-4 text-3xl font-bold text-primary-foreground">Ready to Give Your Pet the Best Care?</h2>
+          <h2 className="mb-4 text-4xl font-bold text-primary-foreground">
+            One App. One Routine. Total Peace of Mind.
+          </h2>
           <p className="mx-auto mb-8 max-w-2xl text-primary-foreground/90 text-lg">
-            Join our community of pet lovers and verified caregivers today. Sign up for free and experience peace of
-            mind!
+            Join 10,000+ pet owners who trust Paws & Relax with their beloved pets.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button size="lg" className="shadow-soft bg-secondary hover:bg-secondary/90 text-foreground" asChild>
-              <Link href="/register">Create Free Account</Link>
+              <Link href="/register">Get Started Free →</Link>
             </Button>
             <Button
               size="lg"
@@ -335,7 +538,7 @@ export default function HomePage() {
               className="border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 bg-transparent shadow-soft"
               asChild
             >
-              <Link href="/apply">Become a Caregiver</Link>
+              <Link href="/trainers">Browse Caregivers</Link>
             </Button>
           </div>
         </div>
