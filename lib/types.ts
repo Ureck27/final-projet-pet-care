@@ -22,6 +22,90 @@ export interface Pet {
   createdAt: Date
 }
 
+// Enhanced Pet Profile
+export interface PetProfile {
+  id: string
+  petId: string
+  ownerId: string
+  // Health & Medical
+  dateOfBirth?: Date
+  weight?: number
+  color?: string
+  microchipId?: string
+  veterinarian?: {
+    name: string
+    clinic: string
+    phone: string
+    email?: string
+  }
+  medicalHistory: Array<{
+    date: Date
+    condition: string
+    treatment: string
+    notes?: string
+  }>
+  allergies?: string[]
+  // Dietary Information
+  dietaryRequirements?: string
+  foodBrand?: string
+  mealsPerDay?: number
+  mealTimes?: string[] // e.g., ["08:00", "18:00"]
+  restrictions?: string[] // foods to avoid
+  treats?: string[]
+  waterIntakeGoal?: number // in ml
+  // Medications & Supplements
+  medications: Array<{
+    name: string
+    dosage: string
+    frequency: string
+    startDate: Date
+    endDate?: Date
+    instructions?: string
+    purpose: string
+  }>
+  supplements: Array<{
+    name: string
+    dosage: string
+    frequency: string
+    purpose: string
+  }>
+  // Behavioral Notes
+  temperament?: string[]
+  knownBehaviors?: string[]
+  fears?: string[]
+  triggers?: string[]
+  positiveBehaviors?: string[]
+  trainingStatus?: string
+  // Emergency Information
+  emergencyContacts: Array<{
+    name: string
+    phone: string
+    relationship: string
+  }>
+  insuranceProvider?: string
+  insurancePolicyNumber?: string
+  // Preferences & Schedule
+  preferredActivities?: string[]
+  exerciseNeeds?: "low" | "moderate" | "high" | "very-high"
+  sleepSchedule?: { bedtime: string; wakeTime: string }
+  grooming?: {
+    frequency: string
+    groomer?: string
+    lastGrooming?: Date
+  }
+  // Medical Records
+  vaccinations: Array<{
+    name: string
+    date: Date
+    expiryDate?: Date
+    vetName?: string
+  }>
+  // Special Instructions
+  specialInstructions?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface Trainer {
   id: string
   userId: string

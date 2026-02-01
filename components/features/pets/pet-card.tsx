@@ -1,11 +1,12 @@
 "use client"
 
+import Link from "next/link"
 import type { Pet } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Dog, Cat, MoreVertical, Edit, Trash2, Calendar } from "lucide-react"
+import { Dog, Cat, MoreVertical, Edit, Trash2, Calendar, FileText } from "lucide-react"
 
 interface PetCardProps {
   pet: Pet
@@ -33,6 +34,12 @@ export function PetCard({ pet, onEdit, onDelete, onBook }: PetCardProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={`/pets/${pet.id}`} className="flex items-center">
+                  <FileText className="mr-2 h-4 w-4" />
+                  View Profile
+                </Link>
+              </DropdownMenuItem>
               {onEdit && (
                 <DropdownMenuItem onClick={() => onEdit(pet)}>
                   <Edit className="mr-2 h-4 w-4" />

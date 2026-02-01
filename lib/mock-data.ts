@@ -1,6 +1,6 @@
 import type { 
   User, Pet, Trainer, Booking, PetStatus, Notification, Task, DailyActivity, 
-  MoodEntry, CarePackage, Message, Review, NotificationPreferences, CarePlan 
+  MoodEntry, CarePackage, Message, Review, NotificationPreferences, CarePlan, PetProfile 
 } from "./types"
 
 export const mockUsers: User[] = [
@@ -636,5 +636,177 @@ export const mockCarePlans: CarePlan[] = [
     restrictions: ["No loud noises", "Avoid sudden changes", "Keep stress levels low"],
     createdAt: new Date("2024-03-25"),
     updatedAt: new Date("2024-03-25"),
+  },
+]
+
+// Pet Profiles - Enhanced detailed information
+export const mockPetProfiles: PetProfile[] = [
+  {
+    id: "1",
+    petId: "1",
+    ownerId: "1",
+    dateOfBirth: new Date("2021-03-15"),
+    weight: 32,
+    color: "Golden",
+    microchipId: "985121000123456",
+    veterinarian: {
+      name: "Dr. Sarah Mitchell",
+      clinic: "Sunny Paws Veterinary Clinic",
+      phone: "555-0101",
+      email: "contact@sunnypaws.com",
+    },
+    medicalHistory: [
+      {
+        date: new Date("2024-02-10"),
+        condition: "Annual Checkup",
+        treatment: "Vaccination update",
+        notes: "Healthy, no issues noted",
+      },
+      {
+        date: new Date("2024-01-15"),
+        condition: "Ear Infection",
+        treatment: "Antibiotic ear drops",
+        notes: "Resolved after 2 weeks of treatment",
+      },
+    ],
+    allergies: ["Chicken"],
+    dietaryRequirements: "Grain-free kibble, high protein",
+    foodBrand: "Royal Canin Grain-Free",
+    mealsPerDay: 2,
+    mealTimes: ["08:00", "18:00"],
+    restrictions: ["Chicken", "Chocolate", "Grapes"],
+    treats: ["Carrots", "Pumpkin", "Peanut butter (xylitol-free)"],
+    waterIntakeGoal: 2000,
+    medications: [
+      {
+        name: "Glucosamine",
+        dosage: "500mg",
+        frequency: "Once daily",
+        startDate: new Date("2024-01-01"),
+        instructions: "Mix with food",
+        purpose: "Joint health",
+      },
+    ],
+    supplements: [
+      {
+        name: "Omega-3 Fish Oil",
+        dosage: "1000mg",
+        frequency: "Once daily",
+        purpose: "Coat and joint health",
+      },
+    ],
+    temperament: ["Friendly", "Energetic", "Loving", "Loyal"],
+    knownBehaviors: ["Jumps when excited", "Chases squirrels", "Loves to fetch"],
+    fears: ["Thunder", "Vacuum cleaner"],
+    triggers: ["Doorbell", "Car keys"],
+    positiveBehaviors: ["Sits on command", "Comes when called", "Walks well on leash"],
+    trainingStatus: "Well-trained, responsive to commands",
+    emergencyContacts: [
+      {
+        name: "John Smith",
+        phone: "1234567890",
+        relationship: "Owner",
+      },
+      {
+        name: "Emily Smith",
+        phone: "0987654321",
+        relationship: "Spouse",
+      },
+    ],
+    insuranceProvider: "Pet Guardian",
+    insurancePolicyNumber: "PG-12345678",
+    preferredActivities: ["Fetch", "Running", "Swimming", "Hiking"],
+    exerciseNeeds: "high",
+    sleepSchedule: { bedtime: "22:00", wakeTime: "07:00" },
+    grooming: {
+      frequency: "Every 6 weeks",
+      groomer: "Paws & Nails Grooming",
+      lastGrooming: new Date("2024-02-20"),
+    },
+    vaccinations: [
+      {
+        name: "DHPP",
+        date: new Date("2024-02-10"),
+        expiryDate: new Date("2025-02-10"),
+        vetName: "Dr. Sarah Mitchell",
+      },
+      {
+        name: "Rabies",
+        date: new Date("2024-02-10"),
+        expiryDate: new Date("2027-02-10"),
+        vetName: "Dr. Sarah Mitchell",
+      },
+    ],
+    specialInstructions:
+      "Max is very food motivated. Use high-value treats for training. Does not like having paws touched - handle carefully during grooming.",
+    createdAt: new Date("2024-01-20"),
+    updatedAt: new Date("2024-02-20"),
+  },
+  {
+    id: "2",
+    petId: "3",
+    ownerId: "1",
+    dateOfBirth: new Date("2022-06-10"),
+    weight: 28,
+    color: "Black",
+    microchipId: "985121000654321",
+    veterinarian: {
+      name: "Dr. Sarah Mitchell",
+      clinic: "Sunny Paws Veterinary Clinic",
+      phone: "555-0101",
+    },
+    medicalHistory: [
+      {
+        date: new Date("2024-02-01"),
+        condition: "Annual Checkup",
+        treatment: "Vaccination update",
+        notes: "Excellent health",
+      },
+    ],
+    allergies: [],
+    dietaryRequirements: "Sensitive stomach formula",
+    foodBrand: "Hill's Science Diet Sensitive Stomach",
+    mealsPerDay: 3,
+    mealTimes: ["07:00", "13:00", "19:00"],
+    restrictions: ["Rich foods", "Sudden diet changes"],
+    treats: ["Plain chicken breast", "Rice"],
+    waterIntakeGoal: 1500,
+    medications: [],
+    supplements: [],
+    temperament: ["Calm", "Anxious", "Loyal", "Gentle"],
+    knownBehaviors: ["Hides when stressed", "Shadow follows owner", "Reverses out of carriers"],
+    fears: ["Car rides", "Strangers", "Changes in environment"],
+    triggers: ["Loud noises", "New people"],
+    positiveBehaviors: ["Cuddles", "Responds to name", "Uses litter box"],
+    trainingStatus: "Not formally trained, but responds to routine",
+    emergencyContacts: [
+      {
+        name: "John Smith",
+        phone: "1234567890",
+        relationship: "Owner",
+      },
+    ],
+    insuranceProvider: "Pet Guardian",
+    insurancePolicyNumber: "PG-87654321",
+    preferredActivities: ["Gentle plays", "Window watching", "Lap sitting"],
+    exerciseNeeds: "low",
+    sleepSchedule: { bedtime: "21:00", wakeTime: "08:00" },
+    grooming: {
+      frequency: "Every 4 weeks",
+      groomer: "Self-grooming primarily",
+      lastGrooming: new Date("2024-02-15"),
+    },
+    vaccinations: [
+      {
+        name: "FVRCP",
+        date: new Date("2024-02-01"),
+        expiryDate: new Date("2025-02-01"),
+        vetName: "Dr. Sarah Mitchell",
+      },
+    ],
+    specialInstructions:
+      "Buddy has severe anxiety. Please maintain routine and keep environment calm. Use gentle handling. Prefers familiar people. Provide safe space to hide if stressed.",
+    createdAt: new Date("2024-01-20"),
+    updatedAt: new Date("2024-02-01"),
   },
 ]
