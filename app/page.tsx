@@ -196,7 +196,7 @@ export default function HomePage() {
             <Badge variant="outline" className="mb-4 border-sky-300 bg-sky-50 text-sky-700 font-semibold">
               Three Problems. One Solution.
             </Badge>
-            <h2 className="mb-4 text-4xl font-bold text-foreground">The Pet Care Challenge</h2>
+            <h2 className="mb-4 text-4xl font-bold text-primary">The Paws & Relax Difference</h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               Paws & Relax solves the three biggest pain points pet owners face
             </p>
@@ -209,7 +209,6 @@ export default function HomePage() {
                   <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-sky-200 to-cyan-100 dark:from-blue-900 dark:to-blue-800">
                     {item.icon && <item.icon className="h-8 w-8 text-blue-600" />}
                   </div>
-                  <h3 className="mb-3 text-lg font-bold text-blue-600">Problem #{item.number}</h3>
                   <p className="mb-6 text-base font-medium text-foreground leading-relaxed">{item.problem}</p>
                   <div className="pt-6 border-t border-emerald-200 dark:border-green-800 bg-gradient-to-r from-emerald-50 dark:from-green-950/30 to-transparent p-4 -mx-8 -mb-8 rounded-b-lg">
                     <p className="text-base text-emerald-700 font-medium flex items-start gap-2">
@@ -228,7 +227,7 @@ export default function HomePage() {
       <section className="px-4 py-16 bg-gradient-to-b from-white/50 to-amber-50/30 dark:bg-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-foreground">The Paws & Relax Difference</h2>
+            <h2 className="mb-4 text-3xl font-bold text-primary">The Paws & Relax Difference</h2>
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
@@ -257,7 +256,7 @@ export default function HomePage() {
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
               4-Step Process
             </Badge>
-            <h2 className="mb-4 text-3xl font-bold text-foreground">How It Works</h2>
+            <h2 className="mb-4 text-3xl font-bold text-primary">How It Works</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
               Get started in 4 simple steps
             </p>
@@ -295,7 +294,7 @@ export default function HomePage() {
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
               Flexible Options
             </Badge>
-            <h2 className="mb-4 text-3xl font-bold text-foreground">Service Packages</h2>
+            <h2 className="mb-4 text-3xl font-bold text-primary">Service Packages</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
               Choose the plan that works best for your pet's needs
             </p>
@@ -335,7 +334,7 @@ export default function HomePage() {
       <section className="px-4 py-16 bg-gradient-to-b from-indigo-50/30 to-white/50 dark:bg-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-foreground">Your Pet's Complete Timeline</h2>
+            <h2 className="mb-4 text-3xl font-bold text-primary">Your Pet's Complete Timeline</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
               See real proof of everything that happens during the day
             </p>
@@ -382,7 +381,7 @@ export default function HomePage() {
       <section className="px-4 py-16 bg-gradient-to-b from-lime-50/30 to-emerald-50/20 dark:from-secondary/5 dark:to-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-foreground">Built on Trust</h2>
+            <h2 className="mb-4 text-3xl font-bold text-primary">Built on Trust</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
               Three layers of protection for your pet
             </p>
@@ -435,7 +434,7 @@ export default function HomePage() {
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
               For Caregivers
             </Badge>
-            <h2 className="mb-4 text-3xl font-bold text-foreground">Build Your Professional Reputation</h2>
+            <h2 className="mb-4 text-3xl font-bold text-primary">Build Your Professional Reputation</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
               Join our vetted network of pet care professionals
             </p>
@@ -483,7 +482,7 @@ export default function HomePage() {
       <section className="px-4 py-16 bg-gradient-to-b from-white/50 to-pink-50/30 dark:bg-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-foreground">What Our Users Say</h2>
+            <h2 className="mb-4 text-3xl font-bold text-primary">What Our Users Say</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
               Join thousands of satisfied pet owners and caregivers
             </p>
@@ -523,7 +522,7 @@ export default function HomePage() {
       <section className="px-4 py-16 bg-gradient-to-b from-orange-50/40 to-amber-50/30 dark:from-secondary/5 dark:to-slate-950">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-foreground">Why Choose Paws & Relax?</h2>
+            <h2 className="mb-4 text-3xl font-bold text-primary">Why Choose Paws & Relax?</h2>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

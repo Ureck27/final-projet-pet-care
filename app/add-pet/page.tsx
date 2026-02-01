@@ -106,7 +106,7 @@ export default function AddPetPage() {
         </Link>
 
         <div>
-          <h1 className="flex items-center gap-2 text-3xl font-bold">
+          <h1 className="flex items-center gap-2 text-3xl font-bold text-primary">
             <PawPrint className="h-8 w-8" />
             Add Your Pet
           </h1>

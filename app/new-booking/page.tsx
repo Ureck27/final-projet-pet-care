@@ -123,7 +123,7 @@ export default function NewBookingPage() {
         </Link>
 
         <div>
-          <h1 className="flex items-center gap-2 text-3xl font-bold">
+          <h1 className="flex items-center gap-2 text-3xl font-bold text-primary">
             <Calendar className="h-8 w-8" />
             New Pet Care Booking
           </h1>
