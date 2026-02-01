@@ -517,56 +517,7 @@ export const mockNotificationPreferences: NotificationPreferences[] = [
   },
 ]
 
-// Messages Mock Data
-export const mockMessages: Message[] = [
-  {
-    id: "1",
-    conversationId: "conv-1",
-    senderId: "2",
-    receiverId: "1",
-    content: "Hi! Max had a great walk today. He was very happy and playful!",
-    read: true,
-    createdAt: new Date("2024-03-15T09:30:00"),
-  },
-  {
-    id: "2",
-    conversationId: "conv-1",
-    senderId: "1",
-    receiverId: "2",
-    content: "That's wonderful! Can he do an extra play session today?",
-    read: true,
-    createdAt: new Date("2024-03-15T10:00:00"),
-  },
-  {
-    id: "3",
-    conversationId: "conv-1",
-    senderId: "2",
-    receiverId: "1",
-    content: "Absolutely! I'll add that to his schedule.",
-    read: false,
-    createdAt: new Date("2024-03-15T10:15:00"),
-  },
-]
-
-// Reviews Mock Data
-export const mockReviews: Review[] = [
-  {
-    id: "1",
-    bookingId: "1",
-    reviewerId: "1",
-    caregiverId: "2",
-    rating: 5,
-    title: "Excellent caregiver!",
-    comment: "Sarah was amazing with Max! She was professional, caring, and sent great updates throughout the day.",
-    categories: {
-      professionalism: 5,
-      communication: 5,
-      careQuality: 5,
-      punctuality: 5,
-    },
-    createdAt: new Date("2024-03-15"),
-  },
-]
+// Messages Mock Data (consolidated later in this file)
 
 export const services = [
   "Basic Training",
