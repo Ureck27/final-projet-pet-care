@@ -156,18 +156,25 @@ export default function CaregiversPage() {
                   )}
 
                   {/* Pricing and CTA */}
-                  <div className="flex items-center justify-between pt-2 border-t">
+                  <div className="flex items-center justify-between pt-2 border-t gap-2">
                     <div>
                       <span className="text-2xl font-bold text-primary">
                         ${caregiver.pricing}
                       </span>
                       <span className="text-xs text-muted-foreground ml-1">/visit</span>
                     </div>
-                    <Button size="sm" asChild>
-                      <Link href={`/profile?id=${caregiver.userId}`}>
-                        View Profile
-                      </Link>
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" asChild>
+                        <Link href={`/reviews?trainer=${caregiver.id}`}>
+                          Reviews
+                        </Link>
+                      </Button>
+                      <Button size="sm" asChild>
+                        <Link href={`/profile?id=${caregiver.userId}`}>
+                          View Profile
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

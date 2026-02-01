@@ -1030,3 +1030,55 @@ export const mockMessages: Message[] = [
     createdAt: new Date("2024-02-27 10:15"),
   },
 ]
+
+// Mock Reviews
+export const mockReviews: Review[] = [
+  {
+    id: "review-1",
+    bookingId: "1",
+    reviewerId: "1",
+    caregiverId: "2",
+    rating: 5,
+    title: "Excellent trainer! Max loved it!",
+    comment: "Sarah is absolutely wonderful with Max. She's patient, knowledgeable, and genuinely cares about each dog's wellbeing. Max has shown such great improvement in his behavior and confidence. Highly recommended!",
+    categories: {
+      professionalism: 5,
+      communication: 5,
+      careQuality: 5,
+      punctuality: 5,
+    },
+    createdAt: new Date("2024-02-14 16:30"),
+  },
+  {
+    id: "review-2",
+    bookingId: "3",
+    reviewerId: "1",
+    caregiverId: "3",
+    rating: 4,
+    title: "Great service and very reliable",
+    comment: "Mike provided excellent overnight care for my dog. He was very responsive to my concerns and sent daily updates with photos. The only minor thing was that he arrived 15 minutes late once, but overall very satisfied.",
+    categories: {
+      professionalism: 4,
+      communication: 5,
+      careQuality: 4,
+      punctuality: 4,
+    },
+    createdAt: new Date("2024-02-12 10:00"),
+  },
+  {
+    id: "review-3",
+    bookingId: "2",
+    reviewerId: "1",
+    caregiverId: "2",
+    rating: 5,
+    title: "Perfect! Five stars across the board",
+    comment: "Sarah took excellent care of Luna while we were away. She's professional, punctual, and really understands feline behavior. Luna was relaxed when we returned. Worth every penny!",
+    categories: {
+      professionalism: 5,
+      communication: 5,
+      careQuality: 5,
+      punctuality: 5,
+    },
+    createdAt: new Date("2024-02-10 14:15"),
+  },
+]
