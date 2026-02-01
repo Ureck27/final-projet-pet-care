@@ -27,9 +27,12 @@ export const forgotPasswordSchema = z.object({
 
 export const petSchema = z.object({
   name: z.string().min(1, "Pet name is required"),
+  fullName: z.string().optional(),
   species: z.enum(["dog", "cat"]),
   breed: z.string().min(1, "Breed is required"),
   age: z.number().min(0, "Age must be positive"),
+  weight: z.string().optional(),
+  color: z.string().optional(),
   medicalNotes: z.string().optional(),
   photo: z.string().optional(),
 })

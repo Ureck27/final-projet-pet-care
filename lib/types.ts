@@ -14,9 +14,12 @@ export interface Pet {
   id: string
   ownerId: string
   name: string
+  fullName?: string
   species: "dog" | "cat"
   breed: string
   age: number
+  weight?: string
+  color?: string
   medicalNotes?: string
   photo?: string
   createdAt: Date

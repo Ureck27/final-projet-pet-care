@@ -1,0 +1,331 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/context/auth-context"
+import { mockPets } from "@/lib/mock-data"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { petSchema, type PetFormData } from "@/lib/validation"
+import { Loader } from "@/components/common/loader"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ImageUpload } from "@/components/ui/image-upload"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Loader2, ArrowLeft, CheckCircle, PawPrint } from "lucide-react"
+import type { Pet } from "@/lib/types"
+import Link from "next/link"
+
+export default function AddPetPage() {
+  const router = useRouter()
+  const { user, isLoading } = useAuth()
+  const [pets, setPets] = useState<Pet[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("")
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login")
+    } else if (user) {
+      setPets(mockPets.filter((pet) => pet.ownerId === user.id))
+    }
+  }, [user, isLoading, router])
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    reset,
+  } = useForm<PetFormData>({
+    resolver: zodResolver(petSchema),
+    defaultValues: {
+      species: "dog",
+      age: 0,
+      photo: "",
+    },
+  })
+
+  const onSubmit = async (data: PetFormData) => {
+    setIsSubmitting(true)
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
+      const newPet: Pet = {
+        id: String(pets.length + Math.random()),
+        ownerId: user!.id,
+        name: data.name,
+        fullName: data.fullName,
+        species: data.species,
+        breed: data.breed,
+        age: data.age,
+        weight: data.weight,
+        color: data.color,
+        medicalNotes: data.medicalNotes,
+        photo: data.photo || "/placeholder.svg",
+        createdAt: new Date(),
+      }
+
+      setPets([...pets, newPet])
+      setSuccessMessage(`${data.name} has been added successfully!`)
+      setShowSuccessMessage(true)
+      reset()
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setShowSuccessMessage(false)
+      }, 3000)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (isLoading || !user) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader size="lg" />
+      </div>
+    )
+  }
+
+  return (
+    <main className="container mx-auto px-4 py-8">
+      <div className="mb-8">
+        <Link href="/pets">
+          <Button variant="outline" className="mb-6 gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back to My Pets
+          </Button>
+        </Link>
+
+        <div>
+          <h1 className="flex items-center gap-2 text-3xl font-bold">
+            <PawPrint className="h-8 w-8" />
+            Add Your Pet
+          </h1>
+          <p className="mt-2 text-gray-600">Tell us about your new furry friend</p>
+        </div>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-3">
+        {/* Form Section */}
+        <div className="lg:col-span-2">
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle>Pet Information</CardTitle>
+              <CardDescription>Add your pet's details below</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {showSuccessMessage && (
+                <Alert className="mb-6 border-green-200 bg-green-50">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800">{successMessage}</AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {/* Pet Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-base font-semibold">
+                    Pet Name <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    placeholder="e.g., Max, Bella, Charlie"
+                    {...register("name")}
+                    className={`text-base ${errors.name ? "border-destructive" : ""}`}
+                  />
+                  {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+                </div>
+
+                {/* Full Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="text-base font-semibold">
+                    Full Name (optional)
+                  </Label>
+                  <Input
+                    id="fullName"
+                    placeholder="e.g., Maximilian the Great"
+                    {...register("fullName")}
+                    className="text-base"
+                  />
+                  <p className="text-xs text-muted-foreground">A more formal name for your pet</p>
+                </div>
+
+                {/* Type & Age */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="species" className="text-base font-semibold">
+                      Pet Type <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={watch("species")}
+                      onValueChange={(value) => setValue("species", value as "dog" | "cat")}
+                    >
+                      <SelectTrigger className="text-base">
+                        <SelectValue placeholder="Select pet type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="dog">🐕 Dog</SelectItem>
+                        <SelectItem value="cat">🐈 Cat</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.species && <p className="text-sm text-destructive">{errors.species.message}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="age" className="text-base font-semibold">
+                      Age <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="age"
+                      type="number"
+                      min="0"
+                      placeholder="e.g., 3"
+                      {...register("age", { valueAsNumber: true })}
+                      className={`text-base ${errors.age ? "border-destructive" : ""}`}
+                    />
+                    <p className="text-xs text-muted-foreground">Age in years</p>
+                    {errors.age && <p className="text-sm text-destructive">{errors.age.message}</p>}
+                  </div>
+                </div>
+
+                {/* Breed */}
+                <div className="space-y-2">
+                  <Label htmlFor="breed" className="text-base font-semibold">
+                    Breed <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="breed"
+                    placeholder="e.g., Golden Retriever, Siamese"
+                    {...register("breed")}
+                    className={`text-base ${errors.breed ? "border-destructive" : ""}`}
+                  />
+                  {errors.breed && <p className="text-sm text-destructive">{errors.breed.message}</p>}
+                </div>
+
+                {/* Weight & Color */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="weight" className="text-base font-semibold">
+                      Weight (optional)
+                    </Label>
+                    <Input
+                      id="weight"
+                      placeholder="e.g., 30 kg"
+                      {...register("weight")}
+                      className="text-base"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="color" className="text-base font-semibold">
+                      Color (optional)
+                    </Label>
+                    <Input
+                      id="color"
+                      placeholder="e.g., Golden, Black"
+                      {...register("color")}
+                      className="text-base"
+                    />
+                  </div>
+                </div>
+
+                {/* Medical Notes */}
+                <div className="space-y-2">
+                  <Label htmlFor="medicalNotes" className="text-base font-semibold">
+                    Medical Notes (optional)
+                  </Label>
+                  <Textarea
+                    id="medicalNotes"
+                    placeholder="Any allergies, medications, or special health needs..."
+                    {...register("medicalNotes")}
+                    rows={3}
+                    className="text-base"
+                  />
+                  <p className="text-xs text-muted-foreground">This helps trainers provide better care</p>
+                </div>
+
+                {/* Photo Upload */}
+                <ImageUpload
+                  value={watch("photo")}
+                  onChange={(value) => setValue("photo", value)}
+                  label="Pet Photo (optional)"
+                  placeholder="Upload a photo of your pet"
+                />
+
+                {/* Submit Button */}
+                <div className="flex gap-3 pt-4">
+                  <Button type="button" variant="outline" onClick={() => router.push("/pets")} className="flex-1">
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting} className="flex-1">
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Adding Pet...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Pet
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Pets Summary Section */}
+        <div>
+          <Card className="border-border sticky top-4">
+            <CardHeader>
+              <CardTitle className="text-lg">Your Pets</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {pets.length === 0 ? (
+                <div className="text-center">
+                  <PawPrint className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">No pets added yet</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {pets.map((pet) => (
+                    <div
+                      key={pet.id}
+                      className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50"
+                    >
+                      <img
+                        src={pet.photo || "/placeholder.svg"}
+                        alt={pet.name}
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm truncate">{pet.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {pet.species} • {pet.breed}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  <Button variant="outline" className="w-full mt-4" asChild>
+                    <Link href="/pets">View All Pets</Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </main>
+  )
+}

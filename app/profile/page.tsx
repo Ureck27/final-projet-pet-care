@@ -87,7 +87,7 @@ export default function ProfilePage() {
                   </span>
                   <span className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    Joined {user.createdAt.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                    Joined {new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
                   </span>
                 </div>
 

@@ -36,9 +36,12 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
     defaultValues: pet
       ? {
           name: pet.name,
+          fullName: pet.fullName || "",
           species: pet.species,
           breed: pet.breed,
           age: pet.age,
+          weight: pet.weight || "",
+          color: pet.color || "",
           medicalNotes: pet.medicalNotes || "",
           photo: pet.photo || "",
         }
@@ -80,12 +83,23 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="fullName">Full Name (optional)</Label>
+            <Input
+              id="fullName"
+              placeholder="Maximilian Golden Retriever"
+              {...register("fullName")}
+              className={errors.fullName ? "border-destructive" : ""}
+            />
+            {errors.fullName && <p className="text-xs text-destructive">{errors.fullName.message}</p>}
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="species">Species</Label>
+              <Label htmlFor="species">Type</Label>
               <Select value={watch("species")} onValueChange={(value) => setValue("species", value as "dog" | "cat")}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select species" />
+                  <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="dog">Dog</SelectItem>
@@ -116,6 +130,30 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
               className={errors.breed ? "border-destructive" : ""}
             />
             {errors.breed && <p className="text-xs text-destructive">{errors.breed.message}</p>}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="weight">Weight (optional)</Label>
+              <Input
+                id="weight"
+                placeholder="30 kg"
+                {...register("weight")}
+                className={errors.weight ? "border-destructive" : ""}
+              />
+              {errors.weight && <p className="text-xs text-destructive">{errors.weight.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="color">Color (optional)</Label>
+              <Input
+                id="color"
+                placeholder="Golden"
+                {...register("color")}
+                className={errors.color ? "border-destructive" : ""}
+              />
+              {errors.color && <p className="text-xs text-destructive">{errors.color.message}</p>}
+            </div>
           </div>
 
           <div className="space-y-2">

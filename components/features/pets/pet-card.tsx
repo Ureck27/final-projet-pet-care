@@ -64,7 +64,10 @@ export function PetCard({ pet, onEdit, onDelete, onBook }: PetCardProps) {
       </div>
       <CardContent className="p-4">
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="font-semibold">{pet.name}</h3>
+          <div>
+            <h3 className="font-semibold">{pet.name}</h3>
+            {pet.fullName && <p className="text-xs text-muted-foreground">{pet.fullName}</p>}
+          </div>
           <Badge variant="secondary" className="gap-1">
             <PetIcon className="h-3 w-3" />
             {pet.species}
@@ -72,6 +75,8 @@ export function PetCard({ pet, onEdit, onDelete, onBook }: PetCardProps) {
         </div>
         <p className="text-sm text-muted-foreground">{pet.breed}</p>
         <p className="text-sm text-muted-foreground">{pet.age} years old</p>
+        {pet.weight && <p className="text-xs text-muted-foreground">Weight: {pet.weight}</p>}
+        {pet.color && <p className="text-xs text-muted-foreground">Color: {pet.color}</p>}
         {pet.medicalNotes && <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{pet.medicalNotes}</p>}
       </CardContent>
     </Card>
