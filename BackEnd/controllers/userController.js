@@ -4,7 +4,7 @@ const User = require('../models/User');
 // @route   GET /api/users
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find({}).select('-password');
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -30,17 +30,24 @@ const getUserById = async (req, res) => {
 // @route   POST /api/users
 const createUser = async (req, res) => {
   try {
-    const { name, email, age } = req.body;
+    const { name, fullName, email, password, role } = req.body;
     
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    // Require password for manual creation
+    if (!password) {
+      return res.status(400).json({ message: 'Password is required' });
+    }
+
     const user = await User.create({
       name,
+      fullName: fullName || name,
       email,
-      age
+      password,
+      role: role || 'user'
     });
 
     res.status(201).json(user);
@@ -57,8 +64,9 @@ const updateUser = async (req, res) => {
 
     if (user) {
       user.name = req.body.name || user.name;
+      user.fullName = req.body.fullName || user.fullName;
       user.email = req.body.email || user.email;
-      user.age = req.body.age || user.age;
+      if (req.body.role) user.role = req.body.role;
 
       const updatedUser = await user.save();
       res.json(updatedUser);
