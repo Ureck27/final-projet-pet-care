@@ -40,7 +40,7 @@ export default function AdminDashboardPage() {
   const totalTrainers = mockTrainers.length
   const totalPets = mockPets.length
   const totalBookings = mockBookings.length
-  const activeBookings = mockBookings.filter(b => b.status === "confirmed" || b.status === "in-progress").length
+  const activeBookings = mockBookings.filter(b => b.status === "confirmed" || b.status === "completed").length
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -52,10 +52,34 @@ export default function AdminDashboardPage() {
 
       {/* Stats */}
       <div className="mb-8 grid gap-4 md:grid-cols-4">
-        <StatsCard title="Total Owners" value={totalUsers} icon={Users} />
-        <StatsCard title="Total Trainers" value={totalTrainers} icon={UserCircle} />
-        <StatsCard title="Total Pets" value={totalPets} icon={PawPrint} />
-        <StatsCard title="Active Bookings" value={activeBookings} description={`Total ${totalBookings}`} icon={CalendarDays} />
+        <Card>
+          <CardContent className="p-6 flex flex-col items-center justify-center">
+             <Users className="mb-2 h-8 w-8 text-primary" />
+             <h3 className="text-2xl font-bold">{totalUsers}</h3>
+             <p className="text-sm text-muted-foreground">Total Owners</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6 flex flex-col items-center justify-center">
+             <UserCircle className="mb-2 h-8 w-8 text-primary" />
+             <h3 className="text-2xl font-bold">{totalTrainers}</h3>
+             <p className="text-sm text-muted-foreground">Total Trainers</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6 flex flex-col items-center justify-center">
+             <PawPrint className="mb-2 h-8 w-8 text-primary" />
+             <h3 className="text-2xl font-bold">{totalPets}</h3>
+             <p className="text-sm text-muted-foreground">Total Pets</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6 flex flex-col items-center justify-center">
+             <CalendarDays className="mb-2 h-8 w-8 text-primary" />
+             <h3 className="text-2xl font-bold">{activeBookings}</h3>
+             <p className="text-sm text-muted-foreground">Active Bookings ({totalBookings} Total)</p>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">

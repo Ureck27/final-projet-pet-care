@@ -84,6 +84,7 @@ export default function NewBookingPage() {
         status: "confirmed",
         notes: data.notes,
         createdAt: new Date(),
+        updatedAt: new Date(),
       }
 
       setBookings([...bookings, newBooking])

@@ -13,13 +13,14 @@ interface PetCardProps {
   onEdit?: (pet: Pet) => void
   onDelete?: (pet: Pet) => void
   onBook?: (pet: Pet) => void
+  className?: string
 }
 
-export function PetCard({ pet, onEdit, onDelete, onBook }: PetCardProps) {
+export function PetCard({ pet, onEdit, onDelete, onBook, className }: PetCardProps) {
   const PetIcon = pet.species === "dog" ? Dog : Cat
 
   return (
-    <Card className="group overflow-hidden border-border transition-shadow hover:shadow-md">
+    <Card className={`group overflow-hidden border-border transition-shadow hover:shadow-md ${className || ""}`}>
       <div className="relative aspect-square overflow-hidden bg-muted">
         <img src={pet.photo || "/placeholder.svg"} alt={pet.name} className="h-full w-full object-cover" />
         <div className="absolute right-2 top-2">

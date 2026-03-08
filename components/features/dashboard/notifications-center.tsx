@@ -18,7 +18,7 @@ export function NotificationsCenter({
   onMarkAsRead,
   onDismiss,
 }: NotificationsCenterProps) {
-  const [filter, setFilter] = useState<"all" | "unread" | "critical">>("all")
+  const [filter, setFilter] = useState<"all" | "unread" | "critical">("all")
 
   const getNotificationIcon = (type: string) => {
     const icons: Record<string, string> = {

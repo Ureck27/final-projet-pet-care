@@ -129,13 +129,13 @@ export function ActivityTimeline({ activities, petName }: ActivityTimelineProps)
                     )}
 
                     {/* Caregiver Notes */}
-                    {activity.caregiveNotes && (
+                    {activity.caregiverNotes && (
                       <div className="mt-3 rounded-lg bg-blue-50 p-3">
                         <p className="text-xs font-semibold text-blue-900">
                           Caregiver Notes:
                         </p>
                         <p className="text-sm text-blue-900">
-                          {activity.caregiveNotes}
+                          {activity.caregiverNotes}
                         </p>
                       </div>
                     )}
