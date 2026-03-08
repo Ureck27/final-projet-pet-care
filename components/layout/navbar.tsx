@@ -33,7 +33,13 @@ export function Navbar() {
   if (isAuthPage) return null
 
   const navLinks = user
-    ? user.role === "owner"
+    ? user.role === "admin"
+      ? [
+          { href: "/admin-dashboard", label: "Dashboard" },
+          { href: "/users", label: "Users" },
+          { href: "/trainers", label: "Trainers" },
+        ]
+      : user.role === "owner"
       ? [
           { href: "/dashboard", label: "Dashboard" },
           { href: "/pets", label: "My Pets" },

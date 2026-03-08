@@ -31,6 +31,15 @@ export const mockUsers: User[] = [
     avatar: "/man-trainer-profile.jpg",
     createdAt: new Date("2024-02-10"),
   },
+  {
+    id: "4",
+    email: "admin@petcare.com",
+    fullName: "System Admin",
+    phone: "1111111111",
+    role: "admin",
+    avatar: "/placeholder.svg",
+    createdAt: new Date("2024-03-01"),
+  },
 ]
 
 export const mockPets: Pet[] = [

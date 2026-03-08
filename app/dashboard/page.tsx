@@ -32,8 +32,12 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!isLoading && !user) {
       router.push("/login")
-    } else if (!isLoading && user?.role === "trainer") {
-      router.push("/trainer-dashboard")
+    } else if (!isLoading) {
+      if (user?.role === "trainer") {
+        router.push("/trainer-dashboard")
+      } else if (user?.role === "admin") {
+        router.push("/admin-dashboard")
+      }
     }
   }, [user, isLoading, router])
 

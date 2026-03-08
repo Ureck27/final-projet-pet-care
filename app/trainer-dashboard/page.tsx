@@ -25,8 +25,12 @@ export default function TrainerDashboardPage() {
   useEffect(() => {
     if (!isLoading && !user) {
       router.push("/login")
-    } else if (!isLoading && user?.role === "owner") {
-      router.push("/dashboard")
+    } else if (!isLoading) {
+      if (user?.role === "owner") {
+        router.push("/dashboard")
+      } else if (user?.role === "admin") {
+        router.push("/admin-dashboard")
+      }
     }
   }, [user, isLoading, router])
 
