@@ -19,10 +19,14 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const trainerRoutes = require('./routes/trainerRoutes');
 const dailyActivityRoutes = require('./routes/dailyActivityRoutes');
+const routineRoutes = require('./routes/routineRoutes');
 
 // Middleware
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
+
+// Static files
+app.use('/uploads', express.static('uploads'));
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -32,6 +36,7 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/trainers', trainerRoutes);
 app.use('/api/daily-activities', dailyActivityRoutes);
+app.use('/api/routine', routineRoutes);
 app.use('/api/trainer-requests', require('./routes/trainerRequestRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
