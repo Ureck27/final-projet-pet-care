@@ -17,6 +17,8 @@ const userRoutes = require('./routes/userRoutes');
 const petRoutes = require('./routes/petRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const taskRoutes = require('./routes/taskRoutes');
+const trainerRoutes = require('./routes/trainerRoutes');
+const dailyActivityRoutes = require('./routes/dailyActivityRoutes');
 
 // Middleware
 app.use(cors({ origin: 'http://localhost:3000' }));
@@ -28,6 +30,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/trainers', trainerRoutes);
+app.use('/api/daily-activities', dailyActivityRoutes);
 app.use('/api/trainer-requests', require('./routes/trainerRequestRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
