@@ -6,6 +6,7 @@ const Routine = require('../models/Routine');
 const RoutineLog = require('../models/RoutineLog');
 const aiPetAnalyzer = require('../services/aiPetAnalyzer');
 const notificationService = require('../services/notificationService');
+const { protect, authorizeRole } = require('../middleware/authMiddleware');
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
@@ -33,8 +34,8 @@ const upload = multer({
   }
 });
 
-// POST /api/routine/upload
-router.post('/upload', upload.single('photo'), (req, res) => {
+// POST /api/routine/upload - Only trainers can upload photos
+router.post('/upload', protect, authorizeRole('trainer', 'admin'), upload.single('photo'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
@@ -56,8 +57,8 @@ router.post('/upload', upload.single('photo'), (req, res) => {
   }
 });
 
-// POST /api/routine/complete
-router.post('/complete', upload.single('photo'), async (req, res) => {
+// POST /api/routine/complete - Only trainers can complete routines
+router.post('/complete', protect, authorizeRole('trainer', 'admin'), upload.single('photo'), async (req, res) => {
   try {
     const { routineId } = req.body;
 
@@ -73,6 +74,13 @@ router.post('/complete', upload.single('photo'), async (req, res) => {
     const routine = await Routine.findById(routineId);
     if (!routine) {
       return res.status(404).json({ message: 'Routine not found' });
+    }
+
+    // Security check: Only assigned trainer or admin can complete the routine
+    if (req.user.role === 'trainer' && routine.trainerId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ 
+        message: 'You are not authorized to complete this routine. Only the assigned trainer can complete it.' 
+      });
     }
 
     // Upload photo and get URL
@@ -126,6 +134,117 @@ router.post('/complete', upload.single('photo'), async (req, res) => {
     res.status(500).json({ 
       success: false,
       message: 'Error completing routine', 
+      error: error.message 
+    });
+  }
+});
+
+// GET /api/routine/my-routines - Get routines for current trainer
+router.get('/my-routines', protect, authorizeRole('trainer'), async (req, res) => {
+  try {
+    const routines = await Routine.find({ trainerId: req.user._id })
+      .populate('petId', 'name type breed age photo')
+      .sort({ scheduledTime: 1 });
+
+    res.status(200).json({
+      success: true,
+      count: routines.length,
+      data: routines
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching routines', 
+      error: error.message 
+    });
+  }
+});
+
+// GET /api/routine/pet/:petId/logs - Get routine logs for a specific pet
+router.get('/pet/:petId/logs', protect, async (req, res) => {
+  try {
+    const { petId } = req.params;
+    
+    // Find the pet to check ownership
+    const Pet = require('../models/Pet');
+    const pet = await Pet.findById(petId);
+    
+    if (!pet) {
+      return res.status(404).json({ message: 'Pet not found' });
+    }
+
+    // Security check: Only owner, assigned trainer, or admin can view logs
+    const isOwner = pet.ownerId.toString() === req.user._id.toString();
+    const isAssignedTrainer = pet.trainerId && pet.trainerId.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isOwner && !isAssignedTrainer && !isAdmin) {
+      return res.status(403).json({ 
+        message: 'You are not authorized to view this pet\'s routine logs' 
+      });
+    }
+
+    // Get routine logs
+    const logs = await RoutineLog.find({ petId })
+      .populate('routineId', 'taskName description scheduledTime')
+      .populate('trainerId', 'name email')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: logs.length,
+      data: logs
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching routine logs', 
+      error: error.message 
+    });
+  }
+});
+
+// GET /api/routine/admin/all - Admin only: Get all routines and logs
+router.get('/admin/all', protect, authorizeRole('admin'), async (req, res) => {
+  try {
+    const { page = 1, limit = 50, status, petId } = req.query;
+    
+    // Build filter
+    const filter = {};
+    if (status) filter.status = status;
+    if (petId) filter.petId = petId;
+
+    // Get routines with pagination
+    const routines = await Routine.find(filter)
+      .populate('petId', 'name type breed')
+      .populate('trainerId', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    // Get routine logs
+    const logs = await RoutineLog.find({})
+      .populate('petId', 'name type')
+      .populate('trainerId', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    res.status(200).json({
+      success: true,
+      routines: {
+        count: routines.length,
+        data: routines
+      },
+      logs: {
+        count: logs.length,
+        data: logs
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching admin data', 
       error: error.message 
     });
   }
