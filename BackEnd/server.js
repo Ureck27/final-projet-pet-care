@@ -12,6 +12,7 @@ connectDB();
 const app = express();
 
 // Route files
+const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const petRoutes = require('./routes/petRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
@@ -22,6 +23,7 @@ app.use(cors());
 app.use(express.json());
 
 // API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/bookings', bookingRoutes);
