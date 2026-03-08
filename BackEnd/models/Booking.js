@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema({
   petId: { type: mongoose.Schema.Types.ObjectId, ref: 'Pet', required: true },
-  trainerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trainer', required: true },
+  trainerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   service: { type: String, required: true },
   date: { type: Date, required: true },

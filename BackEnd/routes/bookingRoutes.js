@@ -7,14 +7,15 @@ const {
   updateBooking,
   deleteBooking
 } = require('../controllers/bookingController');
+const { protect } = require('../middleware/authMiddleware');
 
 router.route('/')
-  .get(getBookings)
-  .post(createBooking);
+  .get(protect, getBookings)
+  .post(protect, createBooking);
 
 router.route('/:id')
-  .get(getBookingById)
-  .put(updateBooking)
-  .delete(deleteBooking);
+  .get(protect, getBookingById)
+  .put(protect, updateBooking)
+  .delete(protect, deleteBooking);
 
 module.exports = router;

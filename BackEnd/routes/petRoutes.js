@@ -7,14 +7,15 @@ const {
   updatePet,
   deletePet
 } = require('../controllers/petController');
+const { protect } = require('../middleware/authMiddleware');
 
 router.route('/')
-  .get(getPets)
-  .post(createPet);
+  .get(protect, getPets)
+  .post(protect, createPet);
 
 router.route('/:id')
-  .get(getPetById)
-  .put(updatePet)
-  .delete(deletePet);
+  .get(protect, getPetById)
+  .put(protect, updatePet)
+  .delete(protect, deletePet);
 
 module.exports = router;

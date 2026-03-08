@@ -7,14 +7,15 @@ const {
   updateUser,
   deleteUser
 } = require('../controllers/userController');
+const { protect, authorizeRole } = require('../middleware/authMiddleware');
 
 router.route('/')
-  .get(getUsers)
-  .post(createUser);
+  .get(protect, authorizeRole('admin'), getUsers)
+  .post(protect, authorizeRole('admin'), createUser);
 
 router.route('/:id')
-  .get(getUserById)
-  .put(updateUser)
-  .delete(deleteUser);
+  .get(protect, getUserById)
+  .put(protect, updateUser)
+  .delete(protect, authorizeRole('admin'), deleteUser);
 
 module.exports = router;
