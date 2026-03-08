@@ -190,7 +190,7 @@ export default function HomePage() {
       </section>
 
       {/* Problem/Solution Section */}
-      <section className="px-4 py-20 bg-image-overlay dark:bg-image-overlay-dark">
+      <section className="px-4 py-20">
         <div className="container mx-auto">
           <div className="mb-16 text-center">
             <Badge variant="outline" className="mb-4 border-primary/20 bg-primary/5 text-primary font-semibold">
@@ -224,7 +224,7 @@ export default function HomePage() {
       </section>
 
       {/* Three Core Features */}
-      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
+      <section className="px-4 py-16">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">The Paws & Relax Difference</h2>
@@ -250,7 +250,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
+      <section id="how-it-works" className="px-4 py-16">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
@@ -288,7 +288,7 @@ export default function HomePage() {
       </section>
 
       {/* Service Packages */}
-      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
+      <section className="px-4 py-16">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
@@ -331,7 +331,7 @@ export default function HomePage() {
       </section>
 
       {/* Timeline Demo Section */}
-      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
+      <section className="px-4 py-16">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">Your Pet's Complete Timeline</h2>
@@ -378,7 +378,7 @@ export default function HomePage() {
       </section>
 
       {/* Trust & Safety */}
-      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
+      <section className="px-4 py-16">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">Built on Trust</h2>
@@ -428,7 +428,7 @@ export default function HomePage() {
       </section>
 
       {/* Caregiver Section */}
-      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
+      <section className="px-4 py-16">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
@@ -479,7 +479,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
+      <section className="px-4 py-16">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">What Our Users Say</h2>
@@ -519,7 +519,7 @@ export default function HomePage() {
       </section>
 
       {/* Why Choose Paws & Relax */}
-      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
+      <section className="px-4 py-16">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">Why Choose Paws & Relax?</h2>
