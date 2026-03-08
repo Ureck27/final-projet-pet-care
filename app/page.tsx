@@ -149,7 +149,7 @@ export default function HomePage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/65 dark:from-black/80 dark:via-black/70 dark:to-black/50" />
+          <div className="absolute inset-0 hero-overlay dark:hero-overlay-dark" />
         </div>
 
         <div className="container relative z-10 mx-auto px-4 py-20 md:py-32">
@@ -190,7 +190,7 @@ export default function HomePage() {
       </section>
 
       {/* Problem/Solution Section */}
-      <section className="px-4 py-20 bg-gradient-to-br from-sky-50/50 via-background to-amber-50/30 dark:from-blue-950/20 dark:via-background dark:to-cyan-950/10">
+      <section className="px-4 py-20 bg-image-overlay dark:bg-image-overlay-dark">
         <div className="container mx-auto">
           <div className="mb-16 text-center">
             <Badge variant="outline" className="mb-4 border-sky-300 bg-sky-50 text-sky-700 font-semibold">
@@ -204,7 +204,7 @@ export default function HomePage() {
 
           <div className="grid gap-8 md:grid-cols-3 mb-8">
             {problemSolution.map((item) => (
-              <Card key={item.number} className="border-2 border-sky-200 dark:border-blue-800 shadow-lg hover:shadow-xl hover:border-sky-300 dark:hover:border-blue-700 transition-all bg-white/60 dark:bg-slate-900 backdrop-blur-sm">
+              <Card key={item.number} className="border- border-border shadow-soft hover:shadow-lg hover:border-primary/50 transition-smooth bg-glass">
                 <CardContent className="p-8">
                   <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-sky-200 to-cyan-100 dark:from-blue-900 dark:to-blue-800">
                     {item.icon && <item.icon className="h-8 w-8 text-blue-600" />}
@@ -224,7 +224,7 @@ export default function HomePage() {
       </section>
 
       {/* Three Core Features */}
-      <section className="px-4 py-16 bg-gradient-to-b from-white/50 to-amber-50/30 dark:bg-slate-950">
+      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">The Paws & Relax Difference</h2>
@@ -234,7 +234,7 @@ export default function HomePage() {
             {coreFeatures.map((feature) => (
               <Card
                 key={feature.title}
-                className="border-border shadow-soft hover:shadow-md hover:border-primary/30 transition-all"
+                className="border-border shadow-soft hover:shadow-md hover:border-primary/30 transition-smooth bg-glass"
               >
                 <CardContent className="p-6">
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
@@ -250,7 +250,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="px-4 py-16 bg-gradient-to-b from-teal-50/40 to-cyan-50/30 dark:from-slate-950 dark:to-accent/10">
+      <section id="how-it-works" className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
@@ -264,7 +264,7 @@ export default function HomePage() {
 
           <div className="grid gap-6 md:grid-cols-4">
             {howItWorks.map((step, index) => (
-              <Card key={step.title} className="border-border shadow-soft hover:shadow-md transition-all relative">
+              <Card key={step.title} className="border-border shadow-soft hover:shadow-md transition-smooth relative bg-glass">
                 <CardContent className="p-6">
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
                     {index + 1}
@@ -288,7 +288,7 @@ export default function HomePage() {
       </section>
 
       {/* Service Packages */}
-      <section className="px-4 py-16 bg-gradient-to-b from-rose-50/30 to-white/50 dark:from-secondary/5 dark:to-slate-950">
+      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
@@ -304,7 +304,7 @@ export default function HomePage() {
             {servicePackages.map((pkg) => (
               <Card
                 key={pkg.type}
-                className="border-border shadow-soft hover:shadow-lg hover:border-primary/30 transition-all overflow-hidden"
+                className="border-border shadow-soft hover:shadow-lg hover:border-primary/30 transition-smooth overflow-hidden bg-glass"
               >
                 <div className="bg-gradient-to-r from-amber-100/50 to-orange-100/50 dark:from-primary/20 dark:to-secondary/20 p-6">
                   <h3 className="mb-2 text-xl font-bold text-foreground">{pkg.type}</h3>
@@ -331,7 +331,7 @@ export default function HomePage() {
       </section>
 
       {/* Timeline Demo Section */}
-      <section className="px-4 py-16 bg-gradient-to-b from-indigo-50/30 to-white/50 dark:bg-slate-950">
+      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">Your Pet's Complete Timeline</h2>
@@ -340,7 +340,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <Card className="border-2 border-primary/20 shadow-lg">
+          <Card className="border-2 border-primary/20 shadow-lg bg-glass">
             <CardContent className="p-8">
               <div className="space-y-4">
                 {[
@@ -378,7 +378,7 @@ export default function HomePage() {
       </section>
 
       {/* Trust & Safety */}
-      <section className="px-4 py-16 bg-gradient-to-b from-lime-50/30 to-emerald-50/20 dark:from-secondary/5 dark:to-slate-950">
+      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">Built on Trust</h2>
@@ -388,7 +388,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
-            <Card className="border-border shadow-soft">
+            <Card className="border-border shadow-soft bg-glass">
               <CardContent className="p-6">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
                   <UserCheck className="h-7 w-7 text-primary" />
@@ -400,7 +400,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border shadow-soft">
+            <Card className="border-border shadow-soft bg-glass">
               <CardContent className="p-6">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
                   <Calendar className="h-7 w-7 text-primary" />
@@ -412,7 +412,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border shadow-soft">
+            <Card className="border-border shadow-soft bg-glass">
               <CardContent className="p-6">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
                   <Bot className="h-7 w-7 text-primary" />
@@ -428,7 +428,7 @@ export default function HomePage() {
       </section>
 
       {/* Caregiver Section */}
-      <section className="px-4 py-16 bg-gradient-to-b from-violet-50/30 to-blue-50/20 dark:from-slate-950 dark:to-accent/10">
+      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary">
@@ -479,7 +479,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="px-4 py-16 bg-gradient-to-b from-white/50 to-pink-50/30 dark:bg-slate-950">
+      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">What Our Users Say</h2>
@@ -490,7 +490,7 @@ export default function HomePage() {
 
           <div className="grid gap-6 md:grid-cols-3">
             {testimonials.map((testimonial) => (
-              <Card key={testimonial.name} className="border-border shadow-soft hover:shadow-md transition-shadow">
+              <Card key={testimonial.name} className="border-border shadow-soft hover:shadow-md transition-shadow bg-glass">
                 <CardContent className="p-6">
                   <div className="mb-4 flex gap-1">
                     {[...Array(testimonial.rating)].map((_, i) => (
@@ -519,7 +519,7 @@ export default function HomePage() {
       </section>
 
       {/* Why Choose Paws & Relax */}
-      <section className="px-4 py-16 bg-gradient-to-b from-orange-50/40 to-amber-50/30 dark:from-secondary/5 dark:to-slate-950">
+      <section className="px-4 py-16 bg-image-overlay dark:bg-image-overlay-dark">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">Why Choose Paws & Relax?</h2>
@@ -532,7 +532,7 @@ export default function HomePage() {
               { icon: CheckSquare, title: "Verified Proof", desc: "AI-verified updates, not just promises" },
               { icon: Target, title: "Unified Platform", desc: "Replace 5+ services with one app" },
             ].map((item) => (
-              <Card key={item.title} className="border-border shadow-soft text-center p-6">
+              <Card key={item.title} className="border-border shadow-soft text-center p-6 bg-glass transition-smooth hover:shadow-md hover:border-primary/30">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15 mx-auto">
                   <item.icon className="h-7 w-7 text-primary" />
                 </div>
