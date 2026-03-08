@@ -37,47 +37,88 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    const foundUser = mockUsers.find((u) => u.email === email)
-    if (foundUser) {
-      setUser(foundUser)
-      localStorage.setItem("petcare_user", JSON.stringify(foundUser))
-      setIsLoading(false)
-      return true
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        const loggedUser: User = {
+          id: data._id || String(mockUsers.length + 1),
+          email: data.email,
+          fullName: data.name || data.fullName,
+          phone: '',
+          role: data.role,
+          createdAt: new Date(),
+        }
+        setUser(loggedUser)
+        localStorage.setItem("petcare_user", JSON.stringify(loggedUser))
+        localStorage.setItem("petcare_token", data.token)
+        setIsLoading(false)
+        return true
+      }
+    } catch (err) {
+      console.error('Login failed', err)
     }
-
     setIsLoading(false)
     return false
   }
 
   const register = async (data: RegisterData): Promise<boolean> => {
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    const newUser: User = {
-      id: String(mockUsers.length + 1),
-      email: data.email,
-      fullName: data.fullName,
-      phone: data.phone,
-      role: data.role,
-      createdAt: new Date(),
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: data.fullName, 
+          email: data.email, 
+          password: data.password 
+        }),
+      })
+      if (res.ok) {
+        const resData = await res.json()
+        const newUser: User = {
+          id: resData._id || String(mockUsers.length + 1),
+          email: resData.email,
+          fullName: resData.name,
+          phone: data.phone,
+          role: resData.role || data.role,
+          createdAt: new Date(),
+        }
+        setUser(newUser)
+        localStorage.setItem("petcare_user", JSON.stringify(newUser))
+        localStorage.setItem("petcare_token", resData.token)
+        setIsLoading(false)
+        return true
+      }
+    } catch (err) {
+      console.error('Register failed', err)
     }
-
-    setUser(newUser)
-    localStorage.setItem("petcare_user", JSON.stringify(newUser))
     setIsLoading(false)
-    return true
+    return false
   }
 
   const logout = () => {
     setUser(null)
     localStorage.removeItem("petcare_user")
+    localStorage.removeItem("petcare_token")
   }
 
   const forgotPassword = async (email: string): Promise<boolean> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return true
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      return res.ok;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
   }
 
   return (
