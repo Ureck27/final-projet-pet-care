@@ -226,7 +226,7 @@ export interface DailyActivity {
   videoUrl?: string
   emotion?: EmotionType
   emotionConfidence?: number // 0-100
-  caregiver Notes?: string
+  caregiverNotes?: string
   location?: { latitude?: number; longitude?: number; address?: string }
   aiVerified: boolean
   createdAt: Date
