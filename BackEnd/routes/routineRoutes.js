@@ -5,6 +5,7 @@ const router = express.Router();
 const Routine = require('../models/Routine');
 const RoutineLog = require('../models/RoutineLog');
 const aiPetAnalyzer = require('../services/aiPetAnalyzer');
+const notificationService = require('../services/notificationService');
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
@@ -103,13 +104,21 @@ router.post('/complete', upload.single('photo'), async (req, res) => {
     routine.status = 'completed';
     await routine.save();
 
+    // Send notifications if AI detected urgent status
+    let notificationResult = null;
+    if (aiPetAnalyzer.requiresImmediateAttention(aiAnalysis.status)) {
+      notificationResult = await notificationService.sendUrgentAlert(routineLog._id);
+      console.log('Notification result:', notificationResult);
+    }
+
     res.status(200).json({
       success: true,
       message: 'Routine completed successfully',
       data: {
         routine: routine,
         routineLog: routineLog,
-        aiAnalysis: aiAnalysis
+        aiAnalysis: aiAnalysis,
+        notifications: notificationResult
       }
     });
 
