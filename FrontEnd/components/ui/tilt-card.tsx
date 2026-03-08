@@ -15,6 +15,14 @@ export function TiltCard({ children, className = "", intensity = 15 }: TiltCardP
   // We use motion values to track mouse position instead of state to prevent re-renders
   const x = useMotionValue(0)
   const y = useMotionValue(0)
+  
+  // Track if we are on a device with hover support
+  const [isHoverable, setIsHoverable] = useState(true)
+  
+  // Disable 3D effect on mobile devices to save performance and prevent touch jitter
+  React.useEffect(() => {
+    setIsHoverable(window.matchMedia("(hover: hover)").matches)
+  }, [])
 
   // Smooth the motion values with a spring physics engine
   const mouseXSpring = useSpring(x, {
@@ -30,14 +38,14 @@ export function TiltCard({ children, className = "", intensity = 15 }: TiltCardP
   })
 
   // Transform the mouse position into rotation values
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [intensity, -intensity])
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-intensity, intensity])
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], isHoverable ? [intensity, -intensity] : [0, 0])
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], isHoverable ? [-intensity, intensity] : [0, 0])
   
   // Create a subtle lighting effect that follows the mouse
-  const brightness = useTransform(mouseYSpring, [-0.5, 0.5], [1.1, 0.9])
+  const brightness = useTransform(mouseYSpring, [-0.5, 0.5], isHoverable ? [1.1, 0.9] : [1, 1])
   
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return
+    if (!ref.current || !isHoverable) return
     
     const rect = ref.current.getBoundingClientRect()
     
