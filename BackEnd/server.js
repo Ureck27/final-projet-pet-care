@@ -29,6 +29,7 @@ app.use('/api/pets', petRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/trainer-requests', require('./routes/trainerRequestRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Basic route
 app.get('/', (req, res) => {
