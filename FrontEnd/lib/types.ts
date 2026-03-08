@@ -405,3 +405,27 @@ export interface TrainerApplication {
   reviewedAt?: Date
   reviewNotes?: string
 }
+
+// Routine Monitoring Types
+export interface Routine {
+  id: string
+  petId: string
+  trainerId: string
+  taskName: string
+  description: string
+  scheduledTime: Date
+  status: "pending" | "completed"
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+export interface RoutineLog {
+  id: string
+  routineId: string
+  petId: string
+  trainerId: string
+  photoUrl: string
+  aiStatus: string
+  aiMessage: string
+  createdAt: Date
+}

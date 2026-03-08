@@ -7,13 +7,15 @@ import { mockPets, mockBookings, mockTrainers } from "@/lib/mock-data"
 import { StatsCard } from "@/components/features/dashboard/stats-card"
 import { CalendarView } from "@/components/features/schedule/calendar-view"
 import { StatusUpdateForm } from "@/components/features/trainer/status-update-form"
+import { RoutineList } from "@/components/features/routine/routine-list"
+import { CameraCapture } from "@/components/features/routine/camera-capture"
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { PawPrint, Calendar, DollarSign, Star, ClipboardCheck } from "lucide-react"
-import type { Pet } from "@/lib/types"
+import { PawPrint, Calendar, DollarSign, Star, ClipboardCheck, Plus } from "lucide-react"
+import type { Pet, Routine } from "@/lib/types"
 import type { StatusUpdateFormData } from "@/lib/validation"
 
 export default function TrainerDashboardPage() {
@@ -21,6 +23,10 @@ export default function TrainerDashboardPage() {
   const { user, isLoading } = useAuth()
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null)
   const [statusFormOpen, setStatusFormOpen] = useState(false)
+  const [routines, setRoutines] = useState<(Routine & { pet: Pet })[]>([])
+  const [cameraOpen, setCameraOpen] = useState(false)
+  const [selectedRoutineId, setSelectedRoutineId] = useState<string | null>(null)
+  const [isCompletingTask, setIsCompletingTask] = useState(false)
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -47,8 +53,92 @@ export default function TrainerDashboardPage() {
   const assignedPetIds = [...new Set(trainerBookings.map((b) => b.petId))]
   const assignedPets = mockPets.filter((p) => assignedPetIds.includes(p.id))
 
+  // Mock routines data - replace with API call
+  useEffect(() => {
+    const mockRoutines: (Routine & { pet: Pet })[] = [
+      {
+        id: "1",
+        petId: "1",
+        trainerId: user?.id || "",
+        taskName: "Morning Exercise",
+        description: "30-minute walk and play session",
+        scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+        status: "pending",
+        pet: assignedPets[0] || mockPets[0]
+      },
+      {
+        id: "2",
+        petId: "2",
+        trainerId: user?.id || "",
+        taskName: "Feeding Time",
+        description: "Provide lunch and medication if needed",
+        scheduledTime: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours from now
+        status: "pending",
+        pet: assignedPets[1] || mockPets[1]
+      },
+      {
+        id: "3",
+        petId: "1",
+        trainerId: user?.id || "",
+        taskName: "Training Session",
+        description: "Basic obedience training",
+        scheduledTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+        status: "completed",
+        pet: assignedPets[0] || mockPets[0]
+      }
+    ]
+    setRoutines(mockRoutines)
+  }, [user, assignedPets])
+
   const handleStatusUpdate = (data: StatusUpdateFormData) => {
     console.log("Status updated:", data)
+  }
+
+  const handleCompleteTask = (routineId: string) => {
+    setSelectedRoutineId(routineId)
+    setCameraOpen(true)
+  }
+
+  const handlePhotoCapture = async (photo: File) => {
+    if (!selectedRoutineId) return
+
+    setIsCompletingTask(true)
+    
+    try {
+      // Create form data for API call
+      const formData = new FormData()
+      formData.append('photo', photo)
+      formData.append('routineId', selectedRoutineId)
+
+      // Call API to complete routine
+      const response = await fetch('/api/routine/complete', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Routine completed:', result)
+        
+        // Update local state
+        setRoutines(prev => prev.map(routine => 
+          routine.id === selectedRoutineId 
+            ? { ...routine, status: 'completed' }
+            : routine
+        ))
+
+        // Show success message or notification
+        alert('Task completed successfully! AI Analysis: ' + result.data.aiAnalysis.message)
+      } else {
+        throw new Error('Failed to complete routine')
+      }
+    } catch (error) {
+      console.error('Error completing routine:', error)
+      alert('Failed to complete task. Please try again.')
+    } finally {
+      setIsCompletingTask(false)
+      setSelectedRoutineId(null)
+    }
   }
 
   return (
@@ -78,6 +168,23 @@ export default function TrainerDashboardPage() {
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Main Content */}
         <div className="space-y-8 lg:col-span-2">
+          {/* Routine Monitoring */}
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <ClipboardCheck className="h-5 w-5" />
+                Routine Monitoring
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RoutineList
+                routines={routines}
+                onCompleteTask={handleCompleteTask}
+                isLoading={isCompletingTask}
+              />
+            </CardContent>
+          </Card>
+
           {/* Assigned Pets */}
           <Card className="border-border">
             <CardHeader>
@@ -160,6 +267,13 @@ export default function TrainerDashboardPage() {
         onOpenChange={setStatusFormOpen}
         pet={selectedPet}
         onSubmit={handleStatusUpdate}
+      />
+
+      <CameraCapture
+        isOpen={cameraOpen}
+        onClose={() => setCameraOpen(false)}
+        onCapture={handlePhotoCapture}
+        isLoading={isCompletingTask}
       />
     </div>
   )
