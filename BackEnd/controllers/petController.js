@@ -1,0 +1,111 @@
+const Pet = require('../models/Pet');
+const PetProfile = require('../models/PetProfile');
+
+// @desc    Get all pets
+// @route   GET /api/pets
+const getPets = async (req, res) => {
+  try {
+    const pets = await Pet.find({}).populate('ownerId', 'fullName email');
+    res.json(pets);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get pet by ID with its profile
+// @route   GET /api/pets/:id
+const getPetById = async (req, res) => {
+  try {
+    const pet = await Pet.findById(req.params.id).populate('ownerId', 'fullName email');
+    if (!pet) {
+      return res.status(404).json({ message: 'Pet not found' });
+    }
+    
+    // Also fetch the pet profile if it exists
+    const petProfile = await PetProfile.findOne({ petId: pet._id });
+    
+    res.json({
+      pet,
+      profile: petProfile || null
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Create new pet
+// @route   POST /api/pets
+const createPet = async (req, res) => {
+  try {
+    const { ownerId, name, species, breed, age, weight, color, medicalNotes, photo } = req.body;
+    
+    const pet = await Pet.create({
+      ownerId,
+      name,
+      species,
+      breed,
+      age,
+      weight,
+      color,
+      medicalNotes,
+      photo
+    });
+
+    res.status(201).json(pet);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// @desc    Update pet
+// @route   PUT /api/pets/:id
+const updatePet = async (req, res) => {
+  try {
+    const pet = await Pet.findById(req.params.id);
+
+    if (pet) {
+      pet.name = req.body.name || pet.name;
+      pet.species = req.body.species || pet.species;
+      pet.breed = req.body.breed || pet.breed;
+      pet.age = req.body.age || pet.age;
+      pet.weight = req.body.weight || pet.weight;
+      pet.color = req.body.color || pet.color;
+      pet.medicalNotes = req.body.medicalNotes || pet.medicalNotes;
+      pet.photo = req.body.photo || pet.photo;
+
+      const updatedPet = await pet.save();
+      res.json(updatedPet);
+    } else {
+      res.status(404).json({ message: 'Pet not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// @desc    Delete pet
+// @route   DELETE /api/pets/:id
+const deletePet = async (req, res) => {
+  try {
+    const pet = await Pet.findById(req.params.id);
+
+    if (pet) {
+      // Also delete the pet profile
+      await PetProfile.deleteOne({ petId: pet._id });
+      await Pet.deleteOne({ _id: pet._id });
+      res.json({ message: 'Pet and associated profile removed' });
+    } else {
+      res.status(404).json({ message: 'Pet not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  getPets,
+  getPetById,
+  createPet,
+  updatePet,
+  deletePet
+};
