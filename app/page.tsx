@@ -146,14 +146,15 @@ export default function HomePage() {
             src="/happy-golden-retriever-and-tabby-cat-resting-safel.jpg"
             alt="Happy pets in a safe, warm home environment"
             fill
-            className="object-cover"
+            className="object-cover object-center"
             priority
           />
-          <div className="absolute inset-0 hero-overlay dark:hero-overlay-dark" />
+          {/* Subtle dark overlay to ensure image is highly visible while giving text contrast */}
+          <div className="absolute inset-0 bg-black/40 dark:bg-black/60 transition-smooth" />
         </div>
 
-        <div className="container relative z-10 mx-auto px-4 py-20 md:py-32">
-          <div className="max-w-3xl">
+        <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4 py-20 md:py-32">
+          <div className="max-w-4xl bg-white/75 dark:bg-slate-900/75 backdrop-blur-lg p-8 md:p-12 rounded-[2rem] border border-white/30 dark:border-slate-700/50 shadow-2xl transition-smooth">
             <Badge className="mb-4 bg-primary/15 text-primary hover:bg-primary/25 border border-primary/20">
               <Shield className="mr-1 h-3 w-3" />
               Professional AI-Powered Pet Care
@@ -165,22 +166,22 @@ export default function HomePage() {
               All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
               Professional care meets transparency.
             </p>
-            <div className="flex flex-col items-start gap-4 sm:flex-row">
-              <Button size="lg" className="shadow-soft bg-primary hover:bg-primary/90" asChild>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row mt-6">
+              <Button size="lg" className="shadow-soft bg-primary hover:bg-primary/90 text-primary-foreground" asChild>
                 <Link href="/register">
                   Find Your Caregiver
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="bg-white/85 dark:bg-black/40 backdrop-blur border-white/50 dark:border-white/20 hover:bg-white/95 dark:hover:bg-black/50" asChild>
+              <Button size="lg" variant="outline" className="bg-white/85 dark:bg-black/40 backdrop-blur border-border/50 hover:bg-white/95 dark:hover:bg-black/50" asChild>
                 <Link href="#how-it-works">See How It Works</Link>
               </Button>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
               {trustFeatures.map((feature) => (
-                <div key={feature} className="flex items-center gap-2 text-sm text-foreground/80 font-medium">
-                  <CheckCircle2 className="h-4 w-4 text-success" />
+                <div key={feature} className="flex items-center gap-2 text-sm text-foreground/90 font-semibold">
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                   {feature}
                 </div>
               ))}
