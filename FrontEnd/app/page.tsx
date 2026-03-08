@@ -1,8 +1,5 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+"use client"
+
 import { 
   PawPrint, Users, Calendar, Shield, Star, ArrowRight, CheckCircle2, Heart, Award,
   Zap, TrendingUp, Lock, Video, Clock, Smile, Clock3, Smartphone, Bot, ClipboardList,
@@ -15,6 +12,7 @@ import { FadeIn, StaggerChildren, StaggerItem } from "@/components/ui/fade-in"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
