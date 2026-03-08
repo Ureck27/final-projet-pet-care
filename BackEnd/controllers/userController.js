@@ -30,7 +30,7 @@ const getUserById = async (req, res) => {
 // @route   POST /api/users
 const createUser = async (req, res) => {
   try {
-    const { email, fullName, phone, role, avatar } = req.body;
+    const { name, email, age } = req.body;
     
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -38,11 +38,9 @@ const createUser = async (req, res) => {
     }
 
     const user = await User.create({
+      name,
       email,
-      fullName,
-      phone,
-      role,
-      avatar
+      age
     });
 
     res.status(201).json(user);
@@ -58,10 +56,9 @@ const updateUser = async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (user) {
-      user.fullName = req.body.fullName || user.fullName;
-      user.phone = req.body.phone || user.phone;
-      user.role = req.body.role || user.role;
-      user.avatar = req.body.avatar || user.avatar;
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+      user.age = req.body.age || user.age;
 
       const updatedUser = await user.save();
       res.json(updatedUser);
