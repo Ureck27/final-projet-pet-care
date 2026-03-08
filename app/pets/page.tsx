@@ -57,9 +57,9 @@ export default function PetsPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {userPets.map((pet) => (
-            <div key={pet.id} onClick={() => router.push(`/pets/${pet.id}`)}>
+            <Link key={pet.id} href={`/pets/${pet.id}`}>
               <PetCard pet={pet} className="cursor-pointer hover:shadow-lg transition-shadow" />
-            </div>
+            </Link>
           ))}
         </div>
       )}

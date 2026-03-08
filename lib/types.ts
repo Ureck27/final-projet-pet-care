@@ -210,7 +210,7 @@ export interface Task {
 }
 
 // Daily Activity Types
-export type EmotionType = "happy" | "sad" | "anxious" | "stressed" | "calm" | "playful" | "neutral" | "distressed"
+export type EmotionType = "happy" | "sad" | "anxious" | "stressed" | "calm" | "playful" | "neutral" | "distressed" | "content"
 
 export interface DailyActivity {
   id: string

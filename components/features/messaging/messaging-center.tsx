@@ -134,7 +134,7 @@ export default function MessagingCenter() {
                     onClick={() => setSelectedConversation(conv.id)}
                     className={`w-full text-left p-3 rounded-lg transition-all ${
                       isSelected
-                        ? "bg-blue-50 dark:bg-blue-950 border-2 border-blue-200 dark:border-blue-800"
+                        ? "bg-primary/10 border-2 border-primary/30"
                         : "hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
@@ -219,14 +219,14 @@ export default function MessagingCenter() {
                     <div
                       className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                         isOwn
-                          ? "bg-blue-500 text-white rounded-br-none"
+                          ? "bg-primary text-primary-foreground rounded-br-none"
                           : "bg-slate-200 dark:bg-slate-700 text-foreground rounded-bl-none"
                       }`}
                     >
                       <p className="text-sm">{message.content}</p>
                       <div
                         className={`flex items-center gap-1 mt-1 text-xs ${
-                          isOwn ? "text-blue-100" : "text-muted-foreground"
+                          isOwn ? "text-primary-foreground/80" : "text-muted-foreground"
                         }`}
                       >
                         <span>
@@ -263,7 +263,7 @@ export default function MessagingCenter() {
               <Button
                 type="submit"
                 size="icon"
-                className="bg-blue-500 hover:bg-blue-600"
+                className="bg-primary hover:bg-primary/90"
               >
                 <Send className="w-4 h-4" />
               </Button>

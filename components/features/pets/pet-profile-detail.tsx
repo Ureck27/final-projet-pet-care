@@ -83,7 +83,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                   {profile.veterinarian.email && (
                     <div>
                       <p className="text-sm text-muted-foreground">Email</p>
-                      <p className="font-medium text-blue-600">{profile.veterinarian.email}</p>
+                      <p className="font-medium text-primary">{profile.veterinarian.email}</p>
                     </div>
                   )}
                 </div>
@@ -147,7 +147,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
               </CardHeader>
               <CardContent className="space-y-3">
                 {profile.medicalHistory.map((record, i) => (
-                  <div key={i} className="border-l-2 border-blue-200 pl-4">
+                  <div key={i} className="border-l-2 border-primary/30 pl-4">
                     <p className="font-medium">{record.condition}</p>
                     <p className="text-sm text-muted-foreground">{format(new Date(record.date), "MMM d, yyyy")}</p>
                     <p className="text-sm">Treatment: {record.treatment}</p>
@@ -300,7 +300,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                     <p className="mb-2 font-medium">Supplements</p>
                     <div className="space-y-2">
                       {profile.supplements.map((supp, i) => (
-                        <div key={i} className="rounded-lg bg-blue-50 p-3 dark:bg-blue-950">
+                        <div key={i} className="rounded-lg bg-secondary/10 p-3">
                           <p className="font-medium">{supp.name}</p>
                           <div className="grid gap-1 text-sm text-muted-foreground">
                             <p>Dosage: {supp.dosage}</p>
@@ -352,7 +352,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
               )}
 
               {profile.knownBehaviors && profile.knownBehaviors.length > 0 && (
-                <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950">
+                <div className="rounded-lg border border-secondary/20 bg-secondary/10 p-3">
                   <p className="mb-2 font-medium">Known Behaviors</p>
                   <ul className="space-y-1 text-sm">
                     {profile.knownBehaviors.map((behavior, i) => (

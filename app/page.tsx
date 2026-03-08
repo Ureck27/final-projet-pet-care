@@ -193,7 +193,7 @@ export default function HomePage() {
       <section className="px-4 py-20 bg-image-overlay dark:bg-image-overlay-dark">
         <div className="container mx-auto">
           <div className="mb-16 text-center">
-            <Badge variant="outline" className="mb-4 border-sky-300 bg-sky-50 text-sky-700 font-semibold">
+            <Badge variant="outline" className="mb-4 border-primary/20 bg-primary/5 text-primary font-semibold">
               Three Problems. One Solution.
             </Badge>
             <h2 className="mb-4 text-4xl font-bold text-primary">The Paws & Relax Difference</h2>
@@ -206,12 +206,12 @@ export default function HomePage() {
             {problemSolution.map((item) => (
               <Card key={item.number} className="border- border-border shadow-soft hover:shadow-lg hover:border-primary/50 transition-smooth bg-glass">
                 <CardContent className="p-8">
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-sky-200 to-cyan-100 dark:from-blue-900 dark:to-blue-800">
-                    {item.icon && <item.icon className="h-8 w-8 text-blue-600" />}
+                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
+                    {item.icon && <item.icon className="h-8 w-8 text-primary" />}
                   </div>
                   <p className="mb-6 text-base font-medium text-foreground leading-relaxed">{item.problem}</p>
-                  <div className="pt-6 border-t border-emerald-200 dark:border-green-800 bg-gradient-to-r from-emerald-50 dark:from-green-950/30 to-transparent p-4 -mx-8 -mb-8 rounded-b-lg">
-                    <p className="text-base text-emerald-700 font-medium flex items-start gap-2">
+                  <div className="pt-6 border-t border-primary/10 bg-gradient-to-r from-primary/5 to-transparent p-4 -mx-8 -mb-8 rounded-b-lg">
+                    <p className="text-base text-primary/80 font-medium flex items-start gap-2">
                       <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0" />
                       {item.solution}
                     </p>
@@ -306,7 +306,7 @@ export default function HomePage() {
                 key={pkg.type}
                 className="border-border shadow-soft hover:shadow-lg hover:border-primary/30 transition-smooth overflow-hidden bg-glass"
               >
-                <div className="bg-gradient-to-r from-amber-100/50 to-orange-100/50 dark:from-primary/20 dark:to-secondary/20 p-6">
+                <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6">
                   <h3 className="mb-2 text-xl font-bold text-foreground">{pkg.type}</h3>
                   <p className="text-sm text-muted-foreground">{pkg.description}</p>
                 </div>
