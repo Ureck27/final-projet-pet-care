@@ -9,6 +9,7 @@ import {
   Search, BarChart3, CheckSquare, UserCheck, BookOpen, Target, Sparkles, Utensils, Droplets,
   Dumbbell, Wind, Coffee, Moon
 } from "lucide-react"
+import { HeroSlider } from "@/components/layout/hero-slider"
 
 export default function HomePage() {
   const problemSolution = [
@@ -139,52 +140,52 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative min-h-[600px] overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="/happy-golden-retriever-and-tabby-cat-resting-safel.jpg"
-            alt="Happy pets in a safe, warm home environment"
-            fill
-            className="object-cover object-center"
-            priority
-          />
-          {/* Subtle dark overlay to ensure image is highly visible while giving text contrast */}
-          <div className="absolute inset-0 bg-black/40 dark:bg-black/60 transition-smooth" />
-        </div>
+      <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            {/* Text Content */}
+            <div className="flex flex-col items-start text-left max-w-2xl">
+              <Badge className="mb-6 bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 px-4 py-2 text-sm">
+                <Shield className="mr-2 h-4 w-4" />
+                Professional AI-Powered Pet Care
+              </Badge>
+              <h1 className="mb-6 text-balance text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl leading-tight">
+                One App. One Routine. <span className="text-primary block mt-2">Total Peace of Mind.</span>
+              </h1>
+              <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl leading-relaxed">
+                All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
+                <strong className="text-foreground block mt-2 font-medium">Professional care meets transparency.</strong>
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <Button size="lg" className="h-14 px-8 text-base shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto" asChild>
+                  <Link href="/register">
+                    Find Your Caregiver
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="h-14 px-8 text-base bg-background/50 backdrop-blur border-border hover:bg-muted w-full sm:w-auto" asChild>
+                  <Link href="#how-it-works">See How It Works</Link>
+                </Button>
+              </div>
 
-        <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4 py-20 md:py-32">
-          <div className="max-w-4xl bg-white/75 dark:bg-slate-900/75 backdrop-blur-lg p-8 md:p-12 rounded-[2rem] border border-white/30 dark:border-slate-700/50 shadow-2xl transition-smooth">
-            <Badge className="mb-4 bg-primary/15 text-primary hover:bg-primary/25 border border-primary/20">
-              <Shield className="mr-1 h-3 w-3" />
-              Professional AI-Powered Pet Care
-            </Badge>
-            <h1 className="mb-6 text-balance text-4xl font-bold tracking-tight text-foreground md:text-6xl">
-              One App. One Routine. <span className="text-primary">Total Peace of Mind.</span>
-            </h1>
-            <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl">
-              All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
-              Professional care meets transparency.
-            </p>
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row mt-6">
-              <Button size="lg" className="shadow-soft bg-primary hover:bg-primary/90 text-primary-foreground" asChild>
-                <Link href="/register">
-                  Find Your Caregiver
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="bg-white/85 dark:bg-black/40 backdrop-blur border-border/50 hover:bg-white/95 dark:hover:bg-black/50" asChild>
-                <Link href="#how-it-works">See How It Works</Link>
-              </Button>
+              <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {trustFeatures.map((feature) => (
+                  <div key={feature} className="flex items-center gap-3 text-sm text-foreground/90 font-medium">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-success/20">
+                      <CheckCircle2 className="h-4 w-4 text-success" />
+                    </div>
+                    {feature}
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
-              {trustFeatures.map((feature) => (
-                <div key={feature} className="flex items-center gap-2 text-sm text-foreground/90 font-semibold">
-                  <CheckCircle2 className="h-5 w-5 text-success" />
-                  {feature}
-                </div>
-              ))}
+            {/* Image Slider Component */}
+            <div className="w-full relative px-2 sm:px-0">
+              <HeroSlider />
+              {/* Optional glowing effect behind slider to blend with background */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/20 blur-[100px] -z-10 rounded-full opacity-50 dark:opacity-20 pointer-events-none" />
             </div>
           </div>
         </div>
