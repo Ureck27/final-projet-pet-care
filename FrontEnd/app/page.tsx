@@ -4,7 +4,7 @@ import {
   PawPrint, Users, Calendar, Shield, Star, ArrowRight, CheckCircle2, Heart, Award,
   Zap, TrendingUp, Lock, Video, Clock, Smile, Clock3, Smartphone, Bot, ClipboardList,
   Search, BarChart3, CheckSquare, UserCheck, BookOpen, Target, Sparkles, Utensils, Droplets,
-  Dumbbell, Wind, Coffee, Moon
+  Dumbbell, Wind, Coffee, Moon, Box, Settings
 } from "lucide-react"
 import dynamic from 'next/dynamic'
 import { TiltCard } from "@/components/ui/tilt-card"
@@ -19,6 +19,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { HeroBackground, PremiumBackground } from "@/components/layout/premium-background"
 import { AnimationWrapper, animationPresets, useStaggeredAnimation } from "@/components/ui/animation-wrapper"
 import { useScrollAnimation, useParallax } from "@/hooks/use-scroll-animation"
+import { GlowingEffect } from "@/components/ui/glowing-effect"
 
 // Lazy load the HeroSlider because it has heavy embla carousel logic and images 
 const HeroSlider = dynamic(() => import('@/components/layout/hero-slider').then(mod => mod.HeroSlider), {
@@ -422,46 +423,57 @@ export default function HomePage() {
       <section className="px-4 py-16">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-primary">Your Pet's Complete Timeline</h2>
+            <h2 className="mb-4 text-3xl font-bold text-primary">
+              Your Pet&apos;s Magical Day ✨
+            </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              See real proof of everything that happens during the day
+              See real proof of every walk, cuddle, snack, and nap—brought to life with playful cards and motion.
             </p>
           </div>
 
-          <Card className="border-2 border-primary/20 shadow-lg bg-glass">
-            <CardContent className="p-8">
-              <div className="space-y-4">
-                {[
-                  { time: "08:00 AM", icon: Coffee, activity: "Morning Routine", mood: "😊 Energetic", note: "Breakfast and morning hydration" },
-                  { time: "09:00 AM", icon: PawPrint, activity: "Walk Completed", mood: "😊 Happy & Energetic", note: "25 minutes at Central Park" },
-                  { time: "10:30 AM", icon: Utensils, activity: "Breakfast Eaten", mood: "😊 Content", note: "Full portion consumed with treats" },
-                  { time: "11:00 AM", icon: Dumbbell, activity: "Exercise & Play", mood: "🎾 Playful & Engaged", note: "Interactive games and agility work" },
-                  { time: "12:30 PM", icon: Droplets, activity: "Bath Time", mood: "😌 Calm", note: "Refreshing shower - well-groomed" },
-                  { time: "02:00 PM", icon: Video, activity: "Training Session", mood: "🎓 Focused & Learning", note: "Great progress on 'stay' command" },
-                  { time: "03:30 PM", icon: Utensils, activity: "Snack Time", mood: "😊 Satisfied", note: "Healthy treats and fresh water" },
-                  { time: "04:30 PM", icon: Moon, activity: "Afternoon Rest", mood: "😌 Calm & Relaxed", note: "Napping peacefully in cozy spot" },
-                  { time: "06:00 PM", icon: Wind, activity: "Evening Walk", mood: "😊 Happy", note: "20 minutes exploration and socialization" },
-                ].map((item) => (
-                  <div key={item.time} className="flex items-center gap-4 pb-4 border-b last:border-b-0">
-                    <span className="font-bold text-primary min-w-20">{item.time}</span>
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15">
-                        <item.icon className="h-5 w-5 text-primary" />
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-foreground">{item.activity}</p>
-                      <p className="text-sm text-muted-foreground">{item.note}</p>
-                    </div>
-                    <Badge variant="secondary" className="whitespace-nowrap">{item.mood}</Badge>
-                  </div>
-                ))}
-              </div>
-              <Button className="w-full mt-6" asChild>
-                <Link href="/dashboard">View Full Timeline →</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12 md:grid-rows-3 lg:gap-6 xl:max-h-[34rem] xl:grid-rows-2">
+            <TimelineGridItem
+              area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
+              icon={<Coffee className="h-4 w-4 text-amber-500" />}
+              title="☀️ Morning Routine & Hydration"
+              description="Fresh water, breakfast, and a happy tail to start the day right."
+            />
+            <TimelineGridItem
+              area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
+              icon={<PawPrint className="h-4 w-4 text-primary" />}
+              title="🚶‍♂️ Adventure Walk & Sniff Time"
+              description="Guided walk with GPS proof, photos, and mood check-ins from the trainer."
+            />
+            <TimelineGridItem
+              area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
+              icon={<Video className="h-4 w-4 text-violet-500" />}
+              title="🎓 Training & Enrichment Session"
+              description="Short videos, AI-verified progress, and badges earned for good behavior."
+            />
+            <TimelineGridItem
+              area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]"
+              icon={<Moon className="h-4 w-4 text-blue-500" />}
+              title="😴 Cozy Nap & Calm Time"
+              description="Heart rate, mood, and comfort logged—see exactly how relaxed they are."
+            />
+            <TimelineGridItem
+              area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
+              icon={<Sparkles className="h-4 w-4 text-pink-500" />}
+              title="📲 End-of-Day Story Recap"
+              description={
+                <>
+                  A sharable story with emojis, highlights, and{" "}
+                  <strong>proof-backed memories</strong> you can revisit anytime.
+                </>
+              }
+            />
+          </ul>
+
+          <div className="mt-10 flex justify-center">
+            <Button size="lg" className="shadow-soft" asChild>
+              <Link href="/dashboard">Open Full Timeline View →</Link>
+            </Button>
+          </div>
         </div>
       </section>
 
