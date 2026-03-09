@@ -6,7 +6,7 @@ const Pet = require('../models/Pet');
 class NotificationService {
   constructor() {
     // Configure email transporter (use environment variables in production)
-    this.transporter = nodemailer.createTransporter({
+    this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER || 'your-email@gmail.com',
@@ -69,10 +69,14 @@ class NotificationService {
         notifications.push({ recipient: 'admin', adminId: admin._id, ...adminNotification });
       }
 
-      // 3. Send to trainer (if different from the one who reported)
-      if (routineLog.trainerId._id.toString() !== routineLog.trainerId._id.toString()) {
-        const trainerNotification = await this.sendEmailToTrainer(routineLog.trainerId, notificationData);
-        notifications.push({ recipient: 'trainer', ...trainerNotification });
+      // 3. Send to trainer (if different from the assigned trainer)
+      const assignedTrainerId = routineLog.petId.trainerId;
+      if (assignedTrainerId && routineLog.trainerId._id.toString() !== assignedTrainerId.toString()) {
+        const assignedTrainer = await User.findById(assignedTrainerId);
+        if (assignedTrainer) {
+          const trainerNotification = await this.sendEmailToTrainer(assignedTrainer, notificationData);
+          notifications.push({ recipient: 'trainer', trainerId: assignedTrainer._id, ...trainerNotification });
+        }
       }
 
       return {

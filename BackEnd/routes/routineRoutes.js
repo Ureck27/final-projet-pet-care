@@ -165,9 +165,9 @@ router.get('/pet/:petId/logs', protect, async (req, res) => {
   try {
     const { petId } = req.params;
     
-    // Find the pet to check ownership
-    const Pet = require('../models/Pet');
-    const pet = await Pet.findById(petId);
+    // Find pet to check ownership
+    const petModel = require('../models/Pet');
+    const pet = await petModel.findById(petId);
     
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });

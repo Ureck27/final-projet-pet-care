@@ -14,15 +14,10 @@ const petSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  fullName: {
-    type: String
-  },
   type: {
     type: String,
-    required: true
-  },
-  species: {
-    type: String
+    required: true,
+    enum: ['dog', 'cat', 'bird', 'rabbit', 'other']
   },
   breed: { type: String },
   age: { type: Number },
