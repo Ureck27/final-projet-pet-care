@@ -21,6 +21,7 @@ import { AnimationWrapper, animationPresets, useStaggeredAnimation } from "@/com
 import { cn } from "@/lib/utils"
 import { useScrollAnimation, useParallax } from "@/hooks/use-scroll-animation"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
+import SplitText from "@/components/ui/split-text"
 
 // Lazy load the HeroSlider because it has heavy embla carousel logic and images 
 const HeroSlider = dynamic(() => import('@/components/layout/hero-slider').then(mod => mod.HeroSlider), {
@@ -183,9 +184,36 @@ export default function HomePage() {
                 </Badge>
               </FadeIn>
               <FadeIn direction="up" delay={0.1}>
-                <h1 ref={heroRef} className="mb-6 text-balance text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl leading-tight text-shadow-sm float-element">
-                  One App. One Routine. <span className="text-primary block mt-2 gradient-animated-element bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Total Peace of Mind.</span>
-                </h1>
+                <div ref={heroRef} className="mb-6 space-y-2 leading-tight text-shadow-sm float-element">
+                  <SplitText
+                    text="One App. One Routine."
+                    tag="h1"
+                    className="block text-balance text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl"
+                    delay={40}
+                    duration={1.1}
+                    ease="power3.out"
+                    splitType="chars"
+                    from={{ opacity: 0, y: 40 }}
+                    to={{ opacity: 1, y: 0 }}
+                    threshold={0.2}
+                    rootMargin="-100px"
+                    textAlign="left"
+                  />
+                  <SplitText
+                    text="Total Peace of Mind."
+                    tag="h1"
+                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary gradient-animated-element bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary"
+                    delay={50}
+                    duration={1.2}
+                    ease="power3.out"
+                    splitType="chars"
+                    from={{ opacity: 0, y: 60 }}
+                    to={{ opacity: 1, y: 0 }}
+                    threshold={0.25}
+                    rootMargin="-80px"
+                    textAlign="left"
+                  />
+                </div>
               </FadeIn>
               <FadeIn direction="up" delay={0.2}>
                 <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl leading-relaxed">
