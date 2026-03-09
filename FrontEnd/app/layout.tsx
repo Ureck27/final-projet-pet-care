@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/context/auth-context"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
-import { GlobalBackground } from "@/components/layout/global-background"
+import { GradientBackground } from "@/components/ui/gradient-background"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased transition-smooth text-shadow-sm">
-        <GlobalBackground />
+        <GradientBackground className="fixed inset-0 -z-20" overlay overlayOpacity={0.35} />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <div className="flex min-h-screen flex-col">
