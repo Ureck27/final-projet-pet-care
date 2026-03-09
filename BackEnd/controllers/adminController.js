@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const Pet = require('../models/Pet');
+const Trainer = require('../models/Trainer');
 const TrainerRequest = require('../models/TrainerRequest');
-const sendEmail = require('../config/emailService');
+const { sendAdminNotification } = require('../services/emailService');
 
 // @desc    Get all users
 // @route   GET /api/admin/users
@@ -36,6 +37,39 @@ const getTrainerRequests = async (req, res) => {
   }
 };
 
+// @desc    Get all trainers
+// @route   GET /api/admin/trainers
+const getAllTrainers = async (req, res) => {
+  try {
+    const trainers = await Trainer.find({}).populate('userId', 'name email');
+    res.json(trainers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get dashboard statistics
+// @route   GET /api/admin/dashboard
+const getDashboardStats = async (req, res) => {
+  try {
+    const userCount = await User.countDocuments();
+    const petCount = await Pet.countDocuments();
+    const trainerCount = await Trainer.countDocuments();
+    const pendingRequestsCount = await TrainerRequest.countDocuments({ status: 'pending' });
+
+    const stats = {
+      totalUsers: userCount,
+      totalPets: petCount,
+      totalTrainers: trainerCount,
+      pendingTrainerRequests: pendingRequestsCount
+    };
+
+    res.json(stats);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Accept trainer request
 // @route   PUT /api/admin/trainer-requests/:id/accept
 const acceptTrainerRequest = async (req, res) => {
@@ -51,22 +85,25 @@ const acceptTrainerRequest = async (req, res) => {
       await request.save();
 
       // Update user role
-      const user = await User.findOne({ email: request.email });
+      const user = await User.findById(request.userId);
       if (user) {
         user.role = 'trainer';
         await user.save();
       }
 
-      // Send email
-      try {
-        await sendEmail({
-          email: request.email,
-          subject: 'Trainer Request Accepted',
-          message: `Congratulations ${request.name}! Your request to become a trainer has been accepted.`
-        });
-      } catch (emailError) {
-        console.error('Failed to send email:', emailError);
-      }
+      // Send admin notification
+      await sendAdminNotification(
+        'Trainer Request Accepted',
+        `
+        <p><strong>Trainer request has been accepted:</strong></p>
+        <ul>
+          <li><strong>Name:</strong> ${request.name}</li>
+          <li><strong>Email:</strong> ${request.email}</li>
+          <li><strong>Experience:</strong> ${request.experience}</li>
+          <li><strong>Acceptance Date:</strong> ${new Date().toLocaleDateString()}</li>
+        </ul>
+        `
+      );
 
       res.json({ message: 'Trainer request accepted', request });
     } else {
@@ -91,16 +128,19 @@ const rejectTrainerRequest = async (req, res) => {
       request.status = 'rejected';
       await request.save();
 
-      // Send email
-      try {
-        await sendEmail({
-          email: request.email,
-          subject: 'Trainer Request Rejected',
-          message: `Hello ${request.name}. Unfortunately, your request to become a trainer has been rejected at this time.`
-        });
-      } catch (emailError) {
-        console.error('Failed to send email:', emailError);
-      }
+      // Send admin notification
+      await sendAdminNotification(
+        'Trainer Request Rejected',
+        `
+        <p><strong>Trainer request has been rejected:</strong></p>
+        <ul>
+          <li><strong>Name:</strong> ${request.name}</li>
+          <li><strong>Email:</strong> ${request.email}</li>
+          <li><strong>Experience:</strong> ${request.experience}</li>
+          <li><strong>Rejection Date:</strong> ${new Date().toLocaleDateString()}</li>
+        </ul>
+        `
+      );
 
       res.json({ message: 'Trainer request rejected', request });
     } else {
@@ -115,6 +155,8 @@ module.exports = {
   getAllUsers,
   getAllPets,
   getTrainerRequests,
+  getAllTrainers,
+  getDashboardStats,
   acceptTrainerRequest,
   rejectTrainerRequest
 };

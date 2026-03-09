@@ -2,8 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import type { User, UserRole } from "@/lib/types"
-import { mockUsers } from "@/lib/mock-data"
-import { api } from "@/lib/api"
+import { authApi } from "@/lib/api"
 
 interface AuthContextType {
   user: User | null
@@ -30,7 +29,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const savedUser = localStorage.getItem("petcare_user")
-    if (savedUser) {
+    const token = localStorage.getItem("petcare_token")
+    
+    if (savedUser && token) {
       setUser(JSON.parse(savedUser))
     }
     setIsLoading(false)
@@ -39,14 +40,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true)
     try {
-      const data = await api.post<{ _id: string, email: string, name: string, role: UserRole, token: string }>('/auth/login', { email, password });
+      const data = await authApi.login({ email, password });
       
       const loggedUser: User = {
         id: data._id,
         email: data.email,
         fullName: data.name,
         phone: '',
-        role: data.role,
+        role: data.role as UserRole,
         createdAt: new Date(),
       }
       setUser(loggedUser)
@@ -56,15 +57,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true
     } catch (err) {
       console.error('Login failed', err)
+      setIsLoading(false)
+      return false
     }
-    setIsLoading(false)
-    return false
   }
 
   const register = async (data: RegisterData): Promise<boolean> => {
     setIsLoading(true)
     try {
-      const resData = await api.post<{ _id: string, email: string, name: string, role: UserRole, token: string }>('/auth/register', { 
+      const resData = await authApi.register({ 
         name: data.fullName, 
         email: data.email, 
         password: data.password 
@@ -75,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: resData.email,
         fullName: resData.name,
         phone: data.phone,
-        role: resData.role,
+        role: resData.role as UserRole,
         createdAt: new Date(),
       }
       setUser(newUser)
@@ -85,9 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true
     } catch (err) {
       console.error('Register failed', err)
+      setIsLoading(false)
+      return false
     }
-    setIsLoading(false)
-    return false
   }
 
   const logout = () => {
@@ -98,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const forgotPassword = async (email: string): Promise<boolean> => {
     try {
-      await api.post('/auth/forgot-password', { email })
+      await authApi.forgotPassword(email)
       return true
     } catch (err) {
       console.error(err)

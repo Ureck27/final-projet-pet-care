@@ -1,5 +1,6 @@
 const Pet = require('../models/Pet');
 const PetProfile = require('../models/PetProfile');
+const { sendAdminNotification } = require('../services/emailService');
 
 // @desc    Get all pets
 // @route   GET /api/pets
@@ -56,6 +57,22 @@ const createPet = async (req, res) => {
       medicalNotes,
       photo
     });
+
+    // Send admin notification
+    await sendAdminNotification(
+      'New Pet Added',
+      `
+      <p><strong>A new pet has been added to the system:</strong></p>
+      <ul>
+        <li><strong>Pet Name:</strong> ${name}</li>
+        <li><strong>Type:</strong> ${type}</li>
+        <li><strong>Breed:</strong> ${breed || 'Not specified'}</li>
+        <li><strong>Age:</strong> ${age || 'Not specified'}</li>
+        <li><strong>Owner ID:</strong> ${ownerId}</li>
+        <li><strong>Added Date:</strong> ${new Date().toLocaleDateString()}</li>
+      </ul>
+      `
+    );
 
     res.status(201).json(pet);
   } catch (error) {

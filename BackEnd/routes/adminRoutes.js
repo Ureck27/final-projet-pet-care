@@ -4,6 +4,8 @@ const {
   getAllUsers,
   getAllPets,
   getTrainerRequests,
+  getAllTrainers,
+  getDashboardStats,
   acceptTrainerRequest,
   rejectTrainerRequest
 } = require('../controllers/adminController');
@@ -15,6 +17,8 @@ router.use(protect, authorizeRole('admin'));
 router.get('/users', getAllUsers);
 router.get('/pets', getAllPets);
 router.get('/trainer-requests', getTrainerRequests);
+router.get('/trainers', getAllTrainers);
+router.get('/dashboard', getDashboardStats);
 router.put('/trainer-requests/:id/accept', acceptTrainerRequest);
 router.put('/trainer-requests/:id/reject', rejectTrainerRequest);
 

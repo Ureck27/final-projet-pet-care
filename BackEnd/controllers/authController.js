@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { sendAdminNotification } = require('../services/emailService');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -27,6 +28,20 @@ const registerUser = async (req, res) => {
     });
 
     if (user) {
+      // Send admin notification
+      await sendAdminNotification(
+        'New User Registration',
+        `
+        <p><strong>New user has registered:</strong></p>
+        <ul>
+          <li><strong>Name:</strong> ${user.name}</li>
+          <li><strong>Email:</strong> ${user.email}</li>
+          <li><strong>Role:</strong> ${user.role}</li>
+          <li><strong>Registration Date:</strong> ${new Date().toLocaleDateString()}</li>
+        </ul>
+        `
+      );
+
       res.status(201).json({
         _id: user._id,
         name: user.name,
