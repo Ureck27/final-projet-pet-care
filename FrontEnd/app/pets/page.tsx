@@ -3,17 +3,13 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { mockPets } from "@/lib/mock-data"
+import { petApi, type Pet } from "@/lib/api"
 import { Loader } from "@/components/common/loader"
 import { EmptyState } from "@/components/common/empty-state"
 import { PetCard } from "@/components/features/pets/pet-card"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, PawPrint } from "lucide-react"
 import Link from "next/link"
-
-import { api } from "@/lib/api"
-import type { Pet } from "@/lib/types"
 
 export default function PetsPage() {
   const router = useRouter()
@@ -33,7 +29,7 @@ export default function PetsPage() {
     if (!user) return
     setIsLoading(true)
     try {
-      const data = await api.get<Pet[]>(`/pets?ownerId=${user.id}`)
+      const data = await petApi.getPets(user.id)
       setPets(data)
     } catch (err) {
       console.error("Failed to fetch pets", err)
@@ -77,7 +73,7 @@ export default function PetsPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {userPets.map((pet) => (
-            <Link key={pet.id} href={`/pets/${pet.id}`}>
+            <Link key={pet._id} href={`/pets?id=${pet._id}`}>
               <PetCard pet={pet} className="cursor-pointer hover:shadow-lg transition-shadow" />
             </Link>
           ))}

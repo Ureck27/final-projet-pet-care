@@ -16,9 +16,8 @@ import { ImageUpload } from "@/components/ui/image-upload"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, ArrowLeft, CheckCircle, PawPrint, Plus } from "lucide-react"
+import { petApi } from "@/lib/api"
 import type { Pet } from "@/lib/types"
-import Link from "next/link"
-import { api } from "@/lib/api"
 
 export default function AddPetPage() {
   const router = useRouter()
@@ -41,7 +40,7 @@ export default function AddPetPage() {
     if (!user) return
     setIsLoading(true)
     try {
-      const data = await api.get<Pet[]>(`/pets?ownerId=${user.id}`)
+      const data = await petApi.getPets(user.id)
       setPets(data)
     } catch (err) {
       console.error("Failed to fetch pets", err)
@@ -84,7 +83,7 @@ export default function AddPetPage() {
         photo: data.photo || "/placeholder.svg",
       }
 
-      await api.post('/pets', newPetData)
+      await petApi.createPet(newPetData)
 
       setSuccessMessage(`${data.name} has been added successfully!`)
       setShowSuccessMessage(true)
@@ -316,7 +315,7 @@ export default function AddPetPage() {
                 <div className="space-y-3">
                   {pets.map((pet) => (
                     <div
-                      key={pet.id}
+                      key={pet._id}
                       className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50"
                     >
                       <img
