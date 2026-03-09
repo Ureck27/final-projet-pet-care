@@ -15,7 +15,7 @@ import { BookingFlow } from "@/components/features/bookings/booking-flow"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Calendar, Clock, Package, MapPin, AlertCircle, Plus, CheckCircle, Clock4 } from "lucide-react"
 import { format } from "date-fns"
-import type { Pet, Trainer } from "@/lib/types"
+import type { Pet as PetType, Trainer } from "@/lib/types"
 
 const packageDetails: Record<string, any> = {
   daily: { name: "Daily Care", icon: "☀️", duration: "1-3 hours/day" },
@@ -32,15 +32,15 @@ const packageColors: Record<string, string> = {
 }
 
 import { api } from "@/lib/api"
-import type { Booking, Pet, Trainer, User } from "@/lib/types"
+import type { Booking, Trainer, User } from "@/lib/types"
 
 export default function BookingsPage() {
   const router = useRouter()
   const { user, isLoading: isAuthLoading } = useAuth()
-  const [bookingFlow, setBookingFlow] = useState({ open: false, pet: null as Pet | null, trainer: null as Trainer | null })
+  const [bookingFlow, setBookingFlow] = useState({ open: false, pet: null as PetType | null, trainer: null as Trainer | null })
   const [activeTab, setActiveTab] = useState("active")
   const [bookings, setBookings] = useState<Booking[]>([])
-  const [pets, setPets] = useState<Pet[]>([])
+  const [pets, setPets] = useState<PetType[]>([])
   const [trainers, setTrainers] = useState<Trainer[]>([])
   const [trainerUsers, setTrainerUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -59,7 +59,7 @@ export default function BookingsPage() {
     try {
       const [bookingsData, petsData, trainersData, tUsersData] = await Promise.all([
         api.get<Booking[]>(`/bookings?ownerId=${user.id}`),
-        api.get<Pet[]>(`/pets?ownerId=${user.id}`),
+        api.get<PetType[]>(`/pets?ownerId=${user.id}`),
         api.get<Trainer[]>('/trainers'),
         api.get<User[]>('/users?role=trainer')
       ])

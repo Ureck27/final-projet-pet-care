@@ -16,6 +16,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { HeroBackground, PremiumBackground } from "@/components/layout/premium-background"
 
 // Lazy load the HeroSlider because it has heavy embla carousel logic and images 
 const HeroSlider = dynamic(() => import('@/components/layout/hero-slider').then(mod => mod.HeroSlider), {
@@ -156,8 +157,9 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
-      <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
-        <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
+      <HeroBackground>
+        <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+          <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             {/* Text Content */}
             <div className="flex flex-col items-start text-left max-w-2xl">
@@ -223,6 +225,7 @@ export default function HomePage() {
           </div>
         </motion.div>
       </section>
+      </HeroBackground>
 
       {/* Problem/Solution Section */}
       <section className="px-4 py-20 relative">
