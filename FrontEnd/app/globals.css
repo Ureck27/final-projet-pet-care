@@ -239,6 +239,128 @@
   .bg-image-overlay-dark {
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.6) 100%);
   }
+
+  /* Modern gradient backgrounds */
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 85%, black) 100%);
+  }
+
+  .gradient-secondary {
+    background: linear-gradient(135deg, var(--secondary) 0%, color-mix(in srgb, var(--secondary) 85%, black) 100%);
+  }
+
+  .gradient-accent {
+    background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 85%, black) 100%);
+  }
+
+  .gradient-hero {
+    background: linear-gradient(
+      135deg,
+      oklch(0.50 0.16 260) 0%,
+      oklch(0.65 0.14 280) 25%,
+      oklch(0.75 0.12 300) 50%,
+      oklch(0.85 0.10 320) 75%,
+      oklch(0.75 0.14 45) 100%
+    );
+  }
+
+  .gradient-hero-dark {
+    background: linear-gradient(
+      135deg,
+      oklch(0.65 0.16 260) 0%,
+      oklch(0.70 0.14 280) 25%,
+      oklch(0.75 0.12 300) 50%,
+      oklch(0.80 0.10 320) 75%,
+      oklch(0.70 0.12 45) 100%
+    );
+  }
+
+  /* Animated gradient backgrounds */
+  .gradient-animated {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+
+  .gradient-animated-slow {
+    background: linear-gradient(-45deg, var(--primary), var(--secondary), var(--accent), oklch(0.60 0.16 300));
+    background-size: 400% 400%;
+    animation: gradientShift 20s ease infinite;
+  }
+
+  /* Modern hover effects */
+  .hover-lift {
+    @apply transition-smooth;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .dark .hover-lift:hover {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .hover-scale {
+    @apply transition-smooth;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  .hover-rotate {
+    @apply transition-smooth;
+  }
+
+  .hover-rotate:hover {
+    transform: rotate(5deg) scale(1.05);
+  }
+
+  /* Button animations */
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-shine:hover::before {
+    left: 100%;
+  }
+
+  /* Pulse animations for attention */
+  .pulse-soft {
+    animation: pulseSoft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Floating animation */
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Glow effects */
+  .glow-primary {
+    box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 50%, transparent);
+  }
+
+  .glow-secondary {
+    box-shadow: 0 0 20px color-mix(in srgb, var(--secondary) 50%, transparent);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 50%, transparent);
+  }
 }
 
 @keyframes fadeIn {
@@ -258,5 +380,35 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulseSoft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
   }
 }

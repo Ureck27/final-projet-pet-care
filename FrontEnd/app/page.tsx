@@ -10,13 +10,17 @@ import dynamic from 'next/dynamic'
 import { TiltCard } from "@/components/ui/tilt-card"
 import { FadeIn, StaggerChildren, StaggerItem } from "@/components/ui/fade-in"
 import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { HeroBackground, PremiumBackground } from "@/components/layout/premium-background"
+import { AnimeWrapper, animePresets, useStaggeredAnimation } from "@/components/ui/anime-wrapper"
+import { useScrollAnimation, useParallax } from "@/hooks/use-scroll-animation"
+// @ts-ignore
+const anime = require('animejs')
 
 // Lazy load the HeroSlider because it has heavy embla carousel logic and images 
 const HeroSlider = dynamic(() => import('@/components/layout/hero-slider').then(mod => mod.HeroSlider), {
@@ -25,6 +29,35 @@ const HeroSlider = dynamic(() => import('@/components/layout/hero-slider').then(
 })
 
 export default function HomePage() {
+  const parallaxRef = useParallax(0.3)
+  const heroRef = useScrollAnimation(animePresets.fadeIn, { delay: 200 })
+  const featuresRef = useScrollAnimation(animePresets.slideInLeft, { delay: 300 })
+  const howItWorksRef = useScrollAnimation(animePresets.slideInRight, { delay: 400 })
+  
+  // Stagger animations for cards
+  useStaggeredAnimation('.feature-card', animePresets.scaleIn, 150)
+  useStaggeredAnimation('.testimonial-card', animePresets.slideInUp, 200)
+  
+  useEffect(() => {
+    // Floating animation for hero elements
+    anime({
+      targets: '.float-element',
+      translateY: [0, -15, 0],
+      duration: 4000,
+      easing: 'easeInOutSine',
+      loop: true,
+      delay: anime.stagger(200)
+    })
+    
+    // Continuous gradient animation
+    anime({
+      targets: '.gradient-animated-element',
+      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+      duration: 15000,
+      easing: 'linear',
+      loop: true
+    })
+  }, [])
   const problemSolution = [
     {
       number: "1",
@@ -170,8 +203,8 @@ export default function HomePage() {
                 </Badge>
               </FadeIn>
               <FadeIn direction="up" delay={0.1}>
-                <h1 className="mb-6 text-balance text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl leading-tight text-shadow-sm">
-                  One App. One Routine. <span className="text-primary block mt-2">Total Peace of Mind.</span>
+                <h1 ref={heroRef} className="mb-6 text-balance text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl leading-tight text-shadow-sm float-element">
+                  One App. One Routine. <span className="text-primary block mt-2 gradient-animated-element bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Total Peace of Mind.</span>
                 </h1>
               </FadeIn>
               <FadeIn direction="up" delay={0.2}>
@@ -184,7 +217,7 @@ export default function HomePage() {
               <FadeIn direction="up" delay={0.3} className="w-full">
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" className="h-14 px-8 text-base shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto transition-smooth" asChild>
+                    <Button size="lg" variant="gradient" className="h-14 px-8 text-base shadow-lg shadow-primary/20 text-primary-foreground w-full sm:w-auto transition-smooth" asChild>
                       <Link href="/register">
                         Find Your Caregiver
                         <ArrowRight className="ml-2 h-5 w-5" />
@@ -192,7 +225,7 @@ export default function HomePage() {
                     </Button>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" variant="outline" className="h-14 px-8 text-base bg-background/50 backdrop-blur border-border hover:bg-muted w-full sm:w-auto transition-smooth shadow-soft" asChild>
+                    <Button size="lg" variant="glass" className="h-14 px-8 text-base border-border hover:bg-muted w-full sm:w-auto transition-smooth shadow-soft" asChild>
                       <Link href="#how-it-works">See How It Works</Link>
                     </Button>
                   </motion.div>
@@ -244,16 +277,16 @@ export default function HomePage() {
             {problemSolution.map((item) => (
               <StaggerItem key={item.number}>
                 <TiltCard intensity={10}>
-                  <Card className="h-full border-border shadow-soft hover:shadow-lg hover:border-primary/50 transition-smooth bg-glass overflow-hidden group">
+                  <Card className="feature-card h-full border-border shadow-soft hover:shadow-xl hover:border-primary/50 transition-smooth glass-effect overflow-hidden group">
                     <CardContent className="p-8 pb-10">
                       <motion.div 
                         whileHover={{ scale: 1.1, rotate: 5 }}
-                        className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 transition-colors group-hover:from-primary/30 group-hover:to-secondary/20"
+                        className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary transition-smooth group-hover:scale-110 float-element"
                       >
-                        {item.icon && <item.icon className="h-8 w-8 text-primary" />}
+                        {item.icon && <item.icon className="h-8 w-8 text-primary-foreground" />}
                       </motion.div>
                       <p className="mb-6 text-base font-medium text-foreground leading-relaxed">{item.problem}</p>
-                      <div className="pt-6 border-t border-primary/10 bg-gradient-to-r from-primary/5 to-transparent p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-primary/10 transition-colors">
+                      <div className="pt-6 border-t border-primary/10 bg-gradient-to-r from-primary/5 to-transparent p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-primary/10 transition-smooth">
                         <p className="text-base text-primary/90 font-medium flex items-start gap-2">
                           <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
                           {item.solution}
@@ -269,26 +302,32 @@ export default function HomePage() {
       </section>
 
       {/* Three Core Features */}
-      <section className="px-4 py-16">
+      <section ref={featuresRef} className="px-4 py-20 relative">
         <div className="container mx-auto">
-          <FadeIn direction="down" className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-primary">Core Services</h2>
+          <FadeIn direction="down" className="mb-16 text-center">
+            <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary shadow-sm hover:shadow transition-smooth">
+              Core Services
+            </Badge>
+            <h2 className="mb-4 text-4xl font-bold text-foreground">Everything You Need</h2>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+              Professional pet care with modern technology
+            </p>
           </FadeIn>
 
           <StaggerChildren staggerDelay={0.15} className="grid gap-8 md:grid-cols-3">
             {coreFeatures.map((feature) => (
               <StaggerItem key={feature.title}>
-                <motion.div whileHover={{ y: -5 }}>
-                  <Card className="border-border shadow-soft hover:shadow-md hover:border-primary/40 transition-smooth bg-glass h-full group">
-                    <CardContent className="p-6">
+                <motion.div whileHover={{ y: -8 }} className="h-full">
+                  <Card className="feature-card border-border shadow-soft hover:shadow-xl hover:border-primary/50 transition-smooth glass-effect h-full group overflow-hidden">
+                    <CardContent className="p-8">
                       <motion.div 
                         whileHover={{ scale: 1.1, rotate: -5 }} 
-                        className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15 group-hover:bg-primary/20 transition-colors"
+                        className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary shadow-soft group-hover:shadow-lg float-element"
                       >
-                        <feature.icon className="h-7 w-7 text-primary" />
+                        <feature.icon className="h-8 w-8 text-primary-foreground" />
                       </motion.div>
-                      <h3 className="mb-2 font-semibold text-foreground group-hover:text-primary transition-colors">{feature.title}</h3>
-                      <p className="text-sm text-muted-foreground">{feature.description}</p>
+                      <h3 className="mb-3 text-xl font-semibold text-foreground group-hover:text-primary transition-colors">{feature.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                     </CardContent>
                   </Card>
                 </motion.div>

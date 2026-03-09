@@ -59,13 +59,13 @@ export function Navbar() {
       ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/50 glass-effect shadow-soft">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-            <PawPrint className="h-5 w-5 text-primary-foreground" />
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl gradient-primary shadow-soft group-hover:shadow-lg group-hover:scale-105 transition-smooth">
+            <PawPrint className="h-6 w-6 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold text-foreground">PetCare</span>
+          <span className="text-xl font-bold text-foreground group-hover:text-primary transition-smooth">PetCare</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -74,9 +74,9 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               className={cn(
-                "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "rounded-xl px-4 py-2 text-sm font-medium transition-smooth hover-lift",
                 pathname === link.href
-                  ? "bg-secondary text-foreground"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >
@@ -91,7 +91,7 @@ export function Navbar() {
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="hover:bg-secondary"
+              className="hover-scale rounded-xl shadow-soft"
               title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             >
               {theme === "dark" ? (

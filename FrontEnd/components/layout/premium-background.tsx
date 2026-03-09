@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+// @ts-ignore
+const anime = require("animejs")
 
 interface PremiumBackgroundProps {
   type?: "video" | "image" | "gradient"
@@ -14,7 +16,7 @@ interface PremiumBackgroundProps {
 const premiumBackgrounds = {
   hero: {
     type: "gradient" as const,
-    gradient: "from-blue-600 via-purple-600 to-pink-600",
+    gradient: "gradient-animated-slow",
     fallback: "/1.jpg"
   },
   about: {
@@ -40,6 +42,7 @@ export function PremiumBackground({
   const [isLoaded, setIsLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const backgroundRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (type === "video" && src && videoRef.current) {
@@ -70,6 +73,21 @@ export function PremiumBackground({
     }
   }, [type, src])
 
+  useEffect(() => {
+    // Add floating animation to background elements
+    if (backgroundRef.current) {
+      anime({
+        targets: '.floating-orb',
+        translateY: [0, -30, 0],
+        translateX: [0, 20, 0],
+        duration: 8000,
+        easing: 'easeInOutSine',
+        loop: true,
+        delay: anime.stagger(2000)
+      })
+    }
+  }, [])
+
   const getOverlayClass = () => {
     switch (overlay) {
       case "light": return "bg-white/10"
@@ -81,16 +99,16 @@ export function PremiumBackground({
   }
 
   return (
-    <div className={`relative w-full h-full overflow-hidden ${className}`}>
+    <div ref={backgroundRef} className={`relative w-full h-full overflow-hidden ${className}`}>
       {type === "gradient" ? (
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
+        <div className="absolute inset-0 gradient-animated-slow">
           <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/10" />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/10" />
         </div>
       ) : type === "video" ? (
         <>
           {!isLoaded && (
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800 animate-pulse" />
+            <div className="absolute inset-0 gradient-animated-slow" />
           )}
           <video
             ref={videoRef}
@@ -114,7 +132,7 @@ export function PremiumBackground({
       ) : (
         <>
           {!isLoaded && (
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800 animate-pulse" />
+            <div className="absolute inset-0 gradient-animated-slow" />
           )}
           <div 
             className={`absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${
@@ -133,10 +151,11 @@ export function PremiumBackground({
       
       <div className={`absolute inset-0 ${getOverlayClass()} transition-colors duration-300`} />
       
-      {/* Animated overlay effects */}
+      {/* Enhanced animated overlay effects */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="floating-orb absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
+        <div className="floating-orb absolute bottom-0 right-0 w-96 h-96 bg-secondary/20 rounded-full blur-3xl" />
+        <div className="floating-orb absolute top-1/2 left-1/2 w-64 h-64 bg-accent/15 rounded-full blur-2xl" />
       </div>
       
       {children && (
@@ -173,7 +192,7 @@ export function SectionBackground({
   return (
     <PremiumBackground 
       type={config.type}
-      src={config.src}
+      src={config.type === 'gradient' ? undefined : config.src}
       fallback={config.fallback}
       overlay="medium"
       className="min-h-screen"
