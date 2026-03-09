@@ -17,10 +17,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { HeroBackground, PremiumBackground } from "@/components/layout/premium-background"
-import { AnimeWrapper, animePresets, useStaggeredAnimation } from "@/components/ui/anime-wrapper"
+import { AnimationWrapper, animationPresets, useStaggeredAnimation } from "@/components/ui/animation-wrapper"
 import { useScrollAnimation, useParallax } from "@/hooks/use-scroll-animation"
-// @ts-ignore
-const anime = require('animejs')
 
 // Lazy load the HeroSlider because it has heavy embla carousel logic and images 
 const HeroSlider = dynamic(() => import('@/components/layout/hero-slider').then(mod => mod.HeroSlider), {
@@ -30,34 +28,14 @@ const HeroSlider = dynamic(() => import('@/components/layout/hero-slider').then(
 
 export default function HomePage() {
   const parallaxRef = useParallax(0.3)
-  const heroRef = useScrollAnimation(animePresets.fadeIn, { delay: 200 })
-  const featuresRef = useScrollAnimation(animePresets.slideInLeft, { delay: 300 })
-  const howItWorksRef = useScrollAnimation(animePresets.slideInRight, { delay: 400 })
+  const heroRef = useScrollAnimation('fadeIn', { delay: 200 })
+  const featuresRef = useScrollAnimation('slideInLeft', { delay: 300 })
+  const howItWorksRef = useScrollAnimation('slideInRight', { delay: 400 })
   
   // Stagger animations for cards
-  useStaggeredAnimation('.feature-card', animePresets.scaleIn, 150)
-  useStaggeredAnimation('.testimonial-card', animePresets.slideInUp, 200)
+  useStaggeredAnimation('.feature-card', 'scaleIn', 150)
+  useStaggeredAnimation('.testimonial-card', 'slideInUp', 200)
   
-  useEffect(() => {
-    // Floating animation for hero elements
-    anime({
-      targets: '.float-element',
-      translateY: [0, -15, 0],
-      duration: 4000,
-      easing: 'easeInOutSine',
-      loop: true,
-      delay: anime.stagger(200)
-    })
-    
-    // Continuous gradient animation
-    anime({
-      targets: '.gradient-animated-element',
-      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-      duration: 15000,
-      easing: 'linear',
-      loop: true
-    })
-  }, [])
   const problemSolution = [
     {
       number: "1",

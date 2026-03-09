@@ -138,17 +138,19 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
+    outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }
 
 /* Added smooth calming animations and UI optimizations */
 @layer utilities {
   .transition-smooth {
-    @apply transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1.0)];
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
     will-change: transform, opacity;
   }
 
@@ -161,15 +163,17 @@
   }
 
   .shadow-soft {
-    @apply shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)];
+    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05);
   }
   
   .dark .shadow-soft {
-    @apply shadow-[0_4px_20px_-4px_rgba(0,0,0,0.2)];
+    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.2);
   }
   
   .glass-effect {
-    @apply bg-background/80 backdrop-blur-md border border-border/50;
+    background-color: color-mix(in srgb, var(--background) 80%, transparent);
+    backdrop-filter: blur(12px);
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
   }
   
   .gpu-accelerate {
@@ -216,11 +220,15 @@
 
   /* Glassmorphism for cards */
   .bg-glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
   
   .dark .bg-glass {
-    @apply bg-slate-900/70 backdrop-blur-md border border-slate-700/50;
+    background-color: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(51, 65, 85, 0.5);
   }
 
   /* Enhanced background image clarity */
@@ -290,7 +298,8 @@
 
   /* Modern hover effects */
   .hover-lift {
-    @apply transition-smooth;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+    will-change: transform, opacity;
   }
 
   .hover-lift:hover {
@@ -303,7 +312,8 @@
   }
 
   .hover-scale {
-    @apply transition-smooth;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+    will-change: transform, opacity;
   }
 
   .hover-scale:hover {
@@ -311,7 +321,8 @@
   }
 
   .hover-rotate {
-    @apply transition-smooth;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+    will-change: transform, opacity;
   }
 
   .hover-rotate:hover {

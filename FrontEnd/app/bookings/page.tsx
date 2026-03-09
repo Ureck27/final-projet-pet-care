@@ -32,7 +32,7 @@ const packageColors: Record<string, string> = {
 }
 
 import { api } from "@/lib/api"
-import type { Booking, Trainer, User } from "@/lib/types"
+import type { Booking, User } from "@/lib/types"
 
 export default function BookingsPage() {
   const router = useRouter()
