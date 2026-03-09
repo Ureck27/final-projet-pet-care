@@ -4,7 +4,11 @@ const Booking = require('../models/Booking');
 // @route   GET /api/bookings
 const getBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({})
+    const filter = {};
+    if (req.query.ownerId) {
+      filter.ownerId = req.query.ownerId;
+    }
+    const bookings = await Booking.find(filter)
       .populate('petId', 'name species breed')
       .populate('trainerId')
       .populate('ownerId', 'fullName email');

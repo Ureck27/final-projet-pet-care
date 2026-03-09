@@ -12,17 +12,37 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, PawPrint } from "lucide-react"
 import Link from "next/link"
 
+import { api } from "@/lib/api"
+import type { Pet } from "@/lib/types"
+
 export default function PetsPage() {
   const router = useRouter()
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
+  const [pets, setPets] = useState<Pet[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isAuthLoading && !user) {
       router.push("/login")
+    } else if (!isAuthLoading && user) {
+      fetchPets()
     }
-  }, [user, isLoading, router])
+  }, [user, isAuthLoading, router])
 
-  if (isLoading || !user) {
+  const fetchPets = async () => {
+    if (!user) return
+    setIsLoading(true)
+    try {
+      const data = await api.get<Pet[]>(`/pets?ownerId=${user.id}`)
+      setPets(data)
+    } catch (err) {
+      console.error("Failed to fetch pets", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (isAuthLoading || isLoading || !user) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />
@@ -30,7 +50,7 @@ export default function PetsPage() {
     )
   }
 
-  const userPets = mockPets.filter((pet) => pet.ownerId === user.id)
+  const userPets = pets
 
   return (
     <main className="container mx-auto px-4 py-8">

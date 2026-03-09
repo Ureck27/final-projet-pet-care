@@ -14,6 +14,9 @@ const petSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  fullName: {
+    type: String
+  },
   type: {
     type: String,
     required: true

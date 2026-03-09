@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { mockBookings, mockPets, mockTrainers, mockUsers, services, timeSlots } from "@/lib/mock-data"
+import { services, timeSlots } from "@/lib/mock-data" // Removed mock data imports
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { bookingSchema, type BookingFormData } from "@/lib/validation"
@@ -16,33 +16,60 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, ArrowLeft, CheckCircle, Calendar } from "lucide-react"
-import type { Booking, Pet, Trainer } from "@/lib/types"
+import { api } from "@/lib/api" // Added API import
+import type { Booking, Pet, Trainer, User } from "@/lib/types" // Added User type
 import Link from "next/link"
 import { format } from "date-fns"
 
 export default function NewBookingPage() {
   const router = useRouter()
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth() // Renamed isLoading to isAuthLoading
   const [bookings, setBookings] = useState<Booking[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [userPets, setUserPets] = useState<Pet[]>([])
+  const [trainers, setTrainers] = useState<Trainer[]>([]) // Added trainers state
+  const [trainerUsers, setTrainerUsers] = useState<User[]>([]) // Added trainerUsers state
   const [selectedPetId, setSelectedPetId] = useState("")
   const [selectedTrainerId, setSelectedTrainerId] = useState("")
+  const [isLoading, setIsLoading] = useState(true) // Added local isLoading state for data fetching
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isAuthLoading && !user) {
       router.push("/login")
-    } else if (user) {
-      setBookings(mockBookings.filter((booking) => booking.ownerId === user.id))
-      const pets = mockPets.filter((pet) => pet.ownerId === user.id)
-      setUserPets(pets)
-      if (pets.length > 0) {
-        setSelectedPetId(pets[0].id)
-      }
+    } else if (!isAuthLoading && user) {
+      fetchInitialData()
     }
-  }, [user, isLoading, router])
+  }, [user, isAuthLoading, router])
+
+  const fetchInitialData = async () => {
+    if (!user) return
+    setIsLoading(true)
+    try {
+      const [petsData, bookingsData, trainersData] = await Promise.all([
+        api.get<Pet[]>(`/pets?ownerId=${user.id}`),
+        api.get<Booking[]>(`/bookings?ownerId=${user.id}`),
+        api.get<Trainer[]>('/trainers')
+      ])
+      
+      setUserPets(petsData)
+      setBookings(bookingsData)
+      setTrainers(trainersData)
+      
+      if (petsData.length > 0) {
+        setSelectedPetId(petsData[0].id)
+      }
+
+      // Also need trainer user data for names
+      const tUsers = await api.get<User[]>('/users?role=trainer')
+      setTrainerUsers(tUsers)
+    } catch (err) {
+      console.error("Failed to fetch initial booking data", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const {
     register,
@@ -63,6 +90,7 @@ export default function NewBookingPage() {
   })
 
   const onSubmit = async (data: BookingFormData) => {
+    if (!user) return
     if (!selectedPetId) {
       alert("Please select a pet")
       return
@@ -70,38 +98,39 @@ export default function NewBookingPage() {
 
     setIsSubmitting(true)
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      const newBooking: Booking = {
-        id: String(bookings.length + Math.random()),
-        ownerId: user!.id,
+      const newBookingData = {
+        ownerId: user.id,
         petId: selectedPetId,
         trainerId: data.trainerId,
         service: data.service,
         date: new Date(data.date),
         time: data.time,
-        status: "confirmed",
         notes: data.notes,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        packageType: "Standard" // Default for now
       }
 
-      setBookings([...bookings, newBooking])
+      await api.post('/bookings', newBookingData)
+
       setSuccessMessage("Booking confirmed! Your pet care appointment is scheduled.")
       setShowSuccessMessage(true)
       reset()
+      
+      // Refresh bookings
+      const updatedBookings = await api.get<Booking[]>(`/bookings?ownerId=${user.id}`)
+      setBookings(updatedBookings)
 
       // Clear success message after 3 seconds
       setTimeout(() => {
         setShowSuccessMessage(false)
       }, 3000)
+    } catch (err) {
+      console.error("Failed to create booking", err)
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  if (isLoading || !user) {
+  if (isAuthLoading || isLoading || !user) { // Updated loading condition
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />
@@ -110,8 +139,8 @@ export default function NewBookingPage() {
   }
 
   const selectedPet = userPets.find((p) => p.id === selectedPetId)
-  const selectedTrainer = mockTrainers.find((t) => t.id === selectedTrainerId)
-  const selectedTrainerUser = selectedTrainer ? mockUsers.find((u) => u.id === selectedTrainer.userId) : null
+  const selectedTrainer = trainers.find((t) => t.id === selectedTrainerId) // Used trainers state
+  const selectedTrainerUser = trainerUsers.find((u) => trainers.some(t => t.id === selectedTrainerId && t.userId === u.id)) // Updated logic to find trainer user
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -201,16 +230,19 @@ export default function NewBookingPage() {
                     <Label htmlFor="trainer" className="text-base font-semibold">
                       Select Caregiver <span className="text-destructive">*</span>
                     </Label>
-                    <Select value={watch("trainerId")} onValueChange={(value) => setValue("trainerId", value)}>
+                    <Select value={watch("trainerId")} onValueChange={(value) => {
+                      setValue("trainerId", value)
+                      setSelectedTrainerId(value)
+                    }}>
                       <SelectTrigger className="text-base">
                         <SelectValue placeholder="Select a professional caregiver" />
                       </SelectTrigger>
                       <SelectContent>
-                        {mockTrainers.map((trainer) => {
-                          const trainerUser = mockUsers.find((u) => u.id === trainer.userId)
+                        {trainers.map((trainer) => {
+                          const tUser = trainerUsers.find((u) => u.id === trainer.userId)
                           return (
                             <SelectItem key={trainer.id} value={trainer.id}>
-                              {trainerUser?.fullName} ⭐ {trainer.rating}
+                              {tUser?.fullName || tUser?.name} ⭐ {trainer.rating}
                             </SelectItem>
                           )
                         })}

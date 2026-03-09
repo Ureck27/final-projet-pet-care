@@ -31,19 +31,50 @@ const packageColors: Record<string, string> = {
   custom: "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800",
 }
 
+import { api } from "@/lib/api"
+import type { Booking, Pet, Trainer, User } from "@/lib/types"
+
 export default function BookingsPage() {
   const router = useRouter()
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
   const [bookingFlow, setBookingFlow] = useState({ open: false, pet: null as Pet | null, trainer: null as Trainer | null })
   const [activeTab, setActiveTab] = useState("active")
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [pets, setPets] = useState<Pet[]>([])
+  const [trainers, setTrainers] = useState<Trainer[]>([])
+  const [trainerUsers, setTrainerUsers] = useState<User[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isAuthLoading && !user) {
       router.push("/login")
+    } else if (!isAuthLoading && user) {
+      fetchBookingsData()
     }
-  }, [user, isLoading, router])
+  }, [user, isAuthLoading, router])
 
-  if (isLoading || !user) {
+  const fetchBookingsData = async () => {
+    if (!user) return
+    setIsLoading(true)
+    try {
+      const [bookingsData, petsData, trainersData, tUsersData] = await Promise.all([
+        api.get<Booking[]>(`/bookings?ownerId=${user.id}`),
+        api.get<Pet[]>(`/pets?ownerId=${user.id}`),
+        api.get<Trainer[]>('/trainers'),
+        api.get<User[]>('/users?role=trainer')
+      ])
+      setBookings(bookingsData)
+      setPets(petsData)
+      setTrainers(trainersData)
+      setTrainerUsers(tUsersData)
+    } catch (err) {
+      console.error("Failed to fetch bookings data", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (isAuthLoading || isLoading || !user) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />
@@ -51,7 +82,7 @@ export default function BookingsPage() {
     )
   }
 
-  const userBookings = mockBookings.filter((booking) => booking.ownerId === user.id)
+  const userBookings = bookings
   const activeBookings = userBookings.filter((b) => b.status === "confirmed" || b.status === "pending")
   const completedBookings = userBookings.filter((b) => b.status === "completed")
 
@@ -81,11 +112,11 @@ export default function BookingsPage() {
     }
   }
 
-  const BookingCard = ({ booking }: { booking: (typeof userBookings)[0] }) => {
-    const pet = mockPets.find((p) => p.id === booking.petId)
-    const trainer = mockTrainers.find((t) => t.id === booking.trainerId)
-    const trainerUser = mockUsers.find((u) => u.id === trainer?.userId)
-    const carePlan = mockCarePlans.find((cp) => cp.bookingId === booking.id)
+  const BookingCard = ({ booking }: { booking: Booking }) => {
+    const pet = pets.find((p) => p.id === booking.petId)
+    const trainer = trainers.find((t) => t.id === booking.trainerId)
+    const trainerUser = trainerUsers.find((u) => u.id === trainer?.userId)
+    const carePlan = null // Mocking care plan as null for now
     const pkg = booking.packageType ? packageDetails[booking.packageType] : null
 
     return (
@@ -307,8 +338,8 @@ export default function BookingsPage() {
         <BookingFlow
           open={bookingFlow.open}
           onOpenChange={(open) => setBookingFlow({ ...bookingFlow, open })}
-          pet={bookingFlow.pet || mockPets[0]}
-          trainer={bookingFlow.trainer || mockTrainers[0]}
+          pet={bookingFlow.pet || pets[0]}
+          trainer={bookingFlow.trainer || trainers[0]}
           onConfirm={(data) => {
             console.log("Booking confirmed:", data)
             // Handle booking confirmation

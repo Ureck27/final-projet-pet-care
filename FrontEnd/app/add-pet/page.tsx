@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { mockPets } from "@/lib/mock-data"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { petSchema, type PetFormData } from "@/lib/validation"
@@ -19,22 +18,37 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, ArrowLeft, CheckCircle, PawPrint, Plus } from "lucide-react"
 import type { Pet } from "@/lib/types"
 import Link from "next/link"
+import { api } from "@/lib/api"
 
 export default function AddPetPage() {
   const router = useRouter()
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
   const [pets, setPets] = useState<Pet[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isAuthLoading && !user) {
       router.push("/login")
-    } else if (user) {
-      setPets(mockPets.filter((pet) => pet.ownerId === user.id))
+    } else if (!isAuthLoading && user) {
+      fetchUserPets()
     }
-  }, [user, isLoading, router])
+  }, [user, isAuthLoading, router])
+
+  const fetchUserPets = async () => {
+    if (!user) return
+    setIsLoading(true)
+    try {
+      const data = await api.get<Pet[]>(`/pets?ownerId=${user.id}`)
+      setPets(data)
+    } catch (err) {
+      console.error("Failed to fetch pets", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const {
     register,
@@ -53,41 +67,42 @@ export default function AddPetPage() {
   })
 
   const onSubmit = async (data: PetFormData) => {
+    if (!user) return
     setIsSubmitting(true)
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      const newPet: Pet = {
-        id: String(pets.length + Math.random()),
-        ownerId: user!.id,
+      const newPetData = {
+        ownerId: user.id,
         name: data.name,
         fullName: data.fullName,
+        type: data.species, // Mapping species to type
         species: data.species,
         breed: data.breed,
         age: data.age,
-        weight: data.weight,
+        weight: typeof data.weight === 'string' ? parseFloat(data.weight) || 0 : data.weight,
         color: data.color,
         medicalNotes: data.medicalNotes,
         photo: data.photo || "/placeholder.svg",
-        createdAt: new Date(),
       }
 
-      setPets([...pets, newPet])
+      await api.post('/pets', newPetData)
+
       setSuccessMessage(`${data.name} has been added successfully!`)
       setShowSuccessMessage(true)
       reset()
+      fetchUserPets() // Refresh list
 
       // Clear success message after 3 seconds
       setTimeout(() => {
         setShowSuccessMessage(false)
       }, 3000)
+    } catch (err) {
+      console.error("Failed to add pet", err)
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  if (isLoading || !user) {
+  if (isAuthLoading || isLoading || !user) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />

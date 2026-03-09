@@ -5,7 +5,11 @@ const PetProfile = require('../models/PetProfile');
 // @route   GET /api/pets
 const getPets = async (req, res) => {
   try {
-    const pets = await Pet.find({}).populate('ownerId', 'fullName email');
+    const filter = {};
+    if (req.query.ownerId) {
+      filter.ownerId = req.query.ownerId;
+    }
+    const pets = await Pet.find(filter).populate('ownerId', 'fullName email');
     res.json(pets);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -37,11 +41,13 @@ const getPetById = async (req, res) => {
 // @route   POST /api/pets
 const createPet = async (req, res) => {
   try {
-    const { ownerId, name, species, breed, age, weight, color, medicalNotes, photo } = req.body;
+    const { ownerId, name, fullName, type, species, breed, age, weight, color, medicalNotes, photo } = req.body;
     
     const pet = await Pet.create({
       ownerId,
       name,
+      fullName,
+      type,
       species,
       breed,
       age,
@@ -65,6 +71,7 @@ const updatePet = async (req, res) => {
 
     if (pet) {
       pet.name = req.body.name || pet.name;
+      pet.type = req.body.type || pet.type;
       pet.species = req.body.species || pet.species;
       pet.breed = req.body.breed || pet.breed;
       pet.age = req.body.age || pet.age;

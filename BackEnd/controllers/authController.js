@@ -21,6 +21,7 @@ const registerUser = async (req, res) => {
 
     const user = await User.create({
       name,
+      fullName: name,
       email,
       password
     });

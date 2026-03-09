@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
+import { api } from "@/lib/api"
+import type { Pet, Booking } from "@/lib/types"
 import { 
-  mockPets, mockBookings, mockPetStatuses, mockTasks, mockDailyActivities, 
+  mockPetStatuses, mockTasks, mockDailyActivities, 
   mockMoodEntries, mockNotifications 
 } from "@/lib/mock-data"
 import { StatsCard } from "@/components/features/dashboard/stats-card"
@@ -25,23 +27,45 @@ import Link from "next/link"
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("overview")
+  const [pets, setPets] = useState<Pet[]>([])
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isAuthLoading && !user) {
       router.push("/login")
-    } else if (!isLoading) {
+    } else if (!isAuthLoading) {
       if (user?.role === "trainer") {
         router.push("/trainer-dashboard")
       } else if (user?.role === "admin") {
         router.push("/admin-dashboard")
+      } else {
+        fetchDashboardData()
       }
     }
-  }, [user, isLoading, router])
+  }, [user, isAuthLoading, router])
 
-  if (isLoading || !user) {
+  const fetchDashboardData = async () => {
+    if (!user) return
+    setIsLoading(true)
+    try {
+      const [petsData, bookingsData] = await Promise.all([
+        api.get<Pet[]>(`/pets?ownerId=${user.id}`),
+        api.get<Booking[]>(`/bookings?ownerId=${user.id}`)
+      ])
+      setPets(petsData)
+      setBookings(bookingsData)
+    } catch (err) {
+      console.error("Failed to fetch dashboard data", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (isAuthLoading || isLoading || !user) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />
@@ -49,8 +73,8 @@ export default function DashboardPage() {
     )
   }
 
-  const userPets = mockPets.filter((pet) => pet.ownerId === user.id)
-  const userBookings = mockBookings.filter((booking) => booking.ownerId === user.id)
+  const userPets = pets
+  const userBookings = bookings
   const petStatuses = mockPetStatuses.filter((status) => userPets.some((pet) => pet.id === status.petId))
   
   // Set default pet if none selected

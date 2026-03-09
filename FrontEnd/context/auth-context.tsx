@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import type { User, UserRole } from "@/lib/types"
 import { mockUsers } from "@/lib/mock-data"
+import { api } from "@/lib/api"
 
 interface AuthContextType {
   user: User | null
@@ -38,27 +39,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true)
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-      if (res.ok) {
-        const data = await res.json()
-        const loggedUser: User = {
-          id: data._id || String(mockUsers.length + 1),
-          email: data.email,
-          fullName: data.name || data.fullName,
-          phone: '',
-          role: data.role,
-          createdAt: new Date(),
-        }
-        setUser(loggedUser)
-        localStorage.setItem("petcare_user", JSON.stringify(loggedUser))
-        localStorage.setItem("petcare_token", data.token)
-        setIsLoading(false)
-        return true
+      const data = await api.post<{ _id: string, email: string, name: string, role: UserRole, token: string }>('/auth/login', { email, password });
+      
+      const loggedUser: User = {
+        id: data._id,
+        email: data.email,
+        fullName: data.name,
+        phone: '',
+        role: data.role,
+        createdAt: new Date(),
       }
+      setUser(loggedUser)
+      localStorage.setItem("petcare_user", JSON.stringify(loggedUser))
+      localStorage.setItem("petcare_token", data.token)
+      setIsLoading(false)
+      return true
     } catch (err) {
       console.error('Login failed', err)
     }
@@ -69,31 +64,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (data: RegisterData): Promise<boolean> => {
     setIsLoading(true)
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name: data.fullName, 
-          email: data.email, 
-          password: data.password 
-        }),
-      })
-      if (res.ok) {
-        const resData = await res.json()
-        const newUser: User = {
-          id: resData._id || String(mockUsers.length + 1),
-          email: resData.email,
-          fullName: resData.name,
-          phone: data.phone,
-          role: resData.role || data.role,
-          createdAt: new Date(),
-        }
-        setUser(newUser)
-        localStorage.setItem("petcare_user", JSON.stringify(newUser))
-        localStorage.setItem("petcare_token", resData.token)
-        setIsLoading(false)
-        return true
+      const resData = await api.post<{ _id: string, email: string, name: string, role: UserRole, token: string }>('/auth/register', { 
+        name: data.fullName, 
+        email: data.email, 
+        password: data.password 
+      });
+      
+      const newUser: User = {
+        id: resData._id,
+        email: resData.email,
+        fullName: resData.name,
+        phone: data.phone,
+        role: resData.role,
+        createdAt: new Date(),
       }
+      setUser(newUser)
+      localStorage.setItem("petcare_user", JSON.stringify(newUser))
+      localStorage.setItem("petcare_token", resData.token)
+      setIsLoading(false)
+      return true
     } catch (err) {
       console.error('Register failed', err)
     }
@@ -109,15 +98,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const forgotPassword = async (email: string): Promise<boolean> => {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-      return res.ok;
+      await api.post('/auth/forgot-password', { email })
+      return true
     } catch (err) {
-      console.error(err);
-      return false;
+      console.error(err)
+      return false
     }
   }
 
