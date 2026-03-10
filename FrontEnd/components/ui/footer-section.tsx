@@ -3,6 +3,7 @@
 import React from "react"
 import type { ComponentProps, ReactNode } from "react"
 import { motion, useReducedMotion } from "framer-motion"
+import Link from "next/link"
 import {
   Facebook as FacebookIcon,
   Instagram as InstagramIcon,
@@ -28,35 +29,33 @@ const footerLinks: FooterSection[] = [
     links: [
       { title: "Features", href: "#features" },
       { title: "Pricing", href: "#pricing" },
+      { title: "How It Works", href: "#how-it-works" },
       { title: "Testimonials", href: "#testimonials" },
-      { title: "Integration", href: "/" },
     ],
   },
   {
     label: "Company",
     links: [
-      { title: "FAQs", href: "/faqs" },
       { title: "About Us", href: "/about" },
+      { title: "Careers", href: "/careers" },
+      { title: "Contact", href: "/contact" },
+      { title: "Reviews", href: "/reviews" },
+    ],
+  },
+  {
+    label: "Legal",
+    links: [
       { title: "Privacy Policy", href: "/privacy" },
       { title: "Terms of Services", href: "/terms" },
     ],
   },
   {
-    label: "Resources",
-    links: [
-      { title: "Blog", href: "/blog" },
-      { title: "Changelog", href: "/changelog" },
-      { title: "Brand", href: "/brand" },
-      { title: "Help", href: "/help" },
-    ],
-  },
-  {
     label: "Social Links",
     links: [
-      { title: "Facebook", href: "#", icon: FacebookIcon },
-      { title: "Instagram", href: "#", icon: InstagramIcon },
-      { title: "Youtube", href: "#", icon: YoutubeIcon },
-      { title: "LinkedIn", href: "#", icon: LinkedinIcon },
+      { title: "Facebook", href: "https://facebook.com", icon: FacebookIcon },
+      { title: "Instagram", href: "https://instagram.com", icon: InstagramIcon },
+      { title: "Youtube", href: "https://youtube.com", icon: YoutubeIcon },
+      { title: "LinkedIn", href: "https://linkedin.com", icon: LinkedinIcon },
     ],
   },
 ]
@@ -80,17 +79,38 @@ export function Footer() {
               <div className="mb-10 md:mb-0">
                 <h3 className="text-xs">{section.label}</h3>
                 <ul className="text-muted-foreground mt-4 space-y-2 text-sm">
-                  {section.links.map((link) => (
-                    <li key={link.title}>
-                      <a
-                        href={link.href}
-                        className="hover:text-foreground inline-flex items-center transition-all duration-300"
-                      >
-                        {link.icon && <link.icon className="me-1 size-4" />}
-                        {link.title}
-                      </a>
-                    </li>
-                  ))}
+                  {section.links.map((link) => {
+                    const isExternal = link.href.startsWith('http')
+                    const isFragment = link.href.startsWith('#')
+                    
+                    if (isExternal) {
+                      return (
+                        <li key={link.title}>
+                          <a
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-foreground inline-flex items-center transition-all duration-300"
+                          >
+                            {link.icon && <link.icon className="me-1 size-4" />}
+                            {link.title}
+                          </a>
+                        </li>
+                      )
+                    }
+                    
+                    return (
+                      <li key={link.title}>
+                        <Link
+                          href={link.href}
+                          className="hover:text-foreground inline-flex items-center transition-all duration-300"
+                        >
+                          {link.icon && <link.icon className="me-1 size-4" />}
+                          {link.title}
+                        </Link>
+                      </li>
+                    )
+                  })}
                 </ul>
               </div>
             </AnimatedContainer>

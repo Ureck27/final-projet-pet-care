@@ -310,7 +310,7 @@ export default function HomePage() {
       </section>
 
       {/* Three Core Features */}
-      <section ref={featuresRef} className="px-4 py-20 relative">
+      <section id="features" ref={featuresRef} className="px-4 py-20 relative">
         <div className="container mx-auto">
           <FadeIn direction="down" className="mb-16 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary shadow-sm hover:shadow transition-smooth">
@@ -397,7 +397,7 @@ export default function HomePage() {
       </section>
 
       {/* Service Packages */}
-      <section className="px-4 py-16">
+      <section id="pricing" className="px-4 py-16">
         <div className="container mx-auto">
           <FadeIn direction="down" className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary shadow-sm hover:shadow transition-smooth">
@@ -614,7 +614,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="px-4 py-16">
+      <section id="testimonials" className="px-4 py-16">
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">What Our Users Say</h2>

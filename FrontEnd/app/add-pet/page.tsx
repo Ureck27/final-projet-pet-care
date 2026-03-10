@@ -315,7 +315,7 @@ export default function AddPetPage() {
                 <div className="space-y-3">
                   {pets.map((pet) => (
                     <div
-                      key={pet._id}
+                      key={pet.id}
                       className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50"
                     >
                       <img
