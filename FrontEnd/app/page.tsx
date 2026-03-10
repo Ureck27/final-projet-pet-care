@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { HeroBackground, PremiumBackground } from "@/components/layout/premium-background"
 import { AnimationWrapper, animationPresets, useStaggeredAnimation } from "@/components/ui/animation-wrapper"
+import { PawPrintBackground, FloatingPets, AnimatedPawTrail, PetCareIcons } from "@/components/ui/pet-illustrations"
 import { cn } from "@/lib/utils"
 import { useScrollAnimation, useParallax } from "@/hooks/use-scroll-animation"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
@@ -172,13 +173,15 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       <HeroBackground>
+        <PawPrintBackground />
+        <FloatingPets />
         <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
           <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             {/* Text Content */}
             <div className="flex flex-col items-start text-left max-w-2xl">
               <FadeIn direction="up">
-                <Badge className="mb-6 bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 px-4 py-2 text-sm shadow-soft transition-smooth">
+                <Badge className="mb-6 bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-300 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-400/30 px-4 py-2 text-sm shadow-soft-lg transition-smooth glow-primary">
                   <Shield className="mr-2 h-4 w-4" />
                   Professional AI-Powered Pet Care
                 </Badge>
@@ -188,7 +191,7 @@ export default function HomePage() {
                   <SplitText
                     text="One App. One Routine."
                     tag="h1"
-                    className="block text-balance text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl"
+                    className="block text-balance text-5xl font-extrabold tracking-tight text-white md:text-6xl lg:text-7xl"
                     delay={40}
                     duration={1.1}
                     ease="power3.out"
@@ -202,7 +205,7 @@ export default function HomePage() {
                   <SplitText
                     text="Total Peace of Mind."
                     tag="h1"
-                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary gradient-animated-element bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary"
+                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold gradient-text md:text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400"
                     delay={50}
                     duration={1.2}
                     ease="power3.out"
@@ -216,16 +219,16 @@ export default function HomePage() {
                 </div>
               </FadeIn>
               <FadeIn direction="up" delay={0.2}>
-                <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl leading-relaxed">
+                <p className="mb-8 text-pretty text-lg text-purple-200 md:text-xl leading-relaxed">
                   All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
-                  <strong className="text-foreground block mt-2 font-medium">Professional care meets transparency.</strong>
+                  <strong className="text-white block mt-2 font-medium">Professional care meets transparency.</strong>
                 </p>
               </FadeIn>
               
               <FadeIn direction="up" delay={0.3} className="w-full">
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" variant="gradient" className="h-14 px-8 text-base shadow-lg shadow-primary/20 text-primary-foreground w-full sm:w-auto transition-smooth" asChild>
+                    <Button size="lg" className="h-14 px-8 text-base gradient-animated text-white shadow-soft-lg glow-primary w-full sm:w-auto transition-smooth border-0" asChild>
                       <Link href="/register">
                         Find Your Caregiver
                         <ArrowRight className="ml-2 h-5 w-5" />
@@ -233,7 +236,7 @@ export default function HomePage() {
                     </Button>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" variant="glass" className="h-14 px-8 text-base border-border hover:bg-muted w-full sm:w-auto transition-smooth shadow-soft" asChild>
+                    <Button size="lg" className="h-14 px-8 text-base glass-effect text-purple-300 hover:text-white border-purple-400/30 hover:border-purple-400/50 w-full sm:w-auto transition-smooth shadow-soft-lg" asChild>
                       <Link href="#how-it-works">See How It Works</Link>
                     </Button>
                   </motion.div>
@@ -243,12 +246,12 @@ export default function HomePage() {
               <StaggerChildren delay={0.4} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {trustFeatures.map((feature) => (
                   <StaggerItem key={feature}>
-                    <div className="flex items-center gap-3 text-sm text-foreground/90 font-medium group">
+                    <div className="flex items-center gap-3 text-sm text-purple-200 font-medium group">
                       <motion.div 
                         whileHover={{ scale: 1.2, rotate: 10 }}
-                        className="flex h-6 w-6 items-center justify-center rounded-full bg-success/20 transition-smooth"
+                        className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-green-400/20 to-emerald-400/20 border border-green-400/30 transition-smooth glow-accent"
                       >
-                        <CheckCircle2 className="h-4 w-4 text-success" />
+                        <CheckCircle2 className="h-4 w-4 text-green-400" />
                       </motion.div>
                       {feature}
                     </div>
@@ -270,13 +273,15 @@ export default function HomePage() {
 
       {/* Problem/Solution Section */}
       <section className="px-4 py-20 relative">
+        <AnimatedPawTrail />
+        <PetCareIcons />
         <div className="container mx-auto">
           <FadeIn direction="up" className="mb-16 text-center">
-            <Badge variant="outline" className="mb-4 border-primary/20 bg-primary/5 text-primary font-semibold shadow-sm hover:shadow transition-smooth">
+            <Badge variant="outline" className="mb-4 border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-300 font-semibold shadow-soft-lg hover:shadow-xl transition-smooth glow-primary">
               Three Problems. One Solution.
             </Badge>
-            <h2 className="mb-4 text-4xl font-bold text-primary">The Paws & Relax Difference</h2>
-            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+            <h2 className="mb-4 text-4xl font-bold gradient-text bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">The Paws & Relax Difference</h2>
+            <p className="mx-auto max-w-2xl text-lg text-purple-200">
               Paws & Relax solves the three biggest pain points pet owners face
             </p>
           </FadeIn>
@@ -285,18 +290,18 @@ export default function HomePage() {
             {problemSolution.map((item) => (
               <StaggerItem key={item.number}>
                 <TiltCard intensity={10}>
-                  <Card className="feature-card h-full border-border shadow-soft hover:shadow-xl hover:border-primary/50 transition-smooth glass-effect overflow-hidden group">
+                  <Card className="feature-card h-full glass-effect shadow-soft-lg hover:shadow-2xl hover:border-purple-400/50 transition-smooth overflow-hidden group">
                     <CardContent className="p-8 pb-10">
                       <motion.div 
                         whileHover={{ scale: 1.1, rotate: 5 }}
-                        className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary transition-smooth group-hover:scale-110 float-element"
+                        className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-animated transition-smooth group-hover:scale-110 float-element shadow-soft-lg"
                       >
-                        {item.icon && <item.icon className="h-8 w-8 text-primary-foreground" />}
+                        {item.icon && <item.icon className="h-8 w-8 text-white" />}
                       </motion.div>
-                      <p className="mb-6 text-base font-medium text-foreground leading-relaxed">{item.problem}</p>
-                      <div className="pt-6 border-t border-primary/10 bg-gradient-to-r from-primary/5 to-transparent p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-primary/10 transition-smooth">
-                        <p className="text-base text-primary/90 font-medium flex items-start gap-2">
-                          <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
+                      <p className="mb-6 text-base font-medium text-purple-100 leading-relaxed">{item.problem}</p>
+                      <div className="pt-6 border-t border-purple-400/20 bg-gradient-to-r from-purple-500/10 to-blue-500/10 p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-purple-500/20 group-hover:to-blue-500/20 transition-smooth">
+                        <p className="text-base text-purple-200 font-medium flex items-start gap-2">
+                          <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-green-400" />
                           {item.solution}
                         </p>
                       </div>
