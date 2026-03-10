@@ -453,7 +453,7 @@ export default function HomePage() {
         <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-primary">
-              Your Pet&apos;s Magical Day ✨
+              Your Pet&apos;s Magical Day
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
               See real proof of every walk, cuddle, snack, and nap—brought to life with playful cards and motion.
@@ -464,34 +464,34 @@ export default function HomePage() {
             <TimelineGridItem
               area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
               icon={<Coffee className="h-4 w-4 text-amber-500" />}
-              title="☀️ Morning Routine & Hydration"
+              title="Morning Routine & Hydration"
               description="Fresh water, breakfast, and a happy tail to start the day right."
             />
             <TimelineGridItem
               area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
               icon={<PawPrint className="h-4 w-4 text-primary" />}
-              title="🚶‍♂️ Adventure Walk & Sniff Time"
+              title="Adventure Walk & Sniff Time"
               description="Guided walk with GPS proof, photos, and mood check-ins from the trainer."
             />
             <TimelineGridItem
               area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
               icon={<Video className="h-4 w-4 text-violet-500" />}
-              title="🎓 Training & Enrichment Session"
+              title="Training & Enrichment Session"
               description="Short videos, AI-verified progress, and badges earned for good behavior."
             />
             <TimelineGridItem
               area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]"
               icon={<Moon className="h-4 w-4 text-blue-500" />}
-              title="😴 Cozy Nap & Calm Time"
+              title="Cozy Nap & Calm Time"
               description="Heart rate, mood, and comfort logged—see exactly how relaxed they are."
             />
             <TimelineGridItem
               area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
               icon={<Sparkles className="h-4 w-4 text-pink-500" />}
-              title="📲 End-of-Day Story Recap"
+              title="End-of-Day Story Recap"
               description={
                 <>
-                  A sharable story with emojis, highlights, and{" "}
+                  A sharable story with highlights and{" "}
                   <strong>proof-backed memories</strong> you can revisit anytime.
                 </>
               }

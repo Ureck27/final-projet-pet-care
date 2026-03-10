@@ -13,9 +13,9 @@ import { Calendar, Camera, Heart, AlertTriangle, CheckCircle } from "lucide-reac
 import type { Pet, RoutineLog } from "@/lib/types"
 
 interface PetStatusPageProps {
-  params: {
+  params: Promise<{
     petId: string
-  }
+  }>
 }
 
 export default function PetStatusPage({ params }: PetStatusPageProps) {
@@ -24,15 +24,26 @@ export default function PetStatusPage({ params }: PetStatusPageProps) {
   const [pet, setPet] = useState<Pet | null>(null)
   const [routineLogs, setRoutineLogs] = useState<RoutineLog[]>([])
   const [loading, setLoading] = useState(true)
+  const [petId, setPetId] = useState<string>("")
 
   useEffect(() => {
+    const getPetId = async () => {
+      const resolvedParams = await params
+      setPetId(resolvedParams.petId)
+    }
+    getPetId()
+  }, [params])
+
+  useEffect(() => {
+    if (!petId) return
+    
     if (!isLoading && !user) {
       router.push("/login")
       return
     }
 
     // Load pet data
-    const foundPet = mockPets.find(p => p.id === params.petId)
+    const foundPet = mockPets.find(p => p.id === petId)
     if (!foundPet) {
       router.push("/dashboard")
       return
@@ -51,7 +62,7 @@ export default function PetStatusPage({ params }: PetStatusPageProps) {
       {
         id: "1",
         routineId: "1",
-        petId: params.petId,
+        petId: petId,
         trainerId: "trainer1",
         photoUrl: "/uploads/mock-photo-1.jpg",
         aiStatus: "healthy",
@@ -61,7 +72,7 @@ export default function PetStatusPage({ params }: PetStatusPageProps) {
       {
         id: "2",
         routineId: "2",
-        petId: params.petId,
+        petId: petId,
         trainerId: "trainer1",
         photoUrl: "/uploads/mock-photo-2.jpg",
         aiStatus: "active",
@@ -71,7 +82,7 @@ export default function PetStatusPage({ params }: PetStatusPageProps) {
       {
         id: "3",
         routineId: "3",
-        petId: params.petId,
+        petId: petId,
         trainerId: "trainer1",
         photoUrl: "/uploads/mock-photo-3.jpg",
         aiStatus: "resting",

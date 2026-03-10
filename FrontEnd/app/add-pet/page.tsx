@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useAuth } from "@/context/auth-context"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -73,11 +74,10 @@ export default function AddPetPage() {
         ownerId: user.id,
         name: data.name,
         fullName: data.fullName,
-        type: data.species, // Mapping species to type
         species: data.species,
         breed: data.breed,
         age: data.age,
-        weight: typeof data.weight === 'string' ? parseFloat(data.weight) || 0 : data.weight,
+        weight: data.weight,
         color: data.color,
         medicalNotes: data.medicalNotes,
         photo: data.photo || "/placeholder.svg",

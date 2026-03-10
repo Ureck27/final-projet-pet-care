@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from 'react'
-// @ts-ignore
-const anime = require('animejs')
+import anime from 'animejs'
 
 export function useScrollAnimation(
   animation: any,

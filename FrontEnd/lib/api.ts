@@ -48,31 +48,34 @@ export const api = {
 
 // Types
 export interface User {
-  _id: string;
-  name: string;
+  id: string;
   email: string;
-  role: 'user' | 'trainer' | 'admin';
-  createdAt: string;
+  fullName: string;
+  phone: string;
+  role: "owner" | "trainer" | "admin";
+  avatar?: string;
+  createdAt: Date;
   updatedAt: string;
 }
 
 export interface Pet {
-  _id: string;
+  id: string;
   ownerId: string;
   name: string;
-  type: string;
-  breed?: string;
-  age?: number;
-  weight?: number;
+  fullName?: string;
+  species: "dog" | "cat";
+  breed: string;
+  age: number;
+  weight?: string;
   color?: string;
   medicalNotes?: string;
   photo?: string;
-  createdAt: string;
+  createdAt: Date;
   updatedAt: string;
 }
 
 export interface TrainerRequest {
-  _id: string;
+  id: string;
   userId: string;
   name: string;
   email: string;
@@ -84,7 +87,7 @@ export interface TrainerRequest {
 }
 
 export interface Trainer {
-  _id: string;
+  id: string;
   userId: string;
   name: string;
   email: string;
@@ -101,8 +104,8 @@ export interface Trainer {
 }
 
 export interface AuthResponse {
-  _id: string;
-  name: string;
+  id: string;
+  fullName: string;
   email: string;
   role: string;
   token: string;
@@ -137,7 +140,7 @@ export const petApi = {
   getPetById: (id: string) =>
     api.get<{ pet: Pet; profile: any }>(`/pets/${id}`),
   
-  createPet: (petData: Omit<Pet, '_id' | 'createdAt' | 'updatedAt'>) =>
+  createPet: (petData: Omit<Pet, 'id' | 'createdAt' | 'updatedAt'>) =>
     api.post<Pet>('/pets', petData),
   
   updatePet: (id: string, petData: Partial<Pet>) =>
