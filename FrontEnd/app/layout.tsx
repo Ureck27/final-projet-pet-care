@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/auth-context"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { GradientBackground } from "@/components/ui/gradient-background"
+import { FloatingAiAssistant } from "@/components/ui/glowing-ai-chat-assistant"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -39,6 +40,7 @@ export default function RootLayout({
               <main className="flex-1">{children}</main>
               <Footer />
             </div>
+            <FloatingAiAssistant />
           </AuthProvider>
         </ThemeProvider>
         <Analytics />
