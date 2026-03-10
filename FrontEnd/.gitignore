@@ -25,3 +25,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+download-videos.sh* 
+setup-env.sh
+MODERNIZATION_GUIDE.md 
+
