@@ -24,6 +24,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PawPrint, Calendar, Bell, TrendingUp, Plus, MessageCircle } from "lucide-react"
 import Link from "next/link"
+import { ProjectDashboard } from "@/components/ui/project-management-dashboard"
+import type { Project, Message } from "@/components/ui/project-management-dashboard"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -32,6 +34,8 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
   const [pets, setPets] = useState<Pet[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
+  const [projectMessages, setProjectMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -58,6 +62,72 @@ export default function DashboardPage() {
       ])
       setPets(petsData)
       setBookings(bookingsData)
+      
+      // Initialize sample project data for demonstration
+      setProjects([
+        {
+          id: "p1",
+          name: "Pet Training Program",
+          subtitle: "Basic Obedience Training",
+          date: "2025-07-10",
+          progress: 60,
+          status: "inProgress",
+          accentColor: "#f59e0b",
+          participants: [
+            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&q=80&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=64&q=80&auto=format&fit=crop",
+          ],
+          daysLeft: 2,
+          bgColorClass: "bg-amber-50 dark:bg-amber-900/20",
+        },
+        {
+          id: "p2",
+          name: "Pet Health Check",
+          subtitle: "Veterinary Appointment",
+          date: "2025-06-15",
+          progress: 50,
+          status: "upcoming",
+          accentColor: "#6366f1",
+          participants: [
+            "https://images.unsplash.com/photo-1596815064285-45ed8a9c0463?w=64&q=80&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?w=64&q=80&auto=format&fit=crop",
+          ],
+          daysLeft: "Due Friday",
+          bgColorClass: "bg-indigo-50 dark:bg-indigo-900/20",
+        },
+        {
+          id: "p3",
+          name: "Grooming Schedule",
+          subtitle: "Monthly Care Routine",
+          date: "2025-03-02",
+          progress: 100,
+          status: "completed",
+          accentColor: "#10b981",
+          participants: [
+            "https://images.unsplash.com/photo-1600486913747-55e5470d6f40?w=64&q=80&auto=format&fit=crop",
+          ],
+          daysLeft: 0,
+          bgColorClass: "bg-emerald-50 dark:bg-emerald-900/20",
+        },
+      ])
+      
+      setProjectMessages([
+        {
+          id: "m1",
+          name: "Dr. Sarah Johnson",
+          avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=96&q=80&auto=format&fit=crop",
+          text: "Your pet's vaccination schedule is due next week. Please book an appointment.",
+          date: "Aug 20",
+          starred: true,
+        },
+        {
+          id: "m2",
+          name: "Mike Thompson",
+          avatarUrl: "https://images.unsplash.com/photo-1600486913747-55e5470d6f40?w=96&q=80&auto=format&fit=crop",
+          text: "Training session went great! Your dog is making excellent progress.",
+          date: "Aug 21",
+        },
+      ])
     } catch (err) {
       console.error("Failed to fetch dashboard data", err)
     } finally {
@@ -124,7 +194,7 @@ export default function DashboardPage() {
 
       {/* Tabbed Interface for different views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
@@ -141,6 +211,7 @@ export default function DashboardPage() {
               </span>
             )}
           </TabsTrigger>
+          <TabsTrigger value="projects">Projects</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -268,6 +339,36 @@ export default function DashboardPage() {
               console.log("Dismissing notification:", id)
             }}
           />
+        </TabsContent>
+
+        {/* Projects Tab */}
+        <TabsContent value="projects">
+          <div className="h-[calc(100vh-12rem)]">
+            <ProjectDashboard
+              title="Pet Care Projects"
+              user={{ 
+                name: user.fullName, 
+                avatarUrl: "https://i.pravatar.cc/96?img=12" 
+              }}
+              projects={projects}
+              messages={projectMessages}
+              persistKey="pet-care-projects"
+              onProjectUpdate={(proj) => {
+                setProjects((arr) => arr.map((p) => (p.id === proj.id ? proj : p)));
+              }}
+              onProjectsReorder={(ids) => {
+                setProjects((arr) => {
+                  const map = new Map(arr.map((p) => [p.id, p]));
+                  return ids.map((id) => map.get(id)!).filter(Boolean);
+                });
+              }}
+              virtualizeList={true}
+              estimatedRowHeight={150}
+              onProjectAction={(id, a) => console.log("action:", a, id)}
+              onProjectClick={(id) => console.log("open:", id)}
+              onMessageStarChange={(id, s) => console.log("star:", id, s)}
+            />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
