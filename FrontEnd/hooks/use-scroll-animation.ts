@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from 'react'
-import anime from 'animejs'
+import anime from 'animejs/lib/anime.es.js'
 
 export function useScrollAnimation(
   animation: any,
