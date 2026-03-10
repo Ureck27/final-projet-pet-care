@@ -17,7 +17,7 @@ interface PetCardProps {
 }
 
 export function PetCard({ pet, onEdit, onDelete, onBook, className }: PetCardProps) {
-  const PetIcon = pet.species === "dog" ? Dog : Cat
+  const PetIcon = pet.type === "dog" ? Dog : Cat
 
   return (
     <Card className={`group overflow-hidden border-border transition-shadow hover:shadow-md ${className || ""}`}>
@@ -71,7 +71,7 @@ export function PetCard({ pet, onEdit, onDelete, onBook, className }: PetCardPro
           </div>
           <Badge variant="secondary" className="gap-1">
             <PetIcon className="h-3 w-3" />
-            {pet.species}
+            {pet.type}
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground">{pet.breed}</p>

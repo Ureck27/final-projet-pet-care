@@ -167,7 +167,7 @@ export default function PetStatusPage({ params }: PetStatusPageProps) {
           <div>
             <h1 className="text-3xl font-bold">{pet.name}</h1>
             <p className="text-muted-foreground">
-              {pet.breed} • {pet.age} years old • {pet.species}
+              {pet.breed} • {pet.age} years old • {pet.type}
             </p>
           </div>
         </div>

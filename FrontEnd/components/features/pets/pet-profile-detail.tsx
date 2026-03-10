@@ -37,7 +37,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
         <div>
           <h1 className="text-3xl font-bold">{pet.name}'s Profile</h1>
           <p className="text-muted-foreground">
-            {pet.breed} • {pet.species.charAt(0).toUpperCase() + pet.species.slice(1)} • {pet.age} years old
+            {pet.breed} • {pet.type.charAt(0).toUpperCase() + pet.type.slice(1)} • {pet.age} years old
           </p>
         </div>
         <Button onClick={() => setIsEditing(!isEditing)} className="gap-2">

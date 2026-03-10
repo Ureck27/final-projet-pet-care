@@ -207,7 +207,7 @@ export default function TrainerDashboardPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{pet.species}</Badge>
+                      <Badge variant="secondary">{pet.type}</Badge>
                       <Button
                         size="sm"
                         onClick={() => {

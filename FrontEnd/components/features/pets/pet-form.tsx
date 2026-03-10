@@ -37,7 +37,7 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
       ? {
           name: pet.name,
           fullName: pet.fullName || "",
-          species: pet.species,
+          species: pet.type,
           breed: pet.breed,
           age: pet.age,
           weight: pet.weight || "",

@@ -198,7 +198,7 @@ export default function NewBookingPage() {
                       <SelectContent>
                         {userPets.map((pet) => (
                           <SelectItem key={pet.id} value={pet.id}>
-                            {pet.name} ({pet.species})
+                            {pet.name} ({pet.type})
                           </SelectItem>
                         ))}
                       </SelectContent>
