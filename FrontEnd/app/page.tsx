@@ -4,7 +4,7 @@ import {
   PawPrint, Users, Calendar, Shield, Star, ArrowRight, CheckCircle2, Heart, Award,
   Zap, TrendingUp, Lock, Video, Clock, Smile, Clock3, Smartphone, Bot, ClipboardList,
   Search, BarChart3, CheckSquare, UserCheck, BookOpen, Target, Sparkles, Utensils, Droplets,
-  Dumbbell, Wind, Coffee, Moon, Box, Settings
+  Dumbbell, Wind, Coffee, Moon, Box, Settings, Brain, Stethoscope, Bell
 } from "lucide-react"
 import dynamic from 'next/dynamic'
 import { TiltCard } from "@/components/ui/tilt-card"
@@ -76,6 +76,21 @@ export default function HomePage() {
       icon: Video,
       title: "AI-Verified Timeline",
       description: "Real-time photo/video updates with emotion detection showing your pet's mood and activity verification",
+    },
+    {
+      icon: Brain,
+      title: "AI Health Assistant",
+      description: "Chat with AI for pet health advice, analyze photos/videos for health insights, and get personalized recommendations",
+    },
+    {
+      icon: Stethoscope,
+      title: "Health Monitoring",
+      description: "Track your pet's health status, get AI-powered insights, and receive notifications for important care reminders",
+    },
+    {
+      icon: Bell,
+      title: "Smart Notifications",
+      description: "Stay informed with intelligent alerts for medications, appointments, and changes in your pet's behavior or routine",
     },
   ]
 
