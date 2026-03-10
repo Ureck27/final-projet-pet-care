@@ -24,8 +24,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PawPrint, Calendar, Bell, TrendingUp, Plus, MessageCircle } from "lucide-react"
 import Link from "next/link"
-import { ProjectDashboard } from "@/components/ui/project-management-dashboard"
-import type { Project, Message } from "@/components/ui/project-management-dashboard"
+import { ProjectDashboard, type Message } from "@/components/ui/project-management-dashboard"
+import { projectApi, type Project, type ProjectMessage } from "@/lib/api"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -36,6 +36,7 @@ export default function DashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [projects, setProjects] = useState<Project[]>([])
   const [projectMessages, setProjectMessages] = useState<Message[]>([])
+  const [isProjectsLoading, setIsProjectsLoading] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -63,77 +64,67 @@ export default function DashboardPage() {
       setPets(petsData)
       setBookings(bookingsData)
       
-      // Initialize sample project data for demonstration
-      setProjects([
-        {
-          id: "p1",
-          name: "Pet Training Program",
-          subtitle: "Basic Obedience Training",
-          date: "2025-07-10",
-          progress: 60,
-          status: "inProgress",
-          accentColor: "#f59e0b",
-          participants: [
-            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&q=80&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=64&q=80&auto=format&fit=crop",
-          ],
-          daysLeft: 2,
-          bgColorClass: "bg-amber-50 dark:bg-amber-900/20",
-        },
-        {
-          id: "p2",
-          name: "Pet Health Check",
-          subtitle: "Veterinary Appointment",
-          date: "2025-06-15",
-          progress: 50,
-          status: "upcoming",
-          accentColor: "#6366f1",
-          participants: [
-            "https://images.unsplash.com/photo-1596815064285-45ed8a9c0463?w=64&q=80&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?w=64&q=80&auto=format&fit=crop",
-          ],
-          daysLeft: "Due Friday",
-          bgColorClass: "bg-indigo-50 dark:bg-indigo-900/20",
-        },
-        {
-          id: "p3",
-          name: "Grooming Schedule",
-          subtitle: "Monthly Care Routine",
-          date: "2025-03-02",
-          progress: 100,
-          status: "completed",
-          accentColor: "#10b981",
-          participants: [
-            "https://images.unsplash.com/photo-1600486913747-55e5470d6f40?w=64&q=80&auto=format&fit=crop",
-          ],
-          daysLeft: 0,
-          bgColorClass: "bg-emerald-50 dark:bg-emerald-900/20",
-        },
-      ])
-      
-      setProjectMessages([
-        {
-          id: "m1",
-          name: "Dr. Sarah Johnson",
-          avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=96&q=80&auto=format&fit=crop",
-          text: "Your pet's vaccination schedule is due next week. Please book an appointment.",
-          date: "Aug 20",
-          starred: true,
-        },
-        {
-          id: "m2",
-          name: "Mike Thompson",
-          avatarUrl: "https://images.unsplash.com/photo-1600486913747-55e5470d6f40?w=96&q=80&auto=format&fit=crop",
-          text: "Training session went great! Your dog is making excellent progress.",
-          date: "Aug 21",
-        },
-      ])
+      // Fetch projects from API
+      fetchProjects()
     } catch (err) {
       console.error("Failed to fetch dashboard data", err)
     } finally {
       setIsLoading(false)
     }
   }
+
+  const fetchProjects = async () => {
+    if (!user) return
+    setIsProjectsLoading(true)
+    try {
+      const response = await projectApi.getProjects()
+      const transformedProjects = response.projects.map(transformProject)
+      setProjects(transformedProjects)
+      
+      // Fetch messages for all projects and transform to Message format
+      if (response.projects.length > 0) {
+        const allMessages: Message[] = []
+        for (const project of response.projects.slice(0, 3)) { // Limit to first 3 projects for demo
+          try {
+            const messagesResponse = await projectApi.getProjectMessages(project._id, { limit: 2 })
+            const transformedMessages = messagesResponse.messages.map(transformProjectMessage)
+            allMessages.push(...transformedMessages)
+          } catch (err) {
+            console.error(`Failed to fetch messages for project ${project._id}:`, err)
+          }
+        }
+        setProjectMessages(allMessages)
+      }
+    } catch (err) {
+      console.error("Failed to fetch projects", err)
+    } finally {
+      setIsProjectsLoading(false)
+    }
+  }
+
+  // Transform ProjectMessage to Message format for ProjectDashboard component
+  const transformProjectMessage = (projectMessage: ProjectMessage): Message => ({
+    id: projectMessage._id,
+    name: projectMessage.senderName,
+    avatarUrl: projectMessage.senderAvatar || "https://i.pravatar.cc/96?img=1",
+    text: projectMessage.text,
+    date: new Date(projectMessage.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    starred: projectMessage.starred
+  })
+
+  // Transform API Project to ProjectDashboard Project format
+  const transformProject = (apiProject: Project): Project => ({
+    id: apiProject._id,
+    name: apiProject.name,
+    subtitle: apiProject.subtitle,
+    date: apiProject.date ? new Date(apiProject.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    progress: apiProject.progress,
+    status: apiProject.status,
+    accentColor: apiProject.accentColor,
+    participants: apiProject.participants,
+    daysLeft: apiProject.daysLeft,
+    bgColorClass: apiProject.bgColorClass
+  })
 
   if (isAuthLoading || isLoading || !user) {
     return (
@@ -353,20 +344,102 @@ export default function DashboardPage() {
               projects={projects}
               messages={projectMessages}
               persistKey="pet-care-projects"
-              onProjectUpdate={(proj) => {
-                setProjects((arr) => arr.map((p) => (p.id === proj.id ? proj : p)));
+              onProjectUpdate={async (proj) => {
+                try {
+                  // Convert back to API format
+                  const apiProject: Partial<Project> = {
+                    _id: proj.id,
+                    name: proj.name,
+                    subtitle: proj.subtitle,
+                    progress: proj.progress,
+                    status: proj.status,
+                    accentColor: proj.accentColor,
+                    participants: proj.participants,
+                    daysLeft: proj.daysLeft,
+                    bgColorClass: proj.bgColorClass
+                  }
+                  await projectApi.updateProject(proj.id, apiProject)
+                  setProjects((arr) => arr.map((p) => (p.id === proj.id ? proj : p)));
+                } catch (error) {
+                  console.error("Failed to update project:", error)
+                }
               }}
-              onProjectsReorder={(ids) => {
-                setProjects((arr) => {
-                  const map = new Map(arr.map((p) => [p.id, p]));
-                  return ids.map((id) => map.get(id)!).filter(Boolean);
-                });
+              onProjectsReorder={async (ids) => {
+                try {
+                  await projectApi.reorderProjects(ids)
+                  setProjects((arr) => {
+                    const map = new Map(arr.map((p) => [p.id, p]));
+                    return ids.map((id) => map.get(id)!).filter(Boolean);
+                  });
+                } catch (error) {
+                  console.error("Failed to reorder projects:", error)
+                }
+              }}
+              onProjectCreate={async (proj) => {
+                try {
+                  // Convert to API format
+                  const apiProject: Partial<Project> = {
+                    name: proj.name,
+                    subtitle: proj.subtitle,
+                    progress: proj.progress,
+                    status: proj.status,
+                    accentColor: proj.accentColor,
+                    participants: proj.participants,
+                    daysLeft: proj.daysLeft,
+                    bgColorClass: proj.bgColorClass
+                  }
+                  const newProject = await projectApi.createProject(apiProject)
+                  const transformedProject = transformProject(newProject)
+                  setProjects((arr) => [transformedProject, ...arr]);
+                } catch (error) {
+                  console.error("Failed to create project:", error)
+                }
+              }}
+              onProjectAction={async (id, action) => {
+                try {
+                  switch (action) {
+                    case "delete":
+                      await projectApi.deleteProject(id)
+                      setProjects((arr) => arr.filter((p) => p.id !== id));
+                      break;
+                    case "open":
+                      console.log("Opening project:", id)
+                      // Navigate to project details or open modal
+                      break;
+                    case "edit":
+                      console.log("Editing project:", id)
+                      // Open edit modal
+                      break;
+                  }
+                } catch (error) {
+                  console.error("Failed to perform project action:", error)
+                }
               }}
               virtualizeList={true}
               estimatedRowHeight={150}
-              onProjectAction={(id, a) => console.log("action:", a, id)}
               onProjectClick={(id) => console.log("open:", id)}
-              onMessageStarChange={(id, s) => console.log("star:", id, s)}
+              onMessageStarChange={async (messageId, starred) => {
+                try {
+                  // Find the project this message belongs to
+                  const message = projectMessages.find(m => m.id === messageId)
+                  if (message) {
+                    // Find the project that contains this message
+                    for (const project of projects) {
+                      try {
+                        await projectApi.toggleMessageStar(project._id, messageId)
+                        setProjectMessages((arr) => 
+                          arr.map((m) => (m.id === messageId ? { ...m, starred } : m))
+                        );
+                        break;
+                      } catch (error) {
+                        console.error("Failed to toggle message star:", error)
+                      }
+                    }
+                  }
+                } catch (error) {
+                  console.error("Failed to toggle message star:", error)
+                }
+              }}
             />
           </div>
         </TabsContent>
