@@ -195,8 +195,8 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {users.map((user) => (
-                    <TableRow key={user._id}>
-                      <TableCell className="font-medium">{user.name}</TableCell>
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">{user.fullName}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
                         <Badge variant={user.role === 'admin' ? 'default' : user.role === 'trainer' ? 'secondary' : 'outline'}>
@@ -212,7 +212,7 @@ export default function AdminDashboardPage() {
                           <Button 
                             variant="destructive" 
                             size="sm"
-                            onClick={() => handleDeleteUser(user._id)}
+                            onClick={() => handleDeleteUser(user.id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -246,9 +246,9 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {pets.map((pet) => (
-                    <TableRow key={pet._id}>
+                    <TableRow key={pet.id}>
                       <TableCell className="font-medium">{pet.name}</TableCell>
-                      <TableCell>{pet.type}</TableCell>
+                      <TableCell>{pet.species}</TableCell>
                       <TableCell>{pet.breed || 'N/A'}</TableCell>
                       <TableCell>{pet.age || 'N/A'}</TableCell>
                       <TableCell>{pet.ownerId}</TableCell>
@@ -281,7 +281,7 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {trainerRequests.map((request) => (
-                    <TableRow key={request._id}>
+                    <TableRow key={request.id}>
                       <TableCell className="font-medium">{request.name}</TableCell>
                       <TableCell>{request.email}</TableCell>
                       <TableCell>{request.experience}</TableCell>
@@ -303,14 +303,14 @@ export default function AdminDashboardPage() {
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => handleApproveRequest(request._id)}
+                              onClick={() => handleApproveRequest(request.id)}
                             >
                               <CheckCircle className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="destructive" 
                               size="sm"
-                              onClick={() => handleRejectRequest(request._id)}
+                              onClick={() => handleRejectRequest(request.id)}
                             >
                               <XCircle className="h-4 w-4" />
                             </Button>
