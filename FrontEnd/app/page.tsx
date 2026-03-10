@@ -298,9 +298,9 @@ export default function HomePage() {
                       >
                         {item.icon && <item.icon className="h-8 w-8 text-white" />}
                       </motion.div>
-                      <p className="mb-6 text-base font-medium text-purple-100 leading-relaxed">{item.problem}</p>
+                      <p className="mb-6 text-base font-medium text-foreground leading-relaxed dark:text-purple-100">{item.problem}</p>
                       <div className="pt-6 border-t border-purple-400/20 bg-gradient-to-r from-purple-500/10 to-blue-500/10 p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-purple-500/20 group-hover:to-blue-500/20 transition-smooth">
-                        <p className="text-base text-purple-200 font-medium flex items-start gap-2">
+                        <p className="text-base text-muted-foreground dark:text-purple-200 font-medium flex items-start gap-2">
                           <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-green-400" />
                           {item.solution}
                         </p>
