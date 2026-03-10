@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { Check, X, Zap, Crown, Building2 } from "lucide-react"
+import { Check, X, Zap, Crown, Building2, Clock, DollarSign, Dog, Cat, Scissors, Home } from "lucide-react"
 
 const plans = [
   {
@@ -65,15 +65,15 @@ const plans = [
 ]
 
 const serviceRates = [
-  { service: "Basic Training", duration: "60 min", price: "$50 - $75" },
-  { service: "Behavioral Modification", duration: "60 min", price: "$75 - $100" },
-  { service: "Puppy Training", duration: "45 min", price: "$55 - $70" },
-  { service: "Cat Training", duration: "45 min", price: "$45 - $65" },
-  { service: "Dog Walking", duration: "30 min", price: "$20 - $30" },
-  { service: "Dog Walking", duration: "60 min", price: "$35 - $50" },
-  { service: "Pet Sitting", duration: "Per night", price: "$60 - $100" },
-  { service: "Grooming (Small)", duration: "60-90 min", price: "$40 - $60" },
-  { service: "Grooming (Large)", duration: "90-120 min", price: "$60 - $100" },
+  { service: "Basic Training", duration: "60 min", price: "$50 - $75", icon: Dog, color: "from-blue-500 to-cyan-500", category: "Training" },
+  { service: "Behavioral Modification", duration: "60 min", price: "$75 - $100", icon: Dog, color: "from-purple-500 to-pink-500", category: "Training" },
+  { service: "Puppy Training", duration: "45 min", price: "$55 - $70", icon: Dog, color: "from-orange-500 to-yellow-500", category: "Training" },
+  { service: "Cat Training", duration: "45 min", price: "$45 - $65", icon: Cat, color: "from-pink-500 to-rose-500", category: "Training" },
+  { service: "Dog Walking", duration: "30 min", price: "$20 - $30", icon: Dog, color: "from-green-500 to-emerald-500", category: "Walking" },
+  { service: "Dog Walking", duration: "60 min", price: "$35 - $50", icon: Dog, color: "from-green-600 to-teal-500", category: "Walking" },
+  { service: "Pet Sitting", duration: "Per night", price: "$60 - $100", icon: Home, color: "from-indigo-500 to-purple-500", category: "Sitting" },
+  { service: "Grooming (Small)", duration: "60-90 min", price: "$40 - $60", icon: Scissors, color: "from-cyan-500 to-blue-500", category: "Grooming" },
+  { service: "Grooming (Large)", duration: "90-120 min", price: "$60 - $100", icon: Scissors, color: "from-violet-500 to-purple-500", category: "Grooming" },
 ]
 
 export default function PricingPage() {
@@ -144,25 +144,45 @@ export default function PricingPage() {
           <p className="mb-8 text-center text-muted-foreground">
             Individual service pricing varies by trainer and location
           </p>
-          <div className="mx-auto max-w-3xl overflow-hidden rounded-lg border border-border bg-card">
-            <table className="w-full">
-              <thead className="border-b border-border bg-secondary/50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Service</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Duration</th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold">Price Range</th>
-                </tr>
-              </thead>
-              <tbody>
-                {serviceRates.map((rate, index) => (
-                  <tr key={index} className="border-b border-border last:border-0 hover:bg-secondary/30">
-                    <td className="px-4 py-3 text-sm">{rate.service}</td>
-                    <td className="px-4 py-3 text-sm text-muted-foreground">{rate.duration}</td>
-                    <td className="px-4 py-3 text-right text-sm font-medium text-primary">{rate.price}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {serviceRates.map((rate, index) => (
+              <Card 
+                key={index} 
+                className="group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02] cursor-pointer"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${rate.color} opacity-0 transition-opacity duration-300 group-hover:opacity-5`} />
+                <CardHeader className="relative">
+                  <div className="flex items-center justify-between">
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${rate.color} text-white shadow-lg transition-transform duration-300 group-hover:scale-110`}>
+                      <rate.icon className="h-6 w-6" />
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                      {rate.category}
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-lg">{rate.service}</CardTitle>
+                  <CardDescription className="flex items-center gap-1 text-sm">
+                    <Clock className="h-3 w-3" />
+                    {rate.duration}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="relative">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">Price Range</p>
+                      <p className={`text-xl font-bold bg-gradient-to-r ${rate.color} bg-clip-text text-transparent`}>
+                        {rate.price}
+                      </p>
+                    </div>
+                    <div className={`h-8 w-8 rounded-full bg-gradient-to-br ${rate.color} opacity-0 transition-all duration-300 group-hover:opacity-20 group-hover:scale-150`} />
+                  </div>
+                  <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                    <DollarSign className="h-3 w-3" />
+                    <span>Varies by trainer & location</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
