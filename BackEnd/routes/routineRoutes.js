@@ -4,6 +4,7 @@ const path = require('path');
 const router = express.Router();
 const Routine = require('../models/Routine');
 const RoutineLog = require('../models/RoutineLog');
+const Pet = require('../models/Pet');
 const aiPetAnalyzer = require('../services/aiPetAnalyzer');
 const notificationService = require('../services/notificationService');
 const { protect, authorizeRole } = require('../middleware/authMiddleware');
@@ -86,14 +87,13 @@ router.post('/complete', protect, authorizeRole('trainer', 'admin'), upload.sing
     // Upload photo and get URL
     const photoUrl = `/uploads/${req.file.filename}`;
 
-    // Analyze photo with AI
-    const aiAnalysis = await aiPetAnalyzer.analyzePetImage(photoUrl);
-    
-    if (!aiAnalysis.success) {
-      return res.status(500).json({ 
-        message: 'AI analysis failed', 
-        error: aiAnalysis.error 
-      });
+    // Analyze photo with AI (non-blocking)
+    let aiAnalysis = { success: false, status: 'unknown', message: 'AI analysis unavailable' };
+    try {
+      aiAnalysis = await aiPetAnalyzer.analyzePetImage(photoUrl);
+    } catch (error) {
+      console.warn('AI analysis failed, continuing with routine completion:', error.message);
+      // Continue without AI analysis
     }
 
     // Create routine log
@@ -166,8 +166,7 @@ router.get('/pet/:petId/logs', protect, async (req, res) => {
     const { petId } = req.params;
     
     // Find pet to check ownership
-    const petModel = require('../models/Pet');
-    const pet = await petModel.findById(petId);
+    const pet = await Pet.findById(petId);
     
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });
@@ -208,6 +207,8 @@ router.get('/pet/:petId/logs', protect, async (req, res) => {
 router.get('/admin/all', protect, authorizeRole('admin'), async (req, res) => {
   try {
     const { page = 1, limit = 50, status, petId } = req.query;
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
     
     // Build filter
     const filter = {};
@@ -219,16 +220,16 @@ router.get('/admin/all', protect, authorizeRole('admin'), async (req, res) => {
       .populate('petId', 'name type breed')
       .populate('trainerId', 'name email')
       .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+      .limit(limitNum)
+      .skip((pageNum - 1) * limitNum);
 
     // Get routine logs
     const logs = await RoutineLog.find({})
       .populate('petId', 'name type')
       .populate('trainerId', 'name email')
       .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+      .limit(limitNum)
+      .skip((pageNum - 1) * limitNum);
 
     res.status(200).json({
       success: true,

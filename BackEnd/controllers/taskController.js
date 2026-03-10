@@ -64,23 +64,32 @@ const updateTask = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
 
-    if (task) {
-      task.status = req.body.status || task.status;
-      task.title = req.body.title || task.title;
-      task.description = req.body.description || task.description;
-      task.dueDate = req.body.dueDate || task.dueDate;
-      task.priority = req.body.priority || task.priority;
-      task.completionNotes = req.body.completionNotes || task.completionNotes;
-      
-      if (req.body.status === 'completed' && task.status !== 'completed') {
-        task.completedAt = new Date();
-      }
-
-      const updatedTask = await task.save();
-      res.json(updatedTask);
-    } else {
-      res.status(404).json({ message: 'Task not found' });
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
     }
+    
+    // Security check: Only owner, assigned caregiver, or admin can update task
+    const isOwner = task.ownerId && task.ownerId.toString() === req.user._id.toString();
+    const isCaregiver = task.caregiverId && task.caregiverId.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+    
+    if (!isOwner && !isCaregiver && !isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to update this task' });
+    }
+
+    task.status = req.body.status ?? task.status;
+    task.title = req.body.title ?? task.title;
+    task.description = req.body.description ?? task.description;
+    task.dueDate = req.body.dueDate ?? task.dueDate;
+    task.priority = req.body.priority ?? task.priority;
+    task.completionNotes = req.body.completionNotes ?? task.completionNotes;
+    
+    if (req.body.status === 'completed' && task.status !== 'completed') {
+      task.completedAt = new Date();
+    }
+
+    const updatedTask = await task.save();
+    res.json(updatedTask);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -92,12 +101,21 @@ const deleteTask = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
 
-    if (task) {
-      await Task.deleteOne({ _id: task._id });
-      res.json({ message: 'Task removed' });
-    } else {
-      res.status(404).json({ message: 'Task not found' });
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
     }
+    
+    // Security check: Only owner, assigned caregiver, or admin can delete task
+    const isOwner = task.ownerId && task.ownerId.toString() === req.user._id.toString();
+    const isCaregiver = task.caregiverId && task.caregiverId.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+    
+    if (!isOwner && !isCaregiver && !isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to delete this task' });
+    }
+
+    await Task.deleteOne({ _id: task._id });
+    res.json({ message: 'Task removed' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

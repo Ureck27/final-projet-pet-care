@@ -1,8 +1,10 @@
 export type UserRole = "owner" | "trainer" | "admin"
 
 export interface User {
-  id: string
+  _id: string
+  id: string // for frontend compatibility
   email: string
+  name: string
   fullName: string
   phone: string
   role: UserRole
@@ -11,14 +13,15 @@ export interface User {
 }
 
 export interface Pet {
-  id: string
+  _id: string
+  id: string // for frontend compatibility
   ownerId: string
   name: string
   fullName?: string
-  species: "dog" | "cat"
+  type: "dog" | "cat" | "bird" | "rabbit" | "other" // Changed from species to type
   breed: string
   age: number
-  weight?: string
+  weight?: number // Changed from string to number
   color?: string
   medicalNotes?: string
   photo?: string
@@ -122,7 +125,8 @@ export interface Trainer {
 }
 
 export interface Booking {
-  id: string
+  _id: string
+  id: string // for frontend compatibility
   petId: string
   trainerId: string
   ownerId: string
@@ -188,7 +192,8 @@ export type TaskPriority = "high" | "medium" | "low"
 export type TaskStatus = "pending" | "in-progress" | "completed" | "overdue" | "cancelled"
 
 export interface Task {
-  id: string
+  _id: string
+  id: string // for frontend compatibility
   petId: string
   ownerId?: string
   caregiverId?: string

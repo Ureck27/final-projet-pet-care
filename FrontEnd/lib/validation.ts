@@ -2,13 +2,12 @@ import { z } from "zod"
 
 export const registerSchema = z
   .object({
-    role: z.enum(["owner", "trainer"]),
     fullName: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
     phone: z.string().min(10, "Phone number must be at least 10 digits"),
-    acceptTerms: z.boolean().refine((val) => val === true, "You must accept the terms"),
+    acceptTerms: z.boolean().refine((val) => val === true, "You must accept terms"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -28,10 +27,10 @@ export const forgotPasswordSchema = z.object({
 export const petSchema = z.object({
   name: z.string().min(1, "Pet name is required"),
   fullName: z.string().optional(),
-  species: z.enum(["dog", "cat"]),
+  type: z.enum(["dog", "cat", "bird", "rabbit", "other"]), // Changed from species to type
   breed: z.string().min(1, "Breed is required"),
   age: z.number().min(0, "Age must be positive"),
-  weight: z.string().optional(),
+  weight: z.number().optional(), // Changed from string to number
   color: z.string().optional(),
   medicalNotes: z.string().optional(),
   photo: z.string().optional(),

@@ -26,7 +26,8 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Something went wrong');
+    const errorMessage = errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+    throw new Error(errorMessage);
   }
 
   return response.json();
@@ -48,25 +49,28 @@ export const api = {
 
 // Types
 export interface User {
+  _id: string;
   id: string;
   email: string;
+  name: string;
   fullName: string;
   phone: string;
-  role: "owner" | "trainer" | "admin";
+  role: "user" | "trainer" | "admin";
   avatar?: string;
   createdAt: Date;
   updatedAt: string;
 }
 
 export interface Pet {
+  _id: string;
   id: string;
   ownerId: string;
   name: string;
   fullName?: string;
-  species: "dog" | "cat";
+  type: "dog" | "cat" | "bird" | "rabbit" | "other";
   breed: string;
   age: number;
-  weight?: string;
+  weight?: number;
   color?: string;
   medicalNotes?: string;
   photo?: string;
@@ -104,7 +108,9 @@ export interface Trainer {
 }
 
 export interface AuthResponse {
+  _id: string;
   id: string;
+  name: string;
   fullName: string;
   email: string;
   role: string;
@@ -193,4 +199,70 @@ export const adminApi = {
   
   deleteUser: (id: string) =>
     api.delete<{ message: string }>(`/admin/users/${id}`),
+};
+
+// Task API
+export const taskApi = {
+  getTasks: () =>
+    api.get<any[]>('/tasks'),
+  
+  getTaskById: (id: string) =>
+    api.get<any>(`/tasks/${id}`),
+  
+  createTask: (taskData: any) =>
+    api.post<any>('/tasks', taskData),
+  
+  updateTask: (id: string, taskData: any) =>
+    api.put<any>(`/tasks/${id}`, taskData),
+  
+  deleteTask: (id: string) =>
+    api.delete<{ message: string }>(`/tasks/${id}`),
+};
+
+// Booking API
+export const bookingApi = {
+  getBookings: (ownerId?: string) => {
+    const query = ownerId ? `?ownerId=${ownerId}` : '';
+    return api.get<any[]>(`/bookings${query}`);
+  },
+  
+  getBookingById: (id: string) =>
+    api.get<any>(`/bookings/${id}`),
+  
+  createBooking: (bookingData: any) =>
+    api.post<any>('/bookings', bookingData),
+  
+  updateBooking: (id: string, bookingData: any) =>
+    api.put<any>(`/bookings/${id}`, bookingData),
+  
+  deleteBooking: (id: string) =>
+    api.delete<{ message: string }>(`/bookings/${id}`),
+};
+
+// Routine API
+export const routineApi = {
+  getRoutines: () =>
+    api.get<any[]>('/routine/my-routines'),
+  
+  getRoutineLogs: (petId: string) =>
+    api.get<any[]>(`/routine/pet/${petId}/logs`),
+  
+  completeRoutine: (routineId: string, photo: File) => {
+    const formData = new FormData();
+    formData.append('photo', photo);
+    formData.append('routineId', routineId);
+    
+    return api.post<any>('/routine/complete', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+  
+  uploadPhoto: (photo: File) => {
+    const formData = new FormData();
+    formData.append('photo', photo);
+    
+    return api.post<{ photoUrl: string }>('/routine/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
 };

@@ -26,6 +26,15 @@ const getPetById = async (req, res) => {
       return res.status(404).json({ message: 'Pet not found' });
     }
     
+    // Security check: Only owner, admin, or assigned trainer can view pet
+    const isOwner = pet.ownerId._id.toString() === req.user._id.toString();
+    const isAssignedTrainer = pet.trainerId && pet.trainerId.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+    
+    if (!isOwner && !isAssignedTrainer && !isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to view this pet' });
+    }
+    
     // Also fetch the pet profile if it exists
     const petProfile = await PetProfile.findOne({ petId: pet._id });
     
@@ -42,14 +51,13 @@ const getPetById = async (req, res) => {
 // @route   POST /api/pets
 const createPet = async (req, res) => {
   try {
-    const { ownerId, name, fullName, type, species, breed, age, weight, color, medicalNotes, photo } = req.body;
+    const { ownerId, name, fullName, type, breed, age, weight, color, medicalNotes, photo } = req.body;
     
     const pet = await Pet.create({
       ownerId,
       name,
       fullName,
       type,
-      species,
       breed,
       age,
       weight,
@@ -86,22 +94,29 @@ const updatePet = async (req, res) => {
   try {
     const pet = await Pet.findById(req.params.id);
 
-    if (pet) {
-      pet.name = req.body.name || pet.name;
-      pet.type = req.body.type || pet.type;
-      pet.species = req.body.species || pet.species;
-      pet.breed = req.body.breed || pet.breed;
-      pet.age = req.body.age || pet.age;
-      pet.weight = req.body.weight || pet.weight;
-      pet.color = req.body.color || pet.color;
-      pet.medicalNotes = req.body.medicalNotes || pet.medicalNotes;
-      pet.photo = req.body.photo || pet.photo;
-
-      const updatedPet = await pet.save();
-      res.json(updatedPet);
-    } else {
-      res.status(404).json({ message: 'Pet not found' });
+    if (!pet) {
+      return res.status(404).json({ message: 'Pet not found' });
     }
+    
+    // Security check: Only owner or admin can update pet
+    const isOwner = pet.ownerId.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+    
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to update this pet' });
+    }
+
+    pet.name = req.body.name ?? pet.name;
+    pet.type = req.body.type ?? pet.type;
+    pet.breed = req.body.breed ?? pet.breed;
+    pet.age = req.body.age ?? pet.age;
+    pet.weight = req.body.weight ?? pet.weight;
+    pet.color = req.body.color ?? pet.color;
+    pet.medicalNotes = req.body.medicalNotes ?? pet.medicalNotes;
+    pet.photo = req.body.photo ?? pet.photo;
+
+    const updatedPet = await pet.save();
+    res.json(updatedPet);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -113,14 +128,22 @@ const deletePet = async (req, res) => {
   try {
     const pet = await Pet.findById(req.params.id);
 
-    if (pet) {
-      // Also delete the pet profile
-      await PetProfile.deleteOne({ petId: pet._id });
-      await Pet.deleteOne({ _id: pet._id });
-      res.json({ message: 'Pet and associated profile removed' });
-    } else {
-      res.status(404).json({ message: 'Pet not found' });
+    if (!pet) {
+      return res.status(404).json({ message: 'Pet not found' });
     }
+    
+    // Security check: Only owner or admin can delete pet
+    const isOwner = pet.ownerId.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+    
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to delete this pet' });
+    }
+
+    // Also delete the pet profile
+    await PetProfile.deleteOne({ petId: pet._id });
+    await Pet.deleteOne({ _id: pet._id });
+    res.json({ message: 'Pet and associated profile removed' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

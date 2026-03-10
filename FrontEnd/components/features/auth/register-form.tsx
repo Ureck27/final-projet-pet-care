@@ -27,17 +27,12 @@ export function RegisterForm() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: "owner",
       acceptTerms: false,
     },
   })
-
-  const selectedRole = watch("role")
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true)
@@ -48,11 +43,10 @@ export function RegisterForm() {
       password: data.password,
       fullName: data.fullName,
       phone: data.phone,
-      role: data.role,
     })
 
     if (success) {
-      router.push(data.role === "owner" ? "/dashboard" : "/trainer-dashboard")
+      router.push("/dashboard")
     } else {
       setError("Registration failed. Please try again.")
     }
@@ -75,36 +69,13 @@ export function RegisterForm() {
             </Alert>
           )}
 
-          <div className="space-y-3">
-            <Label>I am a</Label>
-            <RadioGroup
-              value={selectedRole}
-              onValueChange={(value) => setValue("role", value as "owner" | "trainer")}
-              className="grid grid-cols-2 gap-3"
-            >
-              <Label
-                htmlFor="owner"
-                className={cn(
-                  "flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors",
-                  selectedRole === "owner" ? "border-primary bg-accent" : "border-border hover:border-primary/50",
-                )}
-              >
-                <RadioGroupItem value="owner" id="owner" className="sr-only" />
-                <User className="h-6 w-6" />
-                <span className="text-sm font-medium">Pet Owner</span>
-              </Label>
-              <Label
-                htmlFor="trainer"
-                className={cn(
-                  "flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors",
-                  selectedRole === "trainer" ? "border-primary bg-accent" : "border-border hover:border-primary/50",
-                )}
-              >
-                <RadioGroupItem value="trainer" id="trainer" className="sr-only" />
-                <GraduationCap className="h-6 w-6" />
-                <span className="text-sm font-medium">Pet Trainer</span>
-              </Label>
-            </RadioGroup>
+          <div className="space-y-2">
+            <Label>Account Type</Label>
+            <div className="flex items-center gap-2 p-4 border-2 rounded-lg border-primary bg-accent">
+              <User className="h-6 w-6" />
+              <span className="text-sm font-medium">Pet Owner</span>
+            </div>
+            <p className="text-xs text-muted-foreground">Sign up as a pet owner to manage your pets and book services.</p>
           </div>
 
           <div className="space-y-2">

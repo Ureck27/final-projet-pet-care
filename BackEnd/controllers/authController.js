@@ -24,7 +24,8 @@ const registerUser = async (req, res) => {
       name,
       fullName: name,
       email,
-      password
+      password,
+      role: 'user' // Force role to 'user' for registration
     });
 
     if (user) {
@@ -91,12 +92,49 @@ const forgotPassword = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    // In a production app, we would generate a reset token and send an email here.
-    // For now, return success to fulfill the frontend's request.
+    // Generate reset token
+    const resetToken = require('crypto').randomBytes(32).toString('hex');
+    const resetTokenExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+    
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpiry = resetTokenExpiry;
+    await user.save();
+    
+    // Send reset email (in production, use actual email service)
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    console.log('Password reset link:', resetUrl); // For development
+    
     res.json({ message: 'Password reset link sent to email' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { registerUser, loginUser, forgotPassword };
+// @desc    Reset password
+// @route   POST /api/auth/reset-password
+const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpiry: { $gt: Date.now() }
+    });
+    
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+    
+    // Update password
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiry = undefined;
+    await user.save();
+    
+    res.json({ message: 'Password reset successful' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, forgotPassword, resetPassword };

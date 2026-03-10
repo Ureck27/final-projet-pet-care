@@ -16,7 +16,7 @@ const sendAdminNotification = async (subject, message) => {
     
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'sipoajin3399@gmail.com',
+      to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
       subject: `Pet Care Admin Notification: ${subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
