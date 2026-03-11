@@ -46,6 +46,7 @@ export function Navbar() {
           { href: "/trainers", label: "Find Caregivers" },
           { href: "/bookings", label: "Bookings" },
           { href: "/schedule", label: "Schedule" },
+          { href: "/become-trainer", label: "Become Trainer" },
         ]
       : [
           { href: "/trainer-dashboard", label: "Dashboard" },
