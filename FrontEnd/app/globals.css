@@ -1,96 +1,98 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-
-@custom-variant dark (&:is(.dark *));
-
-/* Modern, vibrant pet care color palette - premium & energetic */
+/* Modern, professional pet care color palette - Premium SaaS level */
 :root {
-  /* Background: Crisp white with a hint of warm slate */
-  --background: oklch(0.99 0.005 250);
-  /* Text: Deep slate for high readability */
-  --foreground: oklch(0.20 0.02 250);
-  --card: oklch(0.99 0.005 250);
-  --card-foreground: oklch(0.20 0.02 250);
-  --popover: oklch(0.99 0.005 250);
-  --popover-foreground: oklch(0.20 0.02 250);
-  /* Primary: Vibrant Indigo - premium, trustworthy */
-  --primary: oklch(0.50 0.16 260);
-  --primary-foreground: oklch(0.99 0 0);
-  /* Secondary: Soft Peach/Coral - friendly, approachable */
-  --secondary: oklch(0.75 0.14 45);
-  --secondary-foreground: oklch(0.25 0.05 45);
-  /* Muted: Soft slate gray */
-  --muted: oklch(0.94 0.01 250);
-  --muted-foreground: oklch(0.40 0.02 250);
-  /* Accent: Golden Yellow - joy, warmth */
-  --accent: oklch(0.85 0.14 85);
-  --accent-foreground: oklch(0.25 0.04 85);
+  /* Background: Clean white with warmth */
+  --background: #F9FAFB;
+  /* Text: Deep navy for strong hierarchy */
+  --foreground: #111827;
+  --card: #FFFFFF;
+  --card-foreground: #111827;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
+  /* Primary: Professional Purple/Indigo */
+  --primary: #6D5CFF;
+  --primary-foreground: #FFFFFF;
+  /* Secondary: Soft Purple */
+  --secondary: #8B7CFF;
+  --secondary-foreground: #FFFFFF;
+  /* Muted: Soft gray */
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
+  /* Accent: Warm Orange */
+  --accent: #FF9F43;
+  --accent-foreground: #FFFFFF;
   /* Destructive */
-  --destructive: oklch(0.60 0.18 20);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.90 0.01 250);
-  --input: oklch(0.90 0.01 250);
-  --ring: oklch(0.50 0.16 260);
-  --chart-1: oklch(0.50 0.16 260);
-  --chart-2: oklch(0.75 0.14 45);
-  --chart-3: oklch(0.85 0.14 85);
-  --chart-4: oklch(0.65 0.16 300);
-  --chart-5: oklch(0.60 0.12 160);
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #6D5CFF;
+  --chart-1: #6D5CFF;
+  --chart-2: #8B7CFF;
+  --chart-3: #FF9F43;
+  --chart-4: #10B981;
+  --chart-5: #F59E0B;
+  /* Success: Green */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --sidebar: #F9FAFB;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #6D5CFF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FF9F43;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #6D5CFF;
+  /* Text colors */
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
   /* Rounded corners */
-  --radius: 0.75rem;
-  --success: oklch(0.62 0.15 140);
-  --warning: oklch(0.80 0.15 80);
-  --sidebar: oklch(0.96 0.01 250);
-  --sidebar-foreground: oklch(0.20 0.02 250);
-  --sidebar-primary: oklch(0.50 0.16 260);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.85 0.14 85);
-  --sidebar-accent-foreground: oklch(0.25 0.04 85);
-  --sidebar-border: oklch(0.90 0.01 250);
-  --sidebar-ring: oklch(0.50 0.16 260);
+  --radius: 1.25rem;
 }
 
 .dark {
-  /* Background: Deep rich violet/slate for a premium dark mode */
-  --background: oklch(0.18 0.01 250);
-  /* Text: Almost white with a tint of blue */
-  --foreground: oklch(0.95 0.01 250);
-  --card: oklch(0.20 0.015 250);
-  --card-foreground: oklch(0.95 0.01 250);
-  --popover: oklch(0.20 0.015 250);
-  --popover-foreground: oklch(0.95 0.01 250);
-  /* Primary: Brighter Indigo */
-  --primary: oklch(0.65 0.16 260);
-  --primary-foreground: oklch(0.10 0.02 260);
-  /* Secondary: Soft Peach */
-  --secondary: oklch(0.70 0.12 45);
-  --secondary-foreground: oklch(0.20 0.05 45);
+  /* Background: Deep navy for premium dark mode */
+  --background: #0B0F1A;
+  /* Text: Almost white with blue tint */
+  --foreground: #F9FAFB;
+  --card: #111827;
+  --card-foreground: #F9FAFB;
+  --popover: #111827;
+  --popover-foreground: #F9FAFB;
+  /* Primary: Bright Purple */
+  --primary: #7C5CFF;
+  --primary-foreground: #FFFFFF;
+  /* Secondary: Soft Purple */
+  --secondary: #A78BFA;
+  --secondary-foreground: #FFFFFF;
   /* Muted: Dark gray-blue */
-  --muted: oklch(0.25 0.02 250);
-  --muted-foreground: oklch(0.65 0.03 250);
-  /* Accent */
-  --accent: oklch(0.75 0.12 85);
-  --accent-foreground: oklch(0.20 0.04 85);
-  --destructive: oklch(0.55 0.16 20);
-  --destructive-foreground: oklch(0.95 0.01 250);
-  --border: oklch(0.28 0.02 250);
-  --input: oklch(0.28 0.02 250);
-  --ring: oklch(0.65 0.16 260);
-  --chart-1: oklch(0.65 0.16 260);
-  --chart-2: oklch(0.70 0.12 45);
-  --chart-3: oklch(0.75 0.12 85);
-  --chart-4: oklch(0.60 0.16 300);
-  --chart-5: oklch(0.55 0.12 160);
-  --success: oklch(0.65 0.15 140);
-  --warning: oklch(0.75 0.15 80);
-  --sidebar: oklch(0.20 0.015 250);
-  --sidebar-foreground: oklch(0.95 0.01 250);
-  --sidebar-primary: oklch(0.65 0.16 260);
-  --sidebar-primary-foreground: oklch(0.10 0.02 260);
-  --sidebar-accent: oklch(0.75 0.12 85);
-  --sidebar-accent-foreground: oklch(0.20 0.04 85);
-  --sidebar-border: oklch(0.28 0.02 250);
-  --sidebar-ring: oklch(0.65 0.16 260);
+  --muted: #1F2937;
+  --muted-foreground: #9CA3AF;
+  /* Accent: Warm Orange */
+  --accent: #F59E0B;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #1F2937;
+  --input: #1F2937;
+  --ring: #7C5CFF;
+  --chart-1: #7C5CFF;
+  --chart-2: #A78BFA;
+  --chart-3: #F59E0B;
+  --chart-4: #10B981;
+  --chart-5: #F59E0B;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --sidebar: #0B0F1A;
+  --sidebar-foreground: #F9FAFB;
+  --sidebar-primary: #7C5CFF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F59E0B;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #1F2937;
+  --sidebar-ring: #7C5CFF;
+  /* Text colors */
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
 }
 
 @theme inline {
@@ -167,12 +169,12 @@
     line-height: 1.2;
   }
   
-  h1 { font-size: 2.25rem; font-weight: 700; }
-  h2 { font-size: 1.875rem; font-weight: 600; }
-  h3 { font-size: 1.5rem; font-weight: 600; }
-  h4 { font-size: 1.25rem; font-weight: 600; }
-  h5 { font-size: 1.125rem; font-weight: 600; }
-  h6 { font-size: 1rem; font-weight: 600; }
+  h1 { font-size: 4rem; font-weight: 800; line-height: 1.1; }
+  h2 { font-size: 2.25rem; font-weight: 700; line-height: 1.2; }
+  h3 { font-size: 1.875rem; font-weight: 600; line-height: 1.3; }
+  h4 { font-size: 1.5rem; font-weight: 600; line-height: 1.3; }
+  h5 { font-size: 1.25rem; font-weight: 600; line-height: 1.4; }
+  h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
   
   p {
     font-family: var(--font-sans);
@@ -189,7 +191,6 @@
   }
 }
 
-/* Added smooth calming animations and UI optimizations */
 @layer utilities {
   .transition-smooth {
     transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
@@ -243,11 +244,13 @@
     color: oklch(0.65 0.03 250);
   }
 
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
-  }
-
-  .animate-slide-up {
+  /* Modern card styles */
+  .card-modern {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
     animation: slideUp 0.6s ease-out forwards;
   }
 
