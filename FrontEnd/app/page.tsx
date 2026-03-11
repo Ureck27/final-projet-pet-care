@@ -9,13 +9,13 @@ import {
 import dynamic from 'next/dynamic'
 import { TiltCard } from "@/components/ui/tilt-card"
 import { FadeIn, StaggerChildren, StaggerItem } from "@/components/ui/fade-in"
-import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef, useEffect } from "react"
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
+import { useRef, useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { ProfessionalCard, FeatureCard } from "@/components/ui/professional-card"
 import { HeroBackground, PremiumBackground } from "@/components/layout/premium-background"
 import { AnimationWrapper, animationPresets, useStaggeredAnimation } from "@/components/ui/animation-wrapper"
 import { PawPrintBackground, FloatingPets, AnimatedPawTrail, PetCareIcons } from "@/components/ui/pet-illustrations"
@@ -31,10 +31,15 @@ const HeroSlider = dynamic(() => import('@/components/layout/hero-slider').then(
 })
 
 export default function HomePage() {
+  const [mounted, setMounted] = useState(false)
   const parallaxRef = useParallax(0.3)
   const heroRef = useScrollAnimation<HTMLDivElement>('fadeIn', { delay: 200 })
   const featuresRef = useScrollAnimation('slideInLeft', { delay: 300 })
   const howItWorksRef = useScrollAnimation('slideInRight', { delay: 400 })
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   
   // Stagger animations for cards
   useStaggeredAnimation('.feature-card', 'scaleIn', 150)
@@ -190,68 +195,41 @@ export default function HomePage() {
       <HeroBackground>
         <PawPrintBackground />
         <FloatingPets />
-        <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+        <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
           <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-12 items-center">
             {/* Text Content */}
-            <div className="flex flex-col items-start text-left max-w-2xl">
+            <div className="flex flex-col items-start text-left max-w-3xl space-y-8">
               <FadeIn direction="up">
-                <Badge className="mb-6 bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-300 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-400/30 px-4 py-2 text-sm shadow-soft-lg transition-smooth glow-primary">
-                  <Shield className="mr-2 h-4 w-4" />
-                  Professional AI-Powered Pet Care
+                <Badge className="mb-8 bg-gradient-to-r from-primary/20 to-secondary/20 text-primary-foreground hover:from-primary/30 hover:to-secondary/30 border border-primary/30 px-6 py-3 text-sm font-medium shadow-medium glow-primary transition-all duration-300">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Professional AI-Powered Pet Care Platform
                 </Badge>
               </FadeIn>
               <FadeIn direction="up" delay={0.1}>
-                <div ref={heroRef} className="mb-6 space-y-2 leading-tight text-shadow-sm float-element">
-                  <SplitText
-                    text="One App. One Routine."
-                    tag="h1"
-                    className="block text-balance text-5xl font-extrabold tracking-tight text-white md:text-6xl lg:text-7xl"
-                    delay={40}
-                    duration={1.1}
-                    ease="power3.out"
-                    splitType="chars"
-                    from={{ opacity: 0, y: 40 }}
-                    to={{ opacity: 1, y: 0 }}
-                    threshold={0.2}
-                    rootMargin="-100px"
-                    textAlign="left"
-                  />
-                  <SplitText
-                    text="Total Peace of Mind."
-                    tag="h1"
-                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold gradient-text md:text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400"
-                    delay={50}
-                    duration={1.2}
-                    ease="power3.out"
-                    splitType="chars"
-                    from={{ opacity: 0, y: 60 }}
-                    to={{ opacity: 1, y: 0 }}
-                    threshold={0.25}
-                    rootMargin="-80px"
-                    textAlign="left"
-                  />
+                <div ref={heroRef} className="space-y-4 leading-tight">
+                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-foreground">
+                    <span className="block mb-2">One App.</span>
+                    <span className="block bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">Total Peace of Mind.</span>
+                  </h1>
+                  <p className="text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed max-w-2xl">
+                    All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates.
+                  </p>
                 </div>
-              </FadeIn>
-              <FadeIn direction="up" delay={0.2}>
-                <p className="mb-8 text-pretty text-lg text-purple-200 md:text-xl leading-relaxed">
-                  All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
-                  <strong className="text-white block mt-2 font-medium">Professional care meets transparency.</strong>
-                </p>
               </FadeIn>
               
               <FadeIn direction="up" delay={0.3} className="w-full">
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" className="h-14 px-8 text-base gradient-animated text-white shadow-soft-lg glow-primary w-full sm:w-auto transition-smooth border-0" asChild>
+                    <Button size="lg" className="h-14 px-8 text-lg font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-large glow-primary w-full sm:w-auto transition-all duration-300" asChild>
                       <Link href="/register">
-                        Find Your Caregiver
+                        Get Started Today
                         <ArrowRight className="ml-2 h-5 w-5" />
                       </Link>
                     </Button>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" className="h-14 px-8 text-base glass-effect text-purple-300 hover:text-white border-purple-400/30 hover:border-purple-400/50 w-full sm:w-auto transition-smooth shadow-soft-lg" asChild>
+                    <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-semibold border-2 border-primary/30 hover:border-primary/50 text-primary hover:bg-primary/10 w-full sm:w-auto transition-all duration-300" asChild>
                       <Link href="#how-it-works">See How It Works</Link>
                     </Button>
                   </motion.div>
@@ -345,20 +323,12 @@ export default function HomePage() {
           <StaggerChildren staggerDelay={0.15} className="grid gap-8 md:grid-cols-3">
             {coreFeatures.map((feature) => (
               <StaggerItem key={feature.title}>
-                <motion.div whileHover={{ y: -8 }} className="h-full">
-                  <Card className="feature-card border-border shadow-soft hover:shadow-xl hover:border-primary/50 transition-smooth glass-effect h-full group overflow-hidden">
-                    <CardContent className="p-8">
-                      <motion.div 
-                        whileHover={{ scale: 1.1, rotate: -5 }} 
-                        className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary shadow-soft group-hover:shadow-lg float-element"
-                      >
-                        <feature.icon className="h-8 w-8 text-primary-foreground" />
-                      </motion.div>
-                      <h3 className="mb-3 text-xl font-semibold text-foreground group-hover:text-primary transition-colors">{feature.title}</h3>
-                      <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                <FeatureCard
+                  icon={feature.icon}
+                  title={feature.title}
+                  description={feature.description}
+                  delay={0}
+                />
               </StaggerItem>
             ))}
           </StaggerChildren>
