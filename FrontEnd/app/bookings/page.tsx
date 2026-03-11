@@ -32,7 +32,7 @@ const packageColors: Record<string, string> = {
 }
 
 import { api } from "@/lib/api"
-import type { Booking, User } from "@/lib/types"
+import type { Booking, CarePlan, User } from "@/lib/types"
 
 export default function BookingsPage() {
   const router = useRouter()
@@ -116,7 +116,7 @@ export default function BookingsPage() {
     const pet = pets.find((p) => p.id === booking.petId)
     const trainer = trainers.find((t) => t.id === booking.trainerId)
     const trainerUser = trainerUsers.find((u) => u.id === trainer?.userId)
-    const carePlan = null // Mocking care plan as null for now
+    const carePlan: CarePlan | null = mockCarePlans.find((cp) => cp.bookingId === booking.id) ?? null
     const pkg = booking.packageType ? packageDetails[booking.packageType] : null
 
     return (

@@ -24,8 +24,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PawPrint, Calendar, Bell, TrendingUp, Plus, MessageCircle } from "lucide-react"
 import Link from "next/link"
-import { ProjectDashboard, type Message } from "@/components/ui/project-management-dashboard"
-import { projectApi, type Project, type ProjectMessage } from "@/lib/api"
+import { ProjectDashboard, type Message as DashboardMessage, type Project as DashboardProject } from "@/components/ui/project-management-dashboard"
+import { projectApi, type Project as ApiProject, type ProjectMessage } from "@/lib/api"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -34,8 +34,8 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
   const [pets, setPets] = useState<Pet[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
-  const [projects, setProjects] = useState<Project[]>([])
-  const [projectMessages, setProjectMessages] = useState<Message[]>([])
+  const [projects, setProjects] = useState<DashboardProject[]>([])
+  const [projectMessages, setProjectMessages] = useState<DashboardMessage[]>([])
   const [isProjectsLoading, setIsProjectsLoading] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -83,7 +83,7 @@ export default function DashboardPage() {
       
       // Fetch messages for all projects and transform to Message format
       if (response.projects.length > 0) {
-        const allMessages: Message[] = []
+        const allMessages: DashboardMessage[] = []
         for (const project of response.projects.slice(0, 3)) { // Limit to first 3 projects for demo
           try {
             const messagesResponse = await projectApi.getProjectMessages(project._id, { limit: 2 })
@@ -103,7 +103,7 @@ export default function DashboardPage() {
   }
 
   // Transform ProjectMessage to Message format for ProjectDashboard component
-  const transformProjectMessage = (projectMessage: ProjectMessage): Message => ({
+  const transformProjectMessage = (projectMessage: ProjectMessage): DashboardMessage => ({
     id: projectMessage._id,
     name: projectMessage.senderName,
     avatarUrl: projectMessage.senderAvatar || "https://i.pravatar.cc/96?img=1",
@@ -113,7 +113,7 @@ export default function DashboardPage() {
   })
 
   // Transform API Project to ProjectDashboard Project format
-  const transformProject = (apiProject: Project): Project => ({
+  const transformProject = (apiProject: ApiProject): DashboardProject => ({
     id: apiProject._id,
     name: apiProject.name,
     subtitle: apiProject.subtitle,
@@ -347,7 +347,7 @@ export default function DashboardPage() {
               onProjectUpdate={async (proj) => {
                 try {
                   // Convert back to API format
-                  const apiProject: Partial<Project> = {
+                  const apiProject: Partial<ApiProject> = {
                     _id: proj.id,
                     name: proj.name,
                     subtitle: proj.subtitle,
@@ -378,7 +378,7 @@ export default function DashboardPage() {
               onProjectCreate={async (proj) => {
                 try {
                   // Convert to API format
-                  const apiProject: Partial<Project> = {
+                  const apiProject: Partial<ApiProject> = {
                     name: proj.name,
                     subtitle: proj.subtitle,
                     progress: proj.progress,
@@ -426,7 +426,7 @@ export default function DashboardPage() {
                     // Find the project that contains this message
                     for (const project of projects) {
                       try {
-                        await projectApi.toggleMessageStar(project._id, messageId)
+                        await projectApi.toggleMessageStar(project.id, messageId)
                         setProjectMessages((arr) => 
                           arr.map((m) => (m.id === messageId ? { ...m, starred } : m))
                         );

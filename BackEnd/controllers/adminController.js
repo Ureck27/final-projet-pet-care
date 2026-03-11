@@ -156,7 +156,7 @@ const rejectTrainerRequest = async (req, res) => {
 const updateUserRole = async (req, res) => {
   try {
     const { role } = req.body;
-    if (!['user', 'trainer', 'admin'].includes(role)) {
+    if (!['user', 'trainer', 'worker', 'admin'].includes(role)) {
       return res.status(400).json({ message: 'Invalid role' });
     }
     const user = await User.findById(req.params.id);

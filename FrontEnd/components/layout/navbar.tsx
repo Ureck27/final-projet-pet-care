@@ -39,7 +39,7 @@ export function Navbar() {
           { href: "/users", label: "Users" },
           { href: "/trainers", label: "Trainers" },
         ]
-      : user.role === "owner"
+      : user.role === "user"
       ? [
           { href: "/dashboard", label: "Dashboard" },
           { href: "/pets", label: "My Pets" },

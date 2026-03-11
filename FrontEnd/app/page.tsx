@@ -32,7 +32,7 @@ const HeroSlider = dynamic(() => import('@/components/layout/hero-slider').then(
 
 export default function HomePage() {
   const parallaxRef = useParallax(0.3)
-  const heroRef = useScrollAnimation('fadeIn', { delay: 200 })
+  const heroRef = useScrollAnimation<HTMLDivElement>('fadeIn', { delay: 200 })
   const featuresRef = useScrollAnimation('slideInLeft', { delay: 300 })
   const howItWorksRef = useScrollAnimation('slideInRight', { delay: 400 })
   
@@ -258,7 +258,7 @@ export default function HomePage() {
                 </div>
               </FadeIn>
 
-              <StaggerChildren delay={0.4} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <StaggerChildren staggerDelay={0.4} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {trustFeatures.map((feature) => (
                   <StaggerItem key={feature}>
                     <div className="flex items-center gap-3 text-sm text-purple-200 font-medium group">

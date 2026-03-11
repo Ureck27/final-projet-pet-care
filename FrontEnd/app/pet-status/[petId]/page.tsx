@@ -50,7 +50,7 @@ export default function PetStatusPage({ params }: PetStatusPageProps) {
     }
 
     // Check if user is authorized (owner or trainer)
-    if (user?.role === "owner" && foundPet.ownerId !== user.id) {
+    if (user?.role === "user" && foundPet.ownerId !== user.id) {
       router.push("/dashboard")
       return
     }
@@ -93,7 +93,7 @@ export default function PetStatusPage({ params }: PetStatusPageProps) {
 
     setRoutineLogs(mockLogs)
     setLoading(false)
-  }, [user, isLoading, router, params.petId])
+  }, [user, isLoading, router, petId])
 
   const getStatusColor = (status: string) => {
     switch (status) {

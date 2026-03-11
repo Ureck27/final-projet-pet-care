@@ -47,6 +47,7 @@ export interface PetHealthAnalysis {
 export interface AIChatRequest {
   message: string
   petId?: string
+  userRole?: "visitor" | "user" | "trainer" | "worker" | "admin"
   conversationHistory?: Array<{
     role: "user" | "assistant"
     content: string
@@ -334,44 +335,54 @@ class AIService {
     suggestions: string[]
     followUpQuestions: string[]
   } {
+    const role = request.userRole || "visitor"
     const responses = [
       {
-        response: "Based on your question, I recommend monitoring your pet's behavior closely. Changes in routine can indicate various health aspects, and it's always good to be observant.",
+        response:
+          role === "visitor"
+            ? "Welcome to PetCare. I can answer general questions about pet care, services, pricing, and how the platform works. For pet-specific advice (based on your pet profile, routines, or bookings), please sign in."
+            : "Based on your question, I recommend monitoring your pet's behavior closely. Changes in routine can indicate various health aspects, and it's always good to be observant.",
         suggestions: [
-          "Keep a daily log of activities",
-          "Note any changes in eating habits",
-          "Monitor sleep patterns"
+          role === "visitor" ? "Explore services and pricing" : "Keep a daily log of activities",
+          role === "visitor" ? "Sign in to connect with trainers" : "Note any changes in eating habits",
+          role === "visitor" ? "Learn how bookings work" : "Monitor sleep patterns"
         ],
         followUpQuestions: [
-          "Have you noticed any recent changes in appetite?",
-          "How is their energy level compared to usual?",
-          "Are there any specific behaviors that concern you?"
+          role === "visitor" ? "What pet do you have (dog/cat/other)?" : "Have you noticed any recent changes in appetite?",
+          role === "visitor" ? "Are you looking for a trainer or a caregiver service?" : "How is their energy level compared to usual?",
+          role === "visitor" ? "Do you want help choosing a service package?" : "Are there any specific behaviors that concern you?"
         ]
       },
       {
-        response: "That's a great question about your pet's wellbeing. Regular observation is key to maintaining their health. Every pet is unique, and understanding their normal behavior helps identify when something might be wrong.",
+        response:
+          role === "trainer" || role === "worker"
+            ? "If this is a care session update, include what you observed (energy, appetite, bathroom, mood) and I can help turn it into a clear owner-facing note and next-step recommendations."
+            : "That's a great question about your pet's wellbeing. Regular observation is key to maintaining their health. Every pet is unique, and understanding their normal behavior helps identify when something might be wrong.",
         suggestions: [
-          "Establish a baseline for normal behavior",
-          "Take weekly photos to track physical changes",
-          "Schedule regular veterinary checkups"
+          role === "trainer" || role === "worker" ? "Draft a daily report summary" : "Establish a baseline for normal behavior",
+          role === "trainer" || role === "worker" ? "Create a simple care checklist" : "Take weekly photos to track physical changes",
+          role === "trainer" || role === "worker" ? "Flag any urgent symptoms to the owner/admin" : "Schedule regular veterinary checkups"
         ],
         followUpQuestions: [
-          "What specific behaviors are you observing?",
-          "How long have you noticed these patterns?",
-          "Have there been any recent changes in environment?"
+          role === "trainer" || role === "worker" ? "What did you observe today (walk/meal/mood)?" : "What specific behaviors are you observing?",
+          role === "trainer" || role === "worker" ? "Any photos/videos to attach to the report?" : "How long have you noticed these patterns?",
+          role === "trainer" || role === "worker" ? "Any concerns that need escalation?" : "Have there been any recent changes in environment?"
         ]
       },
       {
-        response: "I understand your concern for your pet's health. It's always better to be cautious when it comes to their wellbeing. Based on what you've described, here are some things to consider.",
+        response:
+          role === "admin"
+            ? "I can help with platform operations too: resolving bookings, role changes, trainer approvals, and writing announcements. Tell me what you’re trying to do."
+            : "I understand your concern for your pet's health. It's always better to be cautious when it comes to their wellbeing. Based on what you've described, here are some things to consider.",
         suggestions: [
-          "Consult with a veterinarian if symptoms persist",
-          "Monitor and document symptoms",
-          "Maintain regular routine for comfort"
+          role === "admin" ? "Review trainer requests" : "Consult with a veterinarian if symptoms persist",
+          role === "admin" ? "Check dashboard stats" : "Monitor and document symptoms",
+          role === "admin" ? "Manage users and roles" : "Maintain regular routine for comfort"
         ],
         followUpQuestions: [
-          "When did you first notice these symptoms?",
-          "Are there any other accompanying symptoms?",
-          "Has your pet's diet or routine changed recently?"
+          role === "admin" ? "What area do you need help with (users/pets/trainers/bookings)?" : "When did you first notice these symptoms?",
+          role === "admin" ? "Do you want a message template for users?" : "Are there any other accompanying symptoms?",
+          role === "admin" ? "Should this be a platform-wide announcement?" : "Has your pet's diet or routine changed recently?"
         ]
       }
     ]

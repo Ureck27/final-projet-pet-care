@@ -2,13 +2,29 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { Paperclip, Link, Code, Mic, Send, Info, Bot, X } from 'lucide-react'
+import { useAuth } from '@/context/auth-context'
+import { aiService } from '@/lib/ai-service'
+import type { UserRole } from '@/lib/types'
+
+type ChatMessage = {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
+}
 
 const FloatingAiAssistant: React.FC = () => {
+  const { user } = useAuth()
+  const effectiveRole: UserRole = user?.role ?? 'visitor'
+
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [message, setMessage] = useState('')
   const [charCount, setCharCount] = useState(0)
+  const [isSending, setIsSending] = useState(false)
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const maxChars = 2000
   const chatRef = useRef<HTMLDivElement | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value.slice(0, maxChars)
@@ -16,12 +32,79 @@ const FloatingAiAssistant: React.FC = () => {
     setCharCount(value.length)
   }
 
-  const handleSend = () => {
-    if (message.trim()) {
-      // Replace this with your API call / AI backend integration
-      console.log('Sending message:', message)
-      setMessage('')
-      setCharCount(0)
+  useEffect(() => {
+    if (!isChatOpen) return
+    if (messages.length > 0) return
+
+    const welcomeByRole: Record<UserRole, string> = {
+      visitor:
+        "Hi! I’m PetCare AI. I can explain how the platform works and answer general pet-care questions. Sign in to get help connected to your pets, bookings, and routines.",
+      user: "Hi! I’m PetCare AI. Ask me about pet care, bookings, routines, and how to use your dashboard.",
+      trainer: "Hi! I’m PetCare AI. I can help you write session notes, care updates, and training plans for owners.",
+      worker: "Hi! I’m PetCare AI. I can help you log care updates, summarize routine completion notes, and flag urgent issues.",
+      admin: "Hi! I’m PetCare AI. I can help you manage users/roles, trainer approvals, and platform workflows.",
+    }
+
+    setMessages([
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content: welcomeByRole[effectiveRole],
+        timestamp: new Date(),
+      },
+    ])
+  }, [isChatOpen, messages.length, effectiveRole])
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, isChatOpen])
+
+  const handleSend = async () => {
+    const trimmed = message.trim()
+    if (!trimmed || isSending) return
+
+    const userMsg: ChatMessage = {
+      id: `${Date.now()}-u`,
+      role: 'user',
+      content: trimmed,
+      timestamp: new Date(),
+    }
+    const nextMessages = [...messages, userMsg]
+    setMessages(nextMessages)
+    setMessage('')
+    setCharCount(0)
+    setIsSending(true)
+
+    try {
+      const res = await aiService.chat({
+        message: trimmed,
+        userRole: effectiveRole,
+        conversationHistory: nextMessages.map((m) => ({
+          role: m.role,
+          content: m.content,
+          timestamp: m.timestamp,
+        })),
+      })
+
+      const assistantMsg: ChatMessage = {
+        id: `${Date.now()}-a`,
+        role: 'assistant',
+        content: res.success ? res.response : (res.error || 'Sorry, something went wrong.'),
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, assistantMsg])
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `${Date.now()}-e`,
+          role: 'assistant',
+          content: 'Sorry, I could not respond right now. Please try again.',
+          timestamp: new Date(),
+        },
+      ])
+    } finally {
+      setIsSending(false)
     }
   }
 
@@ -101,15 +184,15 @@ const FloatingAiAssistant: React.FC = () => {
               <div className="flex items-center gap-1.5">
                 <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
                 <span className="text-xs font-medium text-zinc-400">
-                  AI Assistant
+                  PetCare AI
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="rounded-2xl bg-zinc-800/60 px-2 py-1 text-xs font-medium text-zinc-300">
-                  GPT-4
+                  {effectiveRole.toUpperCase()}
                 </span>
                 <span className="rounded-2xl border border-red-500/20 bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400">
-                  Pro
+                  Assistant
                 </span>
                 <button
                   onClick={() => setIsChatOpen(false)}
@@ -121,6 +204,29 @@ const FloatingAiAssistant: React.FC = () => {
               </div>
             </div>
 
+            {/* Messages */}
+            <div className="max-h-[320px] overflow-y-auto px-6 pb-2">
+              <div className="space-y-3">
+                {messages.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
+                        m.role === 'user'
+                          ? 'bg-red-600/90 text-white'
+                          : 'bg-zinc-800/60 text-zinc-100'
+                      }`}
+                    >
+                      {m.content}
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+            </div>
+
             {/* Input Section */}
             <div className="relative overflow-hidden">
               <textarea
@@ -129,7 +235,11 @@ const FloatingAiAssistant: React.FC = () => {
                 onKeyDown={handleKeyDown}
                 rows={4}
                 className="min-h-[120px] w-full resize-none border-none bg-transparent px-6 py-4 text-base font-normal leading-relaxed text-zinc-100 outline-none placeholder-zinc-500 scrollbar-none"
-                placeholder="What would you like to explore today? Ask anything, share ideas, or request assistance..."
+                placeholder={
+                  effectiveRole === 'visitor'
+                    ? 'Ask about services, pricing, or pet-care basics...'
+                    : 'Ask about pet care, bookings, routines, or training...'
+                }
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               />
               <div
@@ -211,7 +321,8 @@ const FloatingAiAssistant: React.FC = () => {
                   {/* Send Button */}
                   <button
                     onClick={handleSend}
-                    className="group relative transform cursor-pointer rounded-xl border-none bg-gradient-to-r from-red-600 to-red-500 p-3 text-white shadow-lg transition-all duration-300 hover:-rotate-2 hover:scale-110 hover:from-red-500 hover:to-red-400 hover:shadow-xl hover:shadow-red-500/30 active:scale-95"
+                    disabled={isSending || !message.trim()}
+                    className="group relative transform cursor-pointer rounded-xl border-none bg-gradient-to-r from-red-600 to-red-500 p-3 text-white shadow-lg transition-all duration-300 hover:-rotate-2 hover:scale-110 hover:from-red-500 hover:to-red-400 hover:shadow-xl hover:shadow-red-500/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:rotate-0 disabled:hover:scale-100"
                     style={{
                       boxShadow:
                         '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 0 0 0 rgba(239, 68, 68, 0.4)',
@@ -245,7 +356,7 @@ const FloatingAiAssistant: React.FC = () => {
 
                 <div className="flex items-center gap-1">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                  <span>All systems operational</span>
+                  <span>{isSending ? 'Thinking…' : 'Ready'}</span>
                 </div>
               </div>
             </div>

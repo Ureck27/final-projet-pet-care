@@ -64,7 +64,7 @@ export interface User {
   name: string;
   fullName: string;
   phone: string;
-  role: "user" | "trainer" | "admin";
+  role: "user" | "trainer" | "worker" | "admin";
   avatar?: string;
   createdAt: Date;
   updatedAt: string;

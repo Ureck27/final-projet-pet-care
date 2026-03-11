@@ -30,7 +30,7 @@ export default function SchedulePage() {
   }
 
   const userBookings =
-    user.role === "owner"
+    user.role === "user"
       ? mockBookings.filter((b) => b.ownerId === user.id)
       : mockBookings.filter((b) => {
           const trainer = mockTrainers.find((t) => t.userId === user.id)
@@ -74,7 +74,7 @@ export default function SchedulePage() {
                         </div>
                         <p className="text-sm">{booking.service}</p>
                         <p className="text-xs text-muted-foreground">
-                          {user.role === "owner" ? `Trainer: ${trainerUser?.fullName}` : `Pet: ${pet?.name}`}
+                          {user.role === "user" ? `Trainer: ${trainerUser?.fullName}` : `Pet: ${pet?.name}`}
                         </p>
                       </div>
                     )

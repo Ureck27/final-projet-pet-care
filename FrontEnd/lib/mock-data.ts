@@ -9,7 +9,7 @@ export const mockUsers: User[] = [
     email: "john@example.com",
     fullName: "John Smith",
     phone: "1234567890",
-    role: "owner",
+    role: "user",
     avatar: "/man-profile.png",
     createdAt: new Date("2024-01-15"),
   },

@@ -32,7 +32,7 @@ export default function TrainerDashboardPage() {
     if (!isLoading && !user) {
       router.push("/login")
     } else if (!isLoading) {
-      if (user?.role === "owner") {
+      if (user?.role === "user") {
         router.push("/dashboard")
       } else if (user?.role === "admin") {
         router.push("/admin-dashboard")

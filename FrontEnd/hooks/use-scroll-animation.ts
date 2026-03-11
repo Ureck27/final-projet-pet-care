@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import anime from 'animejs'
 
-export function useScrollAnimation(
+export function useScrollAnimation<T extends HTMLElement = HTMLElement>(
   animation: any,
   options?: {
     threshold?: number
@@ -11,7 +11,7 @@ export function useScrollAnimation(
     delay?: number
   }
 ) {
-  const ref = useRef<HTMLElement>(null)
+  const ref = useRef<T>(null)
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {

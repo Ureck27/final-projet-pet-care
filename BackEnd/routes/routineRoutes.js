@@ -35,8 +35,8 @@ const upload = multer({
   }
 });
 
-// POST /api/routine/upload - Only trainers can upload photos
-router.post('/upload', protect, authorizeRole('trainer', 'admin'), upload.single('photo'), (req, res) => {
+// POST /api/routine/upload - Care staff (trainer/worker) or admin can upload
+router.post('/upload', protect, authorizeRole('trainer', 'worker', 'admin'), upload.single('photo'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
@@ -58,8 +58,8 @@ router.post('/upload', protect, authorizeRole('trainer', 'admin'), upload.single
   }
 });
 
-// POST /api/routine/complete - Only trainers can complete routines
-router.post('/complete', protect, authorizeRole('trainer', 'admin'), upload.single('photo'), async (req, res) => {
+// POST /api/routine/complete - Care staff (trainer/worker) or admin can complete routines
+router.post('/complete', protect, authorizeRole('trainer', 'worker', 'admin'), upload.single('photo'), async (req, res) => {
   try {
     const { routineId } = req.body;
 
@@ -77,8 +77,11 @@ router.post('/complete', protect, authorizeRole('trainer', 'admin'), upload.sing
       return res.status(404).json({ message: 'Routine not found' });
     }
 
-    // Security check: Only assigned trainer or admin can complete the routine
-    if (req.user.role === 'trainer' && routine.trainerId.toString() !== req.user._id.toString()) {
+    // Security check: Only assigned caregiver (trainer/worker) or admin can complete the routine
+    if (
+      (req.user.role === 'trainer' || req.user.role === 'worker') &&
+      routine.trainerId.toString() !== req.user._id.toString()
+    ) {
       return res.status(403).json({ 
         message: 'You are not authorized to complete this routine. Only the assigned trainer can complete it.' 
       });
@@ -139,8 +142,8 @@ router.post('/complete', protect, authorizeRole('trainer', 'admin'), upload.sing
   }
 });
 
-// GET /api/routine/my-routines - Get routines for current trainer
-router.get('/my-routines', protect, authorizeRole('trainer'), async (req, res) => {
+// GET /api/routine/my-routines - Get routines for current caregiver
+router.get('/my-routines', protect, authorizeRole('trainer', 'worker'), async (req, res) => {
   try {
     const routines = await Routine.find({ trainerId: req.user._id })
       .populate('petId', 'name type breed age photo')

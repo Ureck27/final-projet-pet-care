@@ -68,7 +68,7 @@ export default function ProfilePage() {
                   <div>
                     <h1 className="text-2xl font-bold">{user.fullName}</h1>
                     <Badge variant="secondary" className="mt-1 capitalize">
-                      {user.role === "owner" ? "Pet Owner" : "Trainer"}
+                      {user.role === "user" ? "Pet Owner" : user.role}
                     </Badge>
                   </div>
                   <Button variant={isEditing ? "outline" : "default"} onClick={() => setIsEditing(!isEditing)}>
