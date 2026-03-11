@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { ProfessionalCard, FeatureCard } from "@/components/ui/professional-card"
-import { HeroBackground, PremiumBackground } from "@/components/layout/premium-background"
 import { AnimationWrapper, animationPresets, useStaggeredAnimation } from "@/components/ui/animation-wrapper"
 import { PawPrintBackground, FloatingPets, AnimatedPawTrail, PetCareIcons } from "@/components/ui/pet-illustrations"
 import { cn } from "@/lib/utils"
@@ -193,11 +192,10 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
-      <HeroBackground>
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
         <PawPrintBackground />
         <FloatingPets />
-        <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
-          <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
+        <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-12 items-center">
             {/* Text Content */}
             <div className="flex flex-col items-start text-left max-w-3xl space-y-8">
@@ -263,7 +261,6 @@ export default function HomePage() {
           </div>
         </motion.div>
       </section>
-      </HeroBackground>
 
       {/* Problem/Solution Section */}
       <section className="px-4 py-20 relative">
