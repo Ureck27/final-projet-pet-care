@@ -79,6 +79,7 @@ export interface Pet {
   type: "dog" | "cat" | "bird" | "rabbit" | "other";
   breed: string;
   age: number;
+  gender?: "male" | "female" | "unknown";
   weight?: number;
   color?: string;
   medicalNotes?: string;

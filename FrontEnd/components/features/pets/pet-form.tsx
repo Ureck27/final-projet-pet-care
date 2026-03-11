@@ -40,6 +40,7 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
           species: pet.type,
           breed: pet.breed,
           age: pet.age,
+          gender: pet.gender || "unknown",
           weight: pet.weight || "",
           color: pet.color || "",
           medicalNotes: pet.medicalNotes || "",
@@ -48,6 +49,7 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
       : {
           species: "dog",
           age: 0,
+          gender: "unknown",
           photo: "",
         },
   })
@@ -119,6 +121,20 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
               />
               {errors.age && <p className="text-xs text-destructive">{errors.age.message}</p>}
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gender">Gender</Label>
+            <Select value={watch("gender")} onValueChange={(value) => setValue("gender", value as "male" | "female" | "unknown")}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="unknown">Unknown</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

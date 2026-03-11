@@ -30,6 +30,7 @@ export const petSchema = z.object({
   type: z.enum(["dog", "cat", "bird", "rabbit", "other"]), // Changed from species to type
   breed: z.string().min(1, "Breed is required"),
   age: z.number().min(0, "Age must be positive"),
+  gender: z.enum(["male", "female", "unknown"]).optional(),
   weight: z.number().optional(), // Changed from string to number
   color: z.string().optional(),
   medicalNotes: z.string().optional(),

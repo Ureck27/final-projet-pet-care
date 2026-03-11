@@ -240,21 +240,27 @@ export default function AdminDashboardPage() {
                     <TableHead>Type</TableHead>
                     <TableHead>Breed</TableHead>
                     <TableHead>Age</TableHead>
+                    <TableHead>Gender</TableHead>
                     <TableHead>Owner</TableHead>
                     <TableHead>Added</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pets.map((pet) => (
+                  {pets.map((pet) => {
+                    // Find the owner name from the users array
+                    const owner = users.find(u => u.id === pet.ownerId);
+                    return (
                     <TableRow key={pet.id}>
                       <TableCell className="font-medium">{pet.name}</TableCell>
                       <TableCell>{pet.type}</TableCell>
                       <TableCell>{pet.breed || 'N/A'}</TableCell>
                       <TableCell>{pet.age || 'N/A'}</TableCell>
-                      <TableCell>{pet.ownerId}</TableCell>
+                      <TableCell>{pet.gender || 'N/A'}</TableCell>
+                      <TableCell>{owner?.fullName || pet.ownerId}</TableCell>
                       <TableCell>{new Date(pet.createdAt).toLocaleDateString()}</TableCell>
                     </TableRow>
-                  ))}
+                    )
+                  })}
                 </TableBody>
               </Table>
             </CardContent>

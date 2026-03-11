@@ -51,7 +51,7 @@ const getPetById = async (req, res) => {
 // @route   POST /api/pets
 const createPet = async (req, res) => {
   try {
-    const { ownerId, name, fullName, type, breed, age, weight, color, medicalNotes, photo } = req.body;
+    const { ownerId, name, fullName, type, breed, age, gender, weight, color, medicalNotes, photo } = req.body;
     
     const pet = await Pet.create({
       ownerId,
@@ -60,6 +60,7 @@ const createPet = async (req, res) => {
       type,
       breed,
       age,
+      gender,
       weight,
       color,
       medicalNotes,
@@ -76,6 +77,7 @@ const createPet = async (req, res) => {
         <li><strong>Type:</strong> ${type}</li>
         <li><strong>Breed:</strong> ${breed || 'Not specified'}</li>
         <li><strong>Age:</strong> ${age || 'Not specified'}</li>
+        <li><strong>Gender:</strong> ${gender || 'Not specified'}</li>
         <li><strong>Owner ID:</strong> ${ownerId}</li>
         <li><strong>Added Date:</strong> ${new Date().toLocaleDateString()}</li>
       </ul>
@@ -110,6 +112,7 @@ const updatePet = async (req, res) => {
     pet.type = req.body.type ?? pet.type;
     pet.breed = req.body.breed ?? pet.breed;
     pet.age = req.body.age ?? pet.age;
+    pet.gender = req.body.gender ?? pet.gender;
     pet.weight = req.body.weight ?? pet.weight;
     pet.color = req.body.color ?? pet.color;
     pet.medicalNotes = req.body.medicalNotes ?? pet.medicalNotes;

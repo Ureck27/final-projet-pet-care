@@ -21,6 +21,11 @@ const petSchema = new mongoose.Schema({
   },
   breed: { type: String },
   age: { type: Number },
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'unknown'],
+    default: 'unknown'
+  },
   weight: { type: Number },
   color: { type: String },
   medicalNotes: { type: String },
