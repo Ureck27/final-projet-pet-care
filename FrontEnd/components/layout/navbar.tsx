@@ -67,8 +67,8 @@ export function Navbar() {
             <PawPrint className="h-7 w-7 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent group-hover:from-primary/80 group-hover:to-secondary/80 transition-all duration-300">PetCare</span>
-            <span className="text-xs text-muted-foreground font-medium">Professional Pet Services</span>
+            <span className="text-2xl font-heading font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent group-hover:from-primary/80 group-hover:to-secondary/80 transition-all duration-300">PetCare</span>
+            <span className="text-xs text-muted-foreground font-body font-medium">Professional Pet Services</span>
           </div>
         </Link>
 
@@ -78,7 +78,7 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               className={cn(
-                "rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300 hover-lift",
+                "rounded-xl px-4 py-2.5 text-sm font-body font-medium transition-all duration-300 hover-lift tracking-tight",
                 pathname === link.href
                   ? "bg-gradient-to-r from-primary to-secondary text-white shadow-medium glow-primary"
                   : "text-muted-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 hover:text-foreground hover:shadow-soft",
@@ -109,7 +109,7 @@ export function Navbar() {
             <>
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-body font-medium text-primary-foreground">
                   2
                 </span>
               </Button>
@@ -130,8 +130,8 @@ export function Navbar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="flex flex-col gap-1 p-2">
-                    <p className="text-sm font-medium">{user.fullName}</p>
-                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                    <p className="text-sm font-body font-medium">{user.fullName}</p>
+                    <p className="text-xs font-body text-muted-foreground">{user.email}</p>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
@@ -199,7 +199,7 @@ export function Navbar() {
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "rounded-lg px-3 py-2 text-sm font-body font-medium transition-colors tracking-tight",
                   pathname === link.href
                     ? "bg-secondary text-foreground"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -212,7 +212,7 @@ export function Navbar() {
               <Link
                 href="/apply"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-body font-medium text-muted-foreground hover:bg-secondary hover:text-foreground tracking-tight"
               >
                 <Shield className="h-4 w-4" />
                 Become a Caregiver

@@ -200,18 +200,18 @@ export default function HomePage() {
             {/* Text Content */}
             <div className="flex flex-col items-start text-left max-w-3xl space-y-8">
               <FadeIn direction="up">
-                <Badge className="mb-8 bg-gradient-to-r from-primary/20 to-secondary/20 text-primary-foreground hover:from-primary/30 hover:to-secondary/30 border border-primary/30 px-6 py-3 text-sm font-medium shadow-medium glow-primary transition-all duration-300">
+                <Badge className="mb-8 bg-gradient-to-r from-primary/20 to-secondary/20 text-primary-foreground hover:from-primary/30 hover:to-secondary/30 border border-primary/30 px-6 py-3 text-sm font-body font-medium shadow-medium glow-primary transition-all duration-300">
                   <Sparkles className="mr-2 h-4 w-4" />
                   Professional AI-Powered Pet Care Platform
                 </Badge>
               </FadeIn>
               <FadeIn direction="up" delay={0.1}>
                 <div ref={heroRef} className="space-y-4 leading-tight">
-                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-foreground">
+                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading font-black tracking-tight text-foreground">
                     <span className="block mb-2">One App.</span>
                     <span className="block bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">Total Peace of Mind.</span>
                   </h1>
-                  <p className="text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed max-w-2xl">
+                  <p className="text-xl md:text-2xl text-muted-foreground font-body font-medium leading-relaxed max-w-2xl">
                     All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates.
                   </p>
                 </div>
@@ -220,7 +220,7 @@ export default function HomePage() {
               <FadeIn direction="up" delay={0.3} className="w-full">
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" className="h-14 px-8 text-lg font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-large glow-primary w-full sm:w-auto transition-all duration-300" asChild>
+                    <Button size="lg" className="h-14 px-8 text-lg font-body font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-large glow-primary w-full sm:w-auto transition-all duration-300" asChild>
                       <Link href="/register">
                         Get Started Today
                         <ArrowRight className="ml-2 h-5 w-5" />
@@ -228,7 +228,7 @@ export default function HomePage() {
                     </Button>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-semibold border-2 border-primary/30 hover:border-primary/50 text-primary hover:bg-primary/10 w-full sm:w-auto transition-all duration-300" asChild>
+                    <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-body font-semibold border-2 border-primary/30 hover:border-primary/50 text-primary hover:bg-primary/10 w-full sm:w-auto transition-all duration-300" asChild>
                       <Link href="#how-it-works">See How It Works</Link>
                     </Button>
                   </motion.div>
@@ -238,7 +238,7 @@ export default function HomePage() {
               <StaggerChildren staggerDelay={0.4} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {trustFeatures.map((feature) => (
                   <StaggerItem key={feature}>
-                    <div className="flex items-center gap-3 text-sm text-purple-200 font-medium group">
+                    <div className="flex items-center gap-3 text-sm font-body font-medium text-purple-200 group">
                       <motion.div 
                         whileHover={{ scale: 1.2, rotate: 10 }}
                         className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-green-400/20 to-emerald-400/20 border border-green-400/30 transition-smooth glow-accent"
@@ -268,11 +268,11 @@ export default function HomePage() {
         <PetCareIcons />
         <div className="container mx-auto">
           <FadeIn direction="up" className="mb-16 text-center">
-            <Badge variant="outline" className="mb-4 border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-300 font-semibold shadow-soft-lg hover:shadow-xl transition-smooth glow-primary">
+            <Badge variant="outline" className="mb-4 border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-300 font-body font-semibold shadow-soft-lg hover:shadow-xl transition-smooth glow-primary">
               Three Problems. One Solution.
             </Badge>
-            <h2 className="mb-4 text-4xl font-bold gradient-text bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">The Paws & Relax Difference</h2>
-            <p className="mx-auto max-w-2xl text-lg text-purple-200">
+            <h2 className="mb-4 text-4xl font-heading font-bold gradient-text bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">The Paws & Relax Difference</h2>
+            <p className="mx-auto max-w-2xl text-lg font-body text-purple-200">
               Paws & Relax solves the three biggest pain points pet owners face
             </p>
           </FadeIn>
@@ -289,9 +289,9 @@ export default function HomePage() {
                       >
                         {item.icon && <item.icon className="h-8 w-8 text-white" />}
                       </motion.div>
-                      <p className="mb-6 text-base font-medium text-foreground leading-relaxed dark:text-purple-100">{item.problem}</p>
+                      <p className="mb-6 text-base font-body font-medium text-foreground leading-relaxed dark:text-purple-100">{item.problem}</p>
                       <div className="pt-6 border-t border-purple-400/20 bg-gradient-to-r from-purple-500/10 to-blue-500/10 p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-purple-500/20 group-hover:to-blue-500/20 transition-smooth">
-                        <p className="text-base text-muted-foreground dark:text-purple-200 font-medium flex items-start gap-2">
+                        <p className="text-base font-body text-muted-foreground dark:text-purple-200 font-medium flex items-start gap-2">
                           <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-green-400" />
                           {item.solution}
                         </p>
