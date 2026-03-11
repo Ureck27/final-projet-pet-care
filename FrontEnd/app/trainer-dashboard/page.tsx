@@ -62,7 +62,7 @@ export default function TrainerDashboardPage() {
         trainerId: user?.id || "",
         taskName: "Morning Exercise",
         description: "30-minute walk and play session",
-        scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+        scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
         status: "pending",
         pet: assignedPets[0] || mockPets[0]
       },
@@ -72,7 +72,7 @@ export default function TrainerDashboardPage() {
         trainerId: user?.id || "",
         taskName: "Feeding Time",
         description: "Provide lunch and medication if needed",
-        scheduledTime: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours from now
+        scheduledTime: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours from now
         status: "pending",
         pet: assignedPets[1] || mockPets[1]
       },
@@ -82,7 +82,7 @@ export default function TrainerDashboardPage() {
         trainerId: user?.id || "",
         taskName: "Training Session",
         description: "Basic obedience training",
-        scheduledTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+        scheduledTime: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
         status: "completed",
         pet: assignedPets[0] || mockPets[0]
       }
