@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const { sendAdminNotification } = require('../services/emailService');
 
 const generateToken = (id) => {
@@ -12,6 +13,7 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 const registerUser = async (req, res) => {
   try {
+    console.log('Registration request body:', req.body);
     const { name, email, password } = req.body;
 
     const userExists = await User.findOne({ email });
@@ -20,28 +22,34 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    // Hash password before creating user
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    console.log('Creating user with data:', { name, email, password: '***' });
     const user = await User.create({
       name,
       fullName: name,
       email,
-      password,
+      password: hashedPassword,
       role: 'user' // Force role to 'user' for registration
     });
+    console.log('User created successfully:', user);
 
     if (user) {
-      // Send admin notification
-      await sendAdminNotification(
-        'New User Registration',
-        `
-        <p><strong>New user has registered:</strong></p>
-        <ul>
-          <li><strong>Name:</strong> ${user.name}</li>
-          <li><strong>Email:</strong> ${user.email}</li>
-          <li><strong>Role:</strong> ${user.role}</li>
-          <li><strong>Registration Date:</strong> ${new Date().toLocaleDateString()}</li>
-        </ul>
-        `
-      );
+      // Send admin notification (commented out for now)
+      // await sendAdminNotification(
+      //   'New User Registration',
+      //   `
+      //   <p><strong>New user has registered:</strong></p>
+      //   <ul>
+      //     <li><strong>Name:</strong> ${user.name}</li>
+      //     <li><strong>Email:</strong> ${user.email}</li>
+      //     <li><strong>Role:</strong> ${user.role}</li>
+      //     <li><strong>Registration Date:</strong> ${new Date().toLocaleDateString()}</li>
+      //   </ul>
+      //   `
+      // );
 
       res.status(201).json({
         _id: user._id,
@@ -54,6 +62,7 @@ const registerUser = async (req, res) => {
       res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({ message: error.message });
   }
 };
