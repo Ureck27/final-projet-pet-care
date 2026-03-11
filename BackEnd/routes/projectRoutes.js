@@ -18,18 +18,18 @@ const { protect } = require('../middleware/authMiddleware');
 // Apply auth middleware to all routes
 router.use(protect);
 
-// Project routes
+// Project routes (reorder before :id so /reorder is not matched as id)
 router.route('/')
   .get(getProjects)
   .post(createProject);
+
+router.route('/reorder')
+  .put(reorderProjects);
 
 router.route('/:id')
   .get(getProject)
   .put(updateProject)
   .delete(deleteProject);
-
-router.route('/reorder')
-  .put(reorderProjects);
 
 // Message routes
 router.route('/:id/messages')

@@ -8,7 +8,10 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
   const token = typeof window !== 'undefined' ? localStorage.getItem('petcare_token') : null;
   
   const headers = new Headers(options.headers || {});
-  headers.set('Content-Type', 'application/json');
+  const isFormData = options.body instanceof FormData;
+  if (!isFormData) {
+    headers.set('Content-Type', 'application/json');
+  }
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
@@ -18,8 +21,14 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
     headers,
   };
 
-  if (options.body && typeof options.body === 'object') {
-    config.body = JSON.stringify(options.body);
+  if (options.body !== undefined) {
+    if (isFormData) {
+      config.body = options.body;
+    } else if (typeof options.body === 'object') {
+      config.body = JSON.stringify(options.body);
+    } else {
+      config.body = options.body;
+    }
   }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
@@ -251,19 +260,13 @@ export const routineApi = {
     const formData = new FormData();
     formData.append('photo', photo);
     formData.append('routineId', routineId);
-    
-    return api.post<any>('/routine/complete', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    return api.post<any>('/routine/complete', formData);
   },
   
   uploadPhoto: (photo: File) => {
     const formData = new FormData();
     formData.append('photo', photo);
-    
-    return api.post<{ photoUrl: string }>('/routine/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    return api.post<{ photoUrl: string }>('/routine/upload', formData);
   },
 };
 

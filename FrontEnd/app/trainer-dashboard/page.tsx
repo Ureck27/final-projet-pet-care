@@ -105,32 +105,17 @@ export default function TrainerDashboardPage() {
     setIsCompletingTask(true)
     
     try {
-      // Create form data for API call
-      const formData = new FormData()
-      formData.append('photo', photo)
-      formData.append('routineId', selectedRoutineId)
-
-      // Call API to complete routine
-      const response = await fetch('/api/routine/complete', {
-        method: 'POST',
-        body: formData
-      })
-
-      if (response.ok) {
-        const result = await response.json()
-        console.log('Routine completed:', result)
-        
-        // Update local state
+      const { routineApi } = await import('@/lib/api')
+      const result = await routineApi.completeRoutine(selectedRoutineId, photo)
+      
+      if (result?.data) {
         setRoutines(prev => prev.map(routine => 
           routine.id === selectedRoutineId 
             ? { ...routine, status: 'completed' }
             : routine
         ))
-
-        // Show success message or notification
-        alert('Task completed successfully! AI Analysis: ' + result.data.aiAnalysis.message)
-      } else {
-        throw new Error('Failed to complete routine')
+        const msg = result.data?.aiAnalysis?.message ?? 'Routine completed.'
+        alert('Task completed successfully! AI Analysis: ' + msg)
       }
     } catch (error) {
       console.error('Error completing routine:', error)

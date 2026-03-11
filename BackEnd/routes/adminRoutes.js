@@ -7,7 +7,9 @@ const {
   getAllTrainers,
   getDashboardStats,
   acceptTrainerRequest,
-  rejectTrainerRequest
+  rejectTrainerRequest,
+  updateUserRole,
+  deleteUser
 } = require('../controllers/adminController');
 const { protect, authorizeRole } = require('../middleware/authMiddleware');
 
@@ -19,6 +21,8 @@ router.get('/pets', getAllPets);
 router.get('/trainer-requests', getTrainerRequests);
 router.get('/trainers', getAllTrainers);
 router.get('/dashboard', getDashboardStats);
+router.put('/users/:id/role', updateUserRole);
+router.delete('/users/:id', deleteUser);
 router.put('/trainer-requests/:id/accept', acceptTrainerRequest);
 router.put('/trainer-requests/:id/reject', rejectTrainerRequest);
 

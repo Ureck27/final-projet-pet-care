@@ -19,7 +19,7 @@ exports.getProjects = async (req, res) => {
     } = req.query;
 
     // Build query
-    const query = { ownerId: req.user.id };
+    const query = { ownerId: req.user._id };
 
     if (status && status !== 'all') {
       query.status = status;
@@ -59,7 +59,7 @@ exports.getProjects = async (req, res) => {
 
     // Calculate stats
     const stats = await Project.aggregate([
-      { $match: { ownerId: new mongoose.Types.ObjectId(req.user.id) } },
+      { $match: { ownerId: req.user._id } },
       {
         $group: {
           _id: null,
@@ -101,7 +101,7 @@ exports.getProject = async (req, res) => {
   try {
     const project = await Project.findOne({
       _id: req.params.id,
-      ownerId: req.user.id
+      ownerId: req.user._id
     })
       .populate('petId', 'name type photo breed age')
       .populate('trainerId', 'name email bio')
@@ -125,8 +125,8 @@ exports.createProject = async (req, res) => {
   try {
     const projectData = {
       ...req.body,
-      ownerId: req.user.id,
-      order: await Project.countDocuments({ ownerId: req.user.id })
+      ownerId: req.user._id,
+      order: await Project.countDocuments({ ownerId: req.user._id })
     };
 
     const project = new Project(projectData);
@@ -140,7 +140,7 @@ exports.createProject = async (req, res) => {
     if (req.body.initialMessage) {
       const message = new ProjectMessage({
         projectId: project._id,
-        senderId: req.user.id,
+        senderId: req.user._id,
         senderName: req.user.name || req.user.fullName,
         senderAvatar: req.user.avatar || '',
         text: req.body.initialMessage,
@@ -163,7 +163,7 @@ exports.updateProject = async (req, res) => {
   try {
     const project = await Project.findOne({
       _id: req.params.id,
-      ownerId: req.user.id
+      ownerId: req.user._id
     });
 
     if (!project) {
@@ -197,7 +197,7 @@ exports.deleteProject = async (req, res) => {
   try {
     const project = await Project.findOne({
       _id: req.params.id,
-      ownerId: req.user.id
+      ownerId: req.user._id
     });
 
     if (!project) {
@@ -231,7 +231,7 @@ exports.reorderProjects = async (req, res) => {
     // Update order for each project
     const bulkOps = projectIds.map((id, index) => ({
       updateOne: {
-        filter: { _id: id, ownerId: req.user.id },
+        filter: { _id: id, ownerId: req.user._id },
         update: { order: index }
       }
     }));
@@ -239,7 +239,7 @@ exports.reorderProjects = async (req, res) => {
     await Project.bulkWrite(bulkOps);
 
     // Return updated projects
-    const projects = await Project.find({ ownerId: req.user.id })
+    const projects = await Project.find({ ownerId: req.user._id })
       .populate('petId', 'name type photo')
       .populate('trainerId', 'name email')
       .sort({ order: 1 });
@@ -261,7 +261,7 @@ exports.getProjectMessages = async (req, res) => {
     // Verify project ownership
     const project = await Project.findOne({
       _id: req.params.id,
-      ownerId: req.user.id
+      ownerId: req.user._id
     });
 
     if (!project) {
@@ -301,7 +301,7 @@ exports.addProjectMessage = async (req, res) => {
     // Verify project ownership
     const project = await Project.findOne({
       _id: req.params.id,
-      ownerId: req.user.id
+      ownerId: req.user._id
     });
 
     if (!project) {
@@ -310,7 +310,7 @@ exports.addProjectMessage = async (req, res) => {
 
     const message = new ProjectMessage({
       projectId: project._id,
-      senderId: req.user.id,
+      senderId: req.user._id,
       senderName: req.user.name || req.user.fullName,
       senderAvatar: req.user.avatar || '',
       text,
@@ -336,7 +336,7 @@ exports.toggleMessageStar = async (req, res) => {
     // Verify project ownership
     const project = await Project.findOne({
       _id: req.params.projectId,
-      ownerId: req.user.id
+      ownerId: req.user._id
     });
 
     if (!project) {

@@ -53,7 +53,9 @@ const registerUser = async (req, res) => {
 
       res.status(201).json({
         _id: user._id,
+        id: user._id.toString(),
         name: user.name,
+        fullName: user.fullName || user.name,
         email: user.email,
         role: user.role,
         token: generateToken(user._id),
@@ -78,7 +80,9 @@ const loginUser = async (req, res) => {
     if (user && (await user.matchPassword(password))) {
       res.json({
         _id: user._id,
+        id: user._id.toString(),
         name: user.name,
+        fullName: user.fullName || user.name,
         email: user.email,
         role: user.role,
         token: generateToken(user._id),
