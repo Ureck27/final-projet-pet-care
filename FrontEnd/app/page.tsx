@@ -200,18 +200,18 @@ export default function HomePage() {
             {/* Text Content */}
             <div className="flex flex-col items-start text-left max-w-3xl space-y-8">
               <FadeIn direction="up">
-                <Badge className="mb-8 bg-gradient-to-r from-primary/20 to-secondary/20 text-primary-foreground hover:from-primary/30 hover:to-secondary/30 border border-primary/30 px-6 py-3 text-sm font-body font-medium shadow-medium glow-primary transition-all duration-300">
-                  <Sparkles className="mr-2 h-4 w-4" />
+                <Badge className="mb-8 bg-gradient-to-r from-primary/20 to-secondary/20 text-primary-foreground hover:from-primary/30 hover:to-secondary/30 border border-primary/30 px-6 py-3 text-sm font-body font-medium shadow-medium glow-primary transition-all duration-300 badge-visible">
+                  <Sparkles className="mr-2 h-4 w-4 icon-visible" />
                   Professional AI-Powered Pet Care Platform
                 </Badge>
               </FadeIn>
               <FadeIn direction="up" delay={0.1}>
                 <div ref={heroRef} className="space-y-4 leading-tight">
-                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading font-black tracking-tight text-foreground">
+                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading font-black tracking-tight text-foreground text-visible">
                     <span className="block mb-2">One App.</span>
                     <span className="block bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">Total Peace of Mind.</span>
                   </h1>
-                  <p className="text-xl md:text-2xl text-muted-foreground font-body font-medium leading-relaxed max-w-2xl">
+                  <p className="text-xl md:text-2xl text-muted-foreground font-body font-medium leading-relaxed max-w-2xl text-visible">
                     All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates.
                   </p>
                 </div>
@@ -220,15 +220,15 @@ export default function HomePage() {
               <FadeIn direction="up" delay={0.3} className="w-full">
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" className="h-14 px-8 text-lg font-body font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-large glow-primary w-full sm:w-auto transition-all duration-300" asChild>
+                    <Button size="lg" className="h-14 px-8 text-lg font-body font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-large glow-primary w-full sm:w-auto transition-all duration-300 btn-visible" asChild>
                       <Link href="/register">
                         Get Started Today
-                        <ArrowRight className="ml-2 h-5 w-5" />
+                        <ArrowRight className="ml-2 h-5 w-5 icon-visible" />
                       </Link>
                     </Button>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-body font-semibold border-2 border-primary/30 hover:border-primary/50 text-primary hover:bg-primary/10 w-full sm:w-auto transition-all duration-300" asChild>
+                    <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-body font-semibold border-2 border-primary/30 hover:border-primary/50 text-primary hover:bg-primary/10 w-full sm:w-auto transition-all duration-300 btn-visible" asChild>
                       <Link href="#how-it-works">See How It Works</Link>
                     </Button>
                   </motion.div>
@@ -238,12 +238,12 @@ export default function HomePage() {
               <StaggerChildren staggerDelay={0.4} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {trustFeatures.map((feature) => (
                   <StaggerItem key={feature}>
-                    <div className="flex items-center gap-3 text-sm font-body font-medium text-purple-200 group">
+                    <div className="flex items-center gap-3 text-sm font-body font-medium text-purple-200 group text-visible">
                       <motion.div 
                         whileHover={{ scale: 1.2, rotate: 10 }}
                         className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-green-400/20 to-emerald-400/20 border border-green-400/30 transition-smooth glow-accent"
                       >
-                        <CheckCircle2 className="h-4 w-4 text-green-400" />
+                        <CheckCircle2 className="h-4 w-4 text-green-400 icon-visible" />
                       </motion.div>
                       {feature}
                     </div>
