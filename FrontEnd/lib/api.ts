@@ -121,6 +121,7 @@ export interface CaregiverApplication {
 }
 
 export interface Trainer {
+  _id: string;
   id: string;
   userId: string;
   name: string;

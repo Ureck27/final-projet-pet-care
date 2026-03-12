@@ -29,11 +29,10 @@ export default function NewBookingPage() {
   const [successMessage, setSuccessMessage] = useState("")
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [userPets, setUserPets] = useState<Pet[]>([])
-  const [trainers, setTrainers] = useState<Trainer[]>([]) // Added trainers state
-  const [trainerUsers, setTrainerUsers] = useState<User[]>([]) // Added trainerUsers state
+  const [trainers, setTrainers] = useState<Trainer[]>([]) 
   const [selectedPetId, setSelectedPetId] = useState("")
   const [selectedTrainerId, setSelectedTrainerId] = useState("")
-  const [isLoading, setIsLoading] = useState(true) // Added local isLoading state for data fetching
+  const [isLoading, setIsLoading] = useState(true) 
 
   useEffect(() => {
     if (!isAuthLoading && !user) {
@@ -48,8 +47,8 @@ export default function NewBookingPage() {
     setIsLoading(true)
     try {
       const [petsData, bookingsData, trainersData] = await Promise.all([
-        api.get<Pet[]>(`/pets?ownerId=${user.id}`),
-        api.get<Booking[]>(`/bookings?ownerId=${user.id}`),
+        api.get<Pet[]>(`/pets?ownerId=${user._id || user.id}`),
+        api.get<Booking[]>(`/bookings?ownerId=${user._id || user.id}`),
         api.get<Trainer[]>('/trainers')
       ])
       
@@ -58,12 +57,8 @@ export default function NewBookingPage() {
       setTrainers(trainersData)
       
       if (petsData.length > 0) {
-        setSelectedPetId(petsData[0].id)
+        setSelectedPetId(petsData[0]._id || petsData[0].id)
       }
-
-      // Also need trainer user data for names
-      const tUsers = await api.get<User[]>('/users?role=trainer')
-      setTrainerUsers(tUsers)
     } catch (err) {
       console.error("Failed to fetch initial booking data", err)
     } finally {
@@ -138,9 +133,8 @@ export default function NewBookingPage() {
     )
   }
 
-  const selectedPet = userPets.find((p) => p.id === selectedPetId)
-  const selectedTrainer = trainers.find((t) => t.id === selectedTrainerId) // Used trainers state
-  const selectedTrainerUser = trainerUsers.find((u) => trainers.some(t => t.id === selectedTrainerId && t.userId === u.id)) // Updated logic to find trainer user
+  const selectedPet = userPets.find((p) => p._id === selectedPetId || p.id === selectedPetId)
+  const selectedTrainer = trainers.find((t) => t._id === selectedTrainerId || t.id === selectedTrainerId)
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -197,7 +191,7 @@ export default function NewBookingPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {userPets.map((pet) => (
-                          <SelectItem key={pet.id} value={pet.id}>
+                          <SelectItem key={pet._id || pet.id} value={pet._id as string || pet.id}>
                             {pet.name} ({pet.type})
                           </SelectItem>
                         ))}
@@ -239,10 +233,9 @@ export default function NewBookingPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {trainers.map((trainer) => {
-                          const tUser = trainerUsers.find((u) => u.id === trainer.userId)
                           return (
-                            <SelectItem key={trainer.id} value={trainer.id}>
-                              {tUser?.fullName || tUser?.name} ⭐ {trainer.rating}
+                            <SelectItem key={trainer._id as string || trainer.id} value={trainer._id as string || trainer.id}>
+                              {trainer.name} ⭐ {trainer.rating}
                             </SelectItem>
                           )
                         })}
@@ -345,11 +338,11 @@ export default function NewBookingPage() {
                 </div>
               )}
 
-              {selectedTrainerUser && (
+              {selectedTrainer && (
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground">CAREGIVER</p>
-                  <p className="font-semibold">{selectedTrainerUser.fullName}</p>
-                  {selectedTrainer && <p className="text-sm text-muted-foreground">⭐ {selectedTrainer.rating}</p>}
+                  <p className="font-semibold">{selectedTrainer.name}</p>
+                  <p className="text-sm text-muted-foreground">⭐ {selectedTrainer.rating}</p>
                 </div>
               )}
 

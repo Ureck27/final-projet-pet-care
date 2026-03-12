@@ -42,7 +42,6 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [pets, setPets] = useState<PetType[]>([])
   const [trainers, setTrainers] = useState<Trainer[]>([])
-  const [trainerUsers, setTrainerUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -57,16 +56,14 @@ export default function BookingsPage() {
     if (!user) return
     setIsLoading(true)
     try {
-      const [bookingsData, petsData, trainersData, tUsersData] = await Promise.all([
-        api.get<Booking[]>(`/bookings?ownerId=${user.id}`),
-        api.get<PetType[]>(`/pets?ownerId=${user.id}`),
-        api.get<Trainer[]>('/trainers'),
-        api.get<User[]>('/users?role=trainer')
+      const [bookingsData, petsData, trainersData] = await Promise.all([
+        api.get<Booking[]>(`/bookings?ownerId=${user._id || user.id}`),
+        api.get<PetType[]>(`/pets?ownerId=${user._id || user.id}`),
+        api.get<Trainer[]>('/trainers')
       ])
       setBookings(bookingsData)
       setPets(petsData)
       setTrainers(trainersData)
-      setTrainerUsers(tUsersData)
     } catch (err) {
       console.error("Failed to fetch bookings data", err)
     } finally {
@@ -113,10 +110,15 @@ export default function BookingsPage() {
   }
 
   const BookingCard = ({ booking }: { booking: Booking }) => {
-    const pet = pets.find((p) => p.id === booking.petId)
-    const trainer = trainers.find((t) => t.id === booking.trainerId)
-    const trainerUser = trainerUsers.find((u) => u.id === trainer?.userId)
-    const carePlan: CarePlan | null = mockCarePlans.find((cp) => cp.bookingId === booking.id) ?? null
+    // booking.petId and booking.trainerId might be populated objects
+    const petIdToFind = typeof booking.petId === 'object' ? (booking.petId as any)._id : booking.petId;
+    const trainerIdToFind = typeof booking.trainerId === 'object' ? (booking.trainerId as any)._id : booking.trainerId;
+
+    const pet = pets.find((p) => p._id === petIdToFind || p.id === petIdToFind) || (typeof booking.petId === 'object' ? booking.petId : null);
+    const trainer = trainers.find((t) => t._id === trainerIdToFind || t.id === trainerIdToFind) || (typeof booking.trainerId === 'object' ? booking.trainerId : null);
+    
+    // trainer User information is populated in trainer.userId if it's an object, or we can just use trainer.name
+    const carePlan: CarePlan | null = mockCarePlans.find((cp) => cp.bookingId === (booking as any)._id || cp.bookingId === booking.id) ?? null
     const pkg = booking.packageType ? packageDetails[booking.packageType] : null
 
     return (
@@ -125,18 +127,18 @@ export default function BookingsPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex gap-4">
               <Avatar className="h-14 w-14">
-                <AvatarImage src={trainerUser?.avatar || "/placeholder.svg"} alt={trainerUser?.fullName} />
+                <AvatarImage src={"/placeholder.svg"} alt={(trainer as any)?.name} />
                 <AvatarFallback>
-                  {trainerUser?.fullName
+                  {((trainer as any)?.name || "T")
                     .split(" ")
-                    .map((n) => n[0])
+                    .map((n: string) => n[0])
                     .join("")}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="font-semibold text-lg">{pet?.name}'s Care with {trainerUser?.fullName}</p>
+                    <p className="font-semibold text-lg">{(pet as any)?.name}'s Care with {(trainer as any)?.name}</p>
                     {pkg && (
                       <p className="text-sm text-muted-foreground">
                         {pkg.icon} {pkg.name} • {pkg.duration}
