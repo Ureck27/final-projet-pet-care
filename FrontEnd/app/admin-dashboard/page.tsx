@@ -128,6 +128,17 @@ export default function AdminDashboardPage() {
     }
   }
 
+  const handleDeletePet = async (petId: string) => {
+    if (confirm('Are you sure you want to delete this pet?')) {
+      try {
+        await petApi.deletePet(petId)
+        fetchDashboardData()
+      } catch (error) {
+        console.error('Failed to delete pet:', error)
+      }
+    }
+  }
+
   if (isLoading || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -288,8 +299,11 @@ export default function AdminDashboardPage() {
                     <TableHead>Type</TableHead>
                     <TableHead>Breed</TableHead>
                     <TableHead>Age</TableHead>
-                    <TableHead>Owner</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Image</TableHead>
+                    <TableHead>Owner ID</TableHead>
                     <TableHead>Added</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -299,8 +313,33 @@ export default function AdminDashboardPage() {
                       <TableCell>{pet.type}</TableCell>
                       <TableCell>{pet.breed || 'N/A'}</TableCell>
                       <TableCell>{pet.age || 'N/A'}</TableCell>
-                      <TableCell>{pet.ownerId}</TableCell>
+                      <TableCell className="max-w-xs truncate">{pet.description || 'N/A'}</TableCell>
+                      <TableCell>
+                        {pet.image || pet.photo ? (
+                          <img 
+                            src={pet.image || pet.photo} 
+                            alt={pet.name} 
+                            className="w-10 h-10 rounded object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs">
+                            No Image
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>{pet.userId}</TableCell>
                       <TableCell>{new Date(pet.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleDeletePet(pet._id || pet.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -313,7 +352,7 @@ export default function AdminDashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle>Trainer Requests</CardTitle>
-              <CardDescription>Review trainer applications</CardDescription>
+              <CardDescription>Review trainer applications with documents and images</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -321,8 +360,11 @@ export default function AdminDashboardPage() {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
                     <TableHead>Experience</TableHead>
-                    <TableHead>Message</TableHead>
+                    <TableHead>Certifications</TableHead>
+                    <TableHead>Profile</TableHead>
+                    <TableHead>Certificates</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
@@ -332,8 +374,41 @@ export default function AdminDashboardPage() {
                     <TableRow key={request._id || request.id}>
                       <TableCell className="font-medium">{request.name}</TableCell>
                       <TableCell>{request.email}</TableCell>
+                      <TableCell>{request.phone || 'N/A'}</TableCell>
                       <TableCell className="max-w-xs truncate">{request.experience}</TableCell>
-                      <TableCell className="max-w-xs truncate">{request.message}</TableCell>
+                      <TableCell className="max-w-xs truncate">{request.certifications || 'N/A'}</TableCell>
+                      <TableCell>
+                        {request.profileImage ? (
+                          <img 
+                            src={request.profileImage} 
+                            alt="Profile" 
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-xs">
+                            No Image
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          {request.certificateImages && request.certificateImages.length > 0 ? (
+                            request.certificateImages.slice(0, 2).map((cert, index) => (
+                              <img 
+                                key={index}
+                                src={cert} 
+                                alt={`Certificate ${index + 1}`} 
+                                className="w-8 h-8 rounded object-cover"
+                              />
+                            ))
+                          ) : (
+                            <span className="text-xs text-gray-500">None</span>
+                          )}
+                          {request.certificateImages && request.certificateImages.length > 2 && (
+                            <span className="text-xs text-gray-500">+{request.certificateImages.length - 2}</span>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         {request.status === 'pending' && (
                           <Badge variant="secondary">Pending</Badge>
