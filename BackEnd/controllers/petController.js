@@ -112,7 +112,6 @@ const updatePet = async (req, res) => {
     pet.type = req.body.type ?? pet.type;
     pet.breed = req.body.breed ?? pet.breed;
     pet.age = req.body.age ?? pet.age;
-    pet.gender = req.body.gender ?? pet.gender;
     pet.weight = req.body.weight ?? pet.weight;
     pet.color = req.body.color ?? pet.color;
     pet.medicalNotes = req.body.medicalNotes ?? pet.medicalNotes;
