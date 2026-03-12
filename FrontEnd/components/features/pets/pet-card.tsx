@@ -36,7 +36,7 @@ export function PetCard({ pet, onEdit, onDelete, onBook, className }: PetCardPro
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link href={`/pets/${pet.id}`} className="flex items-center">
+                <Link href={`/pets/${pet._id || pet.id}`} className="flex items-center">
                   <FileText className="mr-2 h-4 w-4" />
                   View Profile
                 </Link>

@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { mockPets, mockPetProfiles } from "@/lib/mock-data"
+import { petApi } from "@/lib/api"
+import type { Pet, PetProfile } from "@/lib/types"
 import { Loader } from "@/components/common/loader"
 import { EmptyState } from "@/components/common/empty-state"
 import { PetProfileDetail } from "@/components/features/pets/pet-profile-detail"
@@ -13,16 +14,35 @@ import { ArrowLeft } from "lucide-react"
 export default function PetDetailPage() {
   const router = useRouter()
   const params = useParams()
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
   const petId = params.id as string
+  
+  const [pet, setPet] = useState<Pet | null>(null)
+  const [profile, setProfile] = useState<PetProfile | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isAuthLoading && !user) {
       router.push("/login")
+    } else if (user && petId) {
+      fetchPetData()
     }
-  }, [user, isLoading, router])
+  }, [user, isAuthLoading, router, petId])
 
-  if (isLoading || !user) {
+  const fetchPetData = async () => {
+    setIsLoading(true)
+    try {
+      const data = await petApi.getPetById(petId)
+      setPet(data.pet)
+      setProfile(data.profile)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (isAuthLoading || isLoading || !user) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />
@@ -42,9 +62,6 @@ export default function PetDetailPage() {
       </div>
     )
   }
-
-  const pet = mockPets.find((p) => p.id === petId && p.ownerId === user.id)
-  const profile = mockPetProfiles.find((p) => p.petId === petId)
 
   if (!pet) {
     return (

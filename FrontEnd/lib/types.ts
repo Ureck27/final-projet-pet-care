@@ -26,6 +26,7 @@ export interface Pet {
   medicalNotes?: string
   photo?: string
   createdAt: Date
+  updatedAt: string
 }
 
 // Enhanced Pet Profile
