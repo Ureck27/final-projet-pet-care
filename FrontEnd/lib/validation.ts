@@ -56,6 +56,14 @@ export const trainerProfileSchema = z.object({
   pricing: z.number().min(0, "Pricing must be positive"),
 })
 
+export const bookingSchema = z.object({
+  service: z.string().min(1, "Please select a service"),
+  trainerId: z.string().min(1, "Please select a professional caregiver"),
+  date: z.string().min(1, "Please select a date"),
+  time: z.string().min(1, "Please select a time"),
+  notes: z.string().optional(),
+})
+
 export const statusUpdateSchema = z.object({
   walked: z.boolean(),
   fed: z.boolean(),
