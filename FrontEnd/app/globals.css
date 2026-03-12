@@ -4,48 +4,50 @@
 /* UI/UX Color Theme - Professional & Modern */
 :root {
   /* Background: Light with subtle blue tint */
-  --background: #f8f9fa;
-  /* Text: Deep navy for high readability */
-  --foreground: #222A59;
+  --background: #ffffff;
+  /* Text: Dark navy for high readability */
+  --foreground: #1a1a1a;
   --card: #ffffff;
-  --card-foreground: #222A59;
+  --card-foreground: #1a1a1a;
   --popover: #ffffff;
-  --popover-foreground: #222A59;
-  /* Primary: Medium blue - professional, trustworthy */
-  --primary: #5666BF;
+  --popover-foreground: #1a1a1a;
+  /* Primary: Deep blue - professional, trustworthy */
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
-  /* Secondary: Light blue - friendly, approachable */
-  --secondary: #5670BF;
+  /* Secondary: Medium blue - friendly, approachable */
+  --secondary: #64748b;
   --secondary-foreground: #ffffff;
-  /* Muted: Very light gray */
-  --muted: #f1f3f5;
-  --muted-foreground: #6c757d;
+  /* Muted: Light gray */
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
   /* Accent: Golden Yellow - joy, warmth */
-  --accent: #F2CD13;
-  --accent-foreground: #222A59;
-  /* Destructive: Red variant */
-  --destructive: #dc3545;
+  --accent: #f59e0b;
+  --accent-foreground: #1a1a1a;
+  /* Destructive: Red with good contrast */
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #dee2e6;
-  --input: #dee2e6;
-  --ring: #5666BF;
-  --chart-1: #5666BF;
-  --chart-2: #5670BF;
-  --chart-3: #F2CD13;
-  --chart-4: #222A59;
-  --chart-5: #020E26;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
+  --chart-1: #2563eb;
+  --chart-2: #64748b;
+  --chart-3: #f59e0b;
+  --chart-4: #10b981;
+  --chart-5: #f59e0b;
+  /* Success and warning colors */
+  --success: #059669;
+  --warning: #d97706;
+  /* Sidebar colors */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f59e0b;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #2563eb;
   /* Rounded corners */
   --radius: 0.75rem;
-  --success: #28a745;
-  --warning: #ffc107;
-  --sidebar: #f8f9fa;
-  --sidebar-foreground: #222A59;
-  --sidebar-primary: #5666BF;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #F2CD13;
-  --sidebar-accent-foreground: #222A59;
-  --sidebar-border: #dee2e6;
-  --sidebar-ring: #5666BF;
 }
 
 .dark {
@@ -451,4 +453,83 @@
   50% {
     transform: translateY(-20px);
   }
+}
+
+/* Utility classes for better visibility */
+.btn-visible {
+  color: var(--foreground) !important;
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.text-visible {
+  color: var(--foreground) !important;
+}
+
+.icon-visible {
+  color: var(--foreground) !important;
+}
+
+.card-visible {
+  background-color: var(--card) !important;
+  color: var(--card-foreground) !important;
+  border-color: var(--border) !important;
+}
+
+/* Ensure proper contrast for badges */
+.badge-visible {
+  color: var(--primary-foreground) !important;
+  background-color: var(--primary) !important;
+}
+
+.badge-secondary-visible {
+  color: var(--secondary-foreground) !important;
+  background-color: var(--secondary) !important;
+}
+
+.badge-muted-visible {
+  color: var(--muted-foreground) !important;
+  background-color: var(--muted) !important;
+}
+
+/* Input visibility */
+.input-visible {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+.input-visible::placeholder {
+  color: var(--muted-foreground) !important;
+}
+
+/* Table visibility */
+.table-visible {
+  color: var(--foreground) !important;
+}
+
+.table-header {
+  color: var(--muted-foreground) !important;
+  font-weight: 600 !important;
+}
+
+.table-cell {
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+/* Navigation visibility */
+.nav-visible {
+  background-color: var(--sidebar) !important;
+  color: var(--sidebar-foreground) !important;
+  border-color: var(--sidebar-border) !important;
+}
+
+.nav-link {
+  color: var(--sidebar-foreground) !important;
+}
+
+.nav-link:hover {
+  color: var(--sidebar-primary) !important;
+  background-color: var(--sidebar-accent) !important;
 }

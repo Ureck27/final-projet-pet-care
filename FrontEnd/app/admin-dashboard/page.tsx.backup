@@ -313,7 +313,7 @@ export default function AdminDashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle>Trainer Requests</CardTitle>
-              <CardDescription>Review trainer applications</CardDescription>
+              <CardDescription>Approve or reject trainer applications</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -322,8 +322,8 @@ export default function AdminDashboardPage() {
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Experience</TableHead>
-                    <TableHead>Message</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Applied</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -332,18 +332,17 @@ export default function AdminDashboardPage() {
                     <TableRow key={request.id}>
                       <TableCell className="font-medium">{request.name}</TableCell>
                       <TableCell>{request.email}</TableCell>
-                      <TableCell className="max-w-xs truncate">{request.experience}</TableCell>
-                      <TableCell className="max-w-xs truncate">{request.message}</TableCell>
+                      <TableCell>{request.experience}</TableCell>
                       <TableCell>
-                        {request.status === 'pending' && (
-                          <Badge variant="secondary">Pending</Badge>
-                        )}
-                        {request.status === 'accepted' && (
-                          <Badge variant="default">Accepted</Badge>
-                        )}
-                        {request.status === 'rejected' && (
-                          <Badge variant="destructive">Rejected</Badge>
-                        )}
+                        <Badge 
+                          variant={
+                            request.status === 'accepted' ? 'default' : 
+                            request.status === 'rejected' ? 'destructive' : 
+                            'secondary'
+                          }
+                        >
+                          {request.status}
+                        </Badge>
                       </TableCell>
                       <TableCell>{new Date(request.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
