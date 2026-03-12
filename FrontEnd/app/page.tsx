@@ -192,14 +192,24 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
+<<<<<<< HEAD
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
         <PawPrintBackground />
         <FloatingPets />
         <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-12 items-center">
+=======
+      <HeroBackground>
+        <PawPrintBackground />
+        <FloatingPets />
+        <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+          <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+>>>>>>> footer-comp-7ea8e
             {/* Text Content */}
             <div className="flex flex-col items-start text-left max-w-3xl space-y-8">
               <FadeIn direction="up">
+<<<<<<< HEAD
                 <Badge className="mb-8 bg-gradient-to-r from-primary/20 to-secondary/20 text-primary-foreground hover:from-primary/30 hover:to-secondary/30 border border-primary/30 px-6 py-3 text-sm font-body font-medium shadow-medium glow-primary transition-all duration-300 badge-visible">
                   <Sparkles className="mr-2 h-4 w-4 icon-visible" />
                   Professional AI-Powered Pet Care Platform
@@ -216,11 +226,60 @@ export default function HomePage() {
                   </p>
                 </div>
               </FadeIn>
+=======
+                <Badge className="mb-6 bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-300 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-400/30 px-4 py-2 text-sm shadow-soft-lg transition-smooth glow-primary">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Professional AI-Powered Pet Care
+                </Badge>
+              </FadeIn>
+              <FadeIn direction="up" delay={0.1}>
+                <div ref={heroRef} className="mb-6 space-y-2 leading-tight text-shadow-sm float-element">
+                  <SplitText
+                    text="One App. One Routine."
+                    tag="h1"
+                    className="block text-balance text-5xl font-extrabold tracking-tight text-white md:text-6xl lg:text-7xl"
+                    delay={40}
+                    duration={1.1}
+                    ease="power3.out"
+                    splitType="chars"
+                    from={{ opacity: 0, y: 40 }}
+                    to={{ opacity: 1, y: 0 }}
+                    threshold={0.2}
+                    rootMargin="-100px"
+                    textAlign="left"
+                  />
+                  <SplitText
+                    text="Total Peace of Mind."
+                    tag="h1"
+                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold gradient-text md:text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400"
+                    delay={50}
+                    duration={1.2}
+                    ease="power3.out"
+                    splitType="chars"
+                    from={{ opacity: 0, y: 60 }}
+                    to={{ opacity: 1, y: 0 }}
+                    threshold={0.25}
+                    rootMargin="-80px"
+                    textAlign="left"
+                  />
+                </div>
+              </FadeIn>
+              <FadeIn direction="up" delay={0.2}>
+                <p className="mb-8 text-pretty text-lg text-purple-200 md:text-xl leading-relaxed">
+                  All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
+                  <strong className="text-white block mt-2 font-medium">Professional care meets transparency.</strong>
+                </p>
+              </FadeIn>
+>>>>>>> footer-comp-7ea8e
               
               <FadeIn direction="up" delay={0.3} className="w-full">
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+<<<<<<< HEAD
                     <Button size="lg" className="h-14 px-8 text-lg font-body font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-large glow-primary w-full sm:w-auto transition-all duration-300 btn-visible" asChild>
+=======
+                    <Button size="lg" className="h-14 px-8 text-base gradient-animated text-white shadow-soft-lg glow-primary w-full sm:w-auto transition-smooth border-0" asChild>
+>>>>>>> footer-comp-7ea8e
                       <Link href="/register">
                         Get Started Today
                         <ArrowRight className="ml-2 h-5 w-5 icon-visible" />
@@ -228,7 +287,11 @@ export default function HomePage() {
                     </Button>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+<<<<<<< HEAD
                     <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-body font-semibold border-2 border-primary/30 hover:border-primary/50 text-primary hover:bg-primary/10 w-full sm:w-auto transition-all duration-300 btn-visible" asChild>
+=======
+                    <Button size="lg" className="h-14 px-8 text-base glass-effect text-purple-300 hover:text-white border-purple-400/30 hover:border-purple-400/50 w-full sm:w-auto transition-smooth shadow-soft-lg" asChild>
+>>>>>>> footer-comp-7ea8e
                       <Link href="#how-it-works">See How It Works</Link>
                     </Button>
                   </motion.div>
@@ -238,12 +301,20 @@ export default function HomePage() {
               <StaggerChildren staggerDelay={0.4} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {trustFeatures.map((feature) => (
                   <StaggerItem key={feature}>
+<<<<<<< HEAD
                     <div className="flex items-center gap-3 text-sm font-body font-medium text-purple-200 group text-visible">
+=======
+                    <div className="flex items-center gap-3 text-sm text-purple-200 font-medium group">
+>>>>>>> footer-comp-7ea8e
                       <motion.div 
                         whileHover={{ scale: 1.2, rotate: 10 }}
                         className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-green-400/20 to-emerald-400/20 border border-green-400/30 transition-smooth glow-accent"
                       >
+<<<<<<< HEAD
                         <CheckCircle2 className="h-4 w-4 text-green-400 icon-visible" />
+=======
+                        <CheckCircle2 className="h-4 w-4 text-green-400" />
+>>>>>>> footer-comp-7ea8e
                       </motion.div>
                       {feature}
                     </div>
@@ -263,16 +334,28 @@ export default function HomePage() {
       </section>
 
       {/* Problem/Solution Section */}
+<<<<<<< HEAD
       <section className="px-4 py-20 relative section-dark">
+=======
+      <section className="px-4 py-20 relative">
+>>>>>>> footer-comp-7ea8e
         <AnimatedPawTrail />
         <PetCareIcons />
         <div className="container mx-auto">
           <FadeIn direction="up" className="mb-16 text-center">
+<<<<<<< HEAD
             <Badge variant="outline" className="mb-4 border-primary/30 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary-foreground font-body font-semibold shadow-soft-lg hover:shadow-xl transition-smooth glow-primary">
               Three Problems. One Solution.
             </Badge>
             <h2 className="mb-4 text-5xl font-heading font-bold gradient-text bg-clip-text bg-gradient-to-r from-primary to-secondary">The Paws & Relax Difference</h2>
             <p className="mx-auto max-w-3xl text-xl font-body text-secondary">
+=======
+            <Badge variant="outline" className="mb-4 border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-300 font-semibold shadow-soft-lg hover:shadow-xl transition-smooth glow-primary">
+              Three Problems. One Solution.
+            </Badge>
+            <h2 className="mb-4 text-4xl font-bold gradient-text bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">The Paws & Relax Difference</h2>
+            <p className="mx-auto max-w-2xl text-lg text-purple-200">
+>>>>>>> footer-comp-7ea8e
               Paws & Relax solves the three biggest pain points pet owners face
             </p>
           </FadeIn>
@@ -281,6 +364,7 @@ export default function HomePage() {
             {problemSolution.map((item) => (
               <StaggerItem key={item.number}>
                 <TiltCard intensity={10}>
+<<<<<<< HEAD
                   <Card className="feature-card h-full card-modern shadow-soft-lg hover:shadow-2xl hover:border-primary/30 transition-smooth overflow-hidden group">
                     <CardContent className="p-8 pb-10">
                       <motion.div 
@@ -293,6 +377,20 @@ export default function HomePage() {
                       <div className="pt-6 border-t border-border bg-gradient-to-r from-primary/10 to-secondary/10 p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-primary/20 group-hover:to-secondary/20 transition-smooth">
                         <p className="text-lg font-body text-primary font-medium flex items-start gap-2">
                           <CheckCircle2 className="h-6 w-6 mt-0.5 flex-shrink-0 text-success" />
+=======
+                  <Card className="feature-card h-full glass-effect shadow-soft-lg hover:shadow-2xl hover:border-purple-400/50 transition-smooth overflow-hidden group">
+                    <CardContent className="p-8 pb-10">
+                      <motion.div 
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-animated transition-smooth group-hover:scale-110 float-element shadow-soft-lg"
+                      >
+                        {item.icon && <item.icon className="h-8 w-8 text-white" />}
+                      </motion.div>
+                      <p className="mb-6 text-base font-medium text-purple-100 leading-relaxed">{item.problem}</p>
+                      <div className="pt-6 border-t border-purple-400/20 bg-gradient-to-r from-purple-500/10 to-blue-500/10 p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-purple-500/20 group-hover:to-blue-500/20 transition-smooth">
+                        <p className="text-base text-purple-200 font-medium flex items-start gap-2">
+                          <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-green-400" />
+>>>>>>> footer-comp-7ea8e
                           {item.solution}
                         </p>
                       </div>
@@ -306,7 +404,11 @@ export default function HomePage() {
       </section>
 
       {/* Three Core Features */}
+<<<<<<< HEAD
       <section id="features" ref={featuresRef} className="px-4 py-20 relative section-gradient">
+=======
+      <section id="features" ref={featuresRef} className="px-4 py-20 relative">
+>>>>>>> footer-comp-7ea8e
         <div className="container mx-auto">
           <FadeIn direction="down" className="mb-16 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/10 text-primary-foreground shadow-lg hover:shadow-xl transition-smooth glow-primary">
@@ -385,7 +487,11 @@ export default function HomePage() {
       </section>
 
       {/* Service Packages */}
+<<<<<<< HEAD
       <section id="pricing" className="px-4 py-16 relative section-dark">
+=======
+      <section id="pricing" className="px-4 py-16">
+>>>>>>> footer-comp-7ea8e
         <div className="container mx-auto">
           <FadeIn direction="down" className="mb-12 text-center">
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/10 text-primary-foreground shadow-lg hover:shadow-xl transition-smooth">
