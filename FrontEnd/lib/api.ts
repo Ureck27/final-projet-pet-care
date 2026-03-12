@@ -79,7 +79,6 @@ export interface Pet {
   type: "dog" | "cat" | "bird" | "rabbit" | "other";
   breed: string;
   age: number;
-  gender?: "male" | "female" | "unknown";
   weight?: number;
   color?: string;
   medicalNotes?: string;
@@ -96,6 +95,26 @@ export interface TrainerRequest {
   experience: string;
   message: string;
   status: 'pending' | 'accepted' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CaregiverApplication {
+  _id: string;
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  location: string;
+  experience: string;
+  petTypes: string[];
+  certifications?: string;
+  bio: string;
+  profileImage?: string;
+  idDocument?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  userId?: string;
+  rejectionReason?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -418,4 +437,29 @@ export const projectApi = {
   
   toggleMessageStar: (projectId: string, messageId: string) =>
     api.put<{ starred: boolean }>(`/projects/${projectId}/messages/${messageId}/star`),
+}
+
+export const caregiverApi = {
+  submitApplication: (applicationData: Partial<CaregiverApplication>) =>
+    api.post<CaregiverApplication>('/caregiver/apply', applicationData),
+  
+  getApplications: (status?: string) =>
+    api.get<CaregiverApplication[]>(`/caregiver/pending${status ? `?status=${status}` : ''}`),
+  
+  approveApplication: (id: string) =>
+    api.put<{ message: string; application: CaregiverApplication }>(`/caregiver/approve/${id}`),
+  
+  rejectApplication: (id: string, rejectionReason?: string) =>
+    api.put<{ message: string; application: CaregiverApplication }>(`/caregiver/reject/${id}`, { rejectionReason }),
+  
+  deleteApplication: (id: string) =>
+    api.delete<{ message: string }>(`/caregiver/delete/${id}`),
+  
+  getStats: () =>
+    api.get<{
+      totalApplications: number;
+      pendingApplications: number;
+      approvedCaregivers: number;
+      rejectedApplications: number;
+    }>('/caregiver/stats'),
 };

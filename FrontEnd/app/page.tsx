@@ -1,7 +1,7 @@
 "use client"
 
 import { 
-  PawPrint, Users, Calendar, Shield, Star, ArrowRight, CheckCircle2, Heart, Award,
+  PawPrint, Users, Calendar, Shield, Star, ArrowRight, CheckCircle2, Heart, Award, CheckCircle,
   Zap, TrendingUp, Lock, Video, Clock, Smile, Clock3, Smartphone, Bot, ClipboardList,
   Search, BarChart3, CheckSquare, UserCheck, BookOpen, Target, Sparkles, Utensils, Droplets,
   Dumbbell, Wind, Coffee, Moon, Box, Settings, Brain, Stethoscope, Bell
@@ -192,13 +192,13 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden hero-gradient hero-glow">
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
         <PawPrintBackground />
         <FloatingPets />
         <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-12 items-center">
             {/* Text Content */}
-            <div className="flex flex-col items-start text-left max-w-4xl space-y-8">
+            <div className="flex flex-col items-start text-left max-w-3xl space-y-8">
               <FadeIn direction="up">
                 <Badge className="mb-8 bg-gradient-to-r from-primary/20 to-secondary/20 text-primary-foreground hover:from-primary/30 hover:to-secondary/30 border border-primary/30 px-6 py-3 text-sm font-body font-medium shadow-medium glow-primary transition-all duration-300">
                   <Sparkles className="mr-2 h-4 w-4" />
@@ -206,12 +206,12 @@ export default function HomePage() {
                 </Badge>
               </FadeIn>
               <FadeIn direction="up" delay={0.1}>
-                <div ref={heroRef} className="space-y-6 leading-tight">
-                  <h1 className="text-6xl md:text-7xl lg:text-8xl font-heading font-black tracking-tight text-foreground">
+                <div ref={heroRef} className="space-y-4 leading-tight">
+                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading font-black tracking-tight text-foreground">
                     <span className="block mb-2">One App.</span>
                     <span className="block bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">Total Peace of Mind.</span>
                   </h1>
-                  <p className="text-xl md:text-2xl text-muted-foreground font-body font-medium leading-relaxed max-w-3xl">
+                  <p className="text-xl md:text-2xl text-muted-foreground font-body font-medium leading-relaxed max-w-2xl">
                     All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates.
                   </p>
                 </div>
@@ -220,30 +220,30 @@ export default function HomePage() {
               <FadeIn direction="up" delay={0.3} className="w-full">
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" className="h-16 px-10 text-xl font-body font-bold btn-gradient w-full sm:w-auto transition-all duration-300" asChild>
+                    <Button size="lg" className="h-14 px-8 text-lg font-body font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-large glow-primary w-full sm:w-auto transition-all duration-300" asChild>
                       <Link href="/register">
                         Get Started Today
-                        <ArrowRight className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                        <ArrowRight className="ml-2 h-5 w-5" />
                       </Link>
                     </Button>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" variant="outline" className="h-16 px-10 text-xl font-body font-bold border-2 border-primary/30 hover:border-primary/50 text-primary hover:bg-primary/10 w-full sm:w-auto transition-all duration-300" asChild>
+                    <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-body font-semibold border-2 border-primary/30 hover:border-primary/50 text-primary hover:bg-primary/10 w-full sm:w-auto transition-all duration-300" asChild>
                       <Link href="#how-it-works">See How It Works</Link>
                     </Button>
                   </motion.div>
                 </div>
               </FadeIn>
 
-              <StaggerChildren staggerDelay={0.4} className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <StaggerChildren staggerDelay={0.4} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {trustFeatures.map((feature) => (
                   <StaggerItem key={feature}>
-                    <div className="flex items-center gap-3 text-sm font-body font-medium text-secondary group">
+                    <div className="flex items-center gap-3 text-sm font-body font-medium text-purple-200 group">
                       <motion.div 
                         whileHover={{ scale: 1.2, rotate: 10 }}
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-success/20 to-primary/20 border border-primary/30 transition-smooth glow-primary"
+                        className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-green-400/20 to-emerald-400/20 border border-green-400/30 transition-smooth glow-accent"
                       >
-                        <CheckCircle2 className="h-5 w-5 text-primary" />
+                        <CheckCircle2 className="h-4 w-4 text-green-400" />
                       </motion.div>
                       {feature}
                     </div>
@@ -254,12 +254,9 @@ export default function HomePage() {
 
             {/* Image Slider Component */}
             <FadeIn direction="left" delay={0.2} className="w-full relative px-2 sm:px-0">
-              <div className="relative">
-                <HeroSlider />
-                {/* Enhanced glowing effect behind slider */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-gradient-radial circle, rgba(109, 92, 255, 0.08) 0%, transparent 70%] blur-[120px] -z-10 rounded-full opacity-60 dark:opacity-30 pointer-events-none animate-pulse" />
-                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-accent/5 rounded-3xl -z-10" />
-              </div>
+              <HeroSlider />
+              {/* Optional glowing effect behind slider to blend with background */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/20 blur-[100px] -z-10 rounded-full opacity-50 dark:opacity-20 pointer-events-none" />
             </FadeIn>
           </div>
         </motion.div>
@@ -586,7 +583,7 @@ export default function HomePage() {
 
           <div className="mt-8 text-center">
             <Button size="lg" variant="outline" asChild>
-              <Link href="/apply">Become a Caregiver</Link>
+              <Link href="/caregiver-apply">Become a Verified Caregiver</Link>
             </Button>
           </div>
         </div>

@@ -62,7 +62,6 @@ export default function AddPetPage() {
     defaultValues: {
       type: "dog",
       age: 0,
-      gender: "unknown",
       photo: "",
     },
   })
@@ -79,7 +78,6 @@ export default function AddPetPage() {
         type: data.type,
         breed: data.breed,
         age: data.age,
-        gender: data.gender,
         weight: data.weight,
         color: data.color,
         medicalNotes: data.medicalNotes,
@@ -226,27 +224,6 @@ export default function AddPetPage() {
                     className={`text-base ${errors.breed ? "border-destructive" : ""}`}
                   />
                   {errors.breed && <p className="text-sm text-destructive">{errors.breed.message}</p>}
-                </div>
-
-                {/* Gender */}
-                <div className="space-y-2">
-                  <Label htmlFor="gender" className="text-base font-semibold">
-                    Gender
-                  </Label>
-                  <Select
-                    value={watch("gender")}
-                    onValueChange={(value) => setValue("gender", value as "male" | "female" | "unknown")}
-                  >
-                    <SelectTrigger className="text-base">
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="unknown">Unknown</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.gender && <p className="text-sm text-destructive">{errors.gender.message}</p>}
                 </div>
 
                 {/* Weight & Color */}

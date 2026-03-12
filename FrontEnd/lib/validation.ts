@@ -30,19 +30,23 @@ export const petSchema = z.object({
   type: z.enum(["dog", "cat", "bird", "rabbit", "other"]), // Changed from species to type
   breed: z.string().min(1, "Breed is required"),
   age: z.number().min(0, "Age must be positive"),
-  gender: z.enum(["male", "female", "unknown"]).optional(),
   weight: z.number().optional(), // Changed from string to number
   color: z.string().optional(),
   medicalNotes: z.string().optional(),
   photo: z.string().optional(),
 })
 
-export const bookingSchema = z.object({
-  service: z.string().min(1, "Service is required"),
-  trainerId: z.string().min(1, "Trainer is required"),
-  date: z.string().min(1, "Date is required"),
-  time: z.string().min(1, "Time is required"),
-  notes: z.string().optional(),
+export const caregiverApplicationSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().min(10, "Phone number must be at least 10 characters"),
+  location: z.string().min(2, "Location is required"),
+  experience: z.string().min(10, "Please provide detailed experience information"),
+  petTypes: z.array(z.string()).min(1, "Please select at least one pet type"),
+  certifications: z.string().optional(),
+  bio: z.string().min(20, "Bio must be at least 20 characters"),
+  profileImage: z.string().optional(),
+  idDocument: z.string().optional(),
 })
 
 export const trainerProfileSchema = z.object({
