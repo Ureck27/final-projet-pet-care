@@ -88,6 +88,7 @@ export interface Pet {
 }
 
 export interface TrainerRequest {
+  _id: string;
   id: string;
   userId: string;
   name: string;
@@ -436,7 +437,7 @@ export const projectApi = {
     api.post<ProjectMessage>(`/projects/${projectId}/messages`, messageData),
   
   toggleMessageStar: (projectId: string, messageId: string) =>
-    api.put<{ starred: boolean }>(`/projects/${projectId}/messages/${messageId}/star`),
+    api.put<{ starred: boolean }>(`/projects/${projectId}/messages/${messageId}/star`, {}),
 }
 
 export const caregiverApi = {
@@ -447,7 +448,7 @@ export const caregiverApi = {
     api.get<CaregiverApplication[]>(`/caregiver/pending${status ? `?status=${status}` : ''}`),
   
   approveApplication: (id: string) =>
-    api.put<{ message: string; application: CaregiverApplication }>(`/caregiver/approve/${id}`),
+    api.put<{ message: string; application: CaregiverApplication }>(`/caregiver/approve/${id}`, {}),
   
   rejectApplication: (id: string, rejectionReason?: string) =>
     api.put<{ message: string; application: CaregiverApplication }>(`/caregiver/reject/${id}`, { rejectionReason }),

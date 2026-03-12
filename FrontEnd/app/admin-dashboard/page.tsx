@@ -243,7 +243,7 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {users.map((user) => (
-                    <TableRow key={user.id}>
+                    <TableRow key={user._id || user.id}>
                       <TableCell className="font-medium">{user.fullName}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
@@ -260,7 +260,7 @@ export default function AdminDashboardPage() {
                           <Button 
                             variant="destructive" 
                             size="sm"
-                            onClick={() => handleDeleteUser(user.id)}
+                            onClick={() => handleDeleteUser(user._id || user.id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -294,7 +294,7 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {pets.map((pet) => (
-                    <TableRow key={pet.id}>
+                    <TableRow key={pet._id || pet.id}>
                       <TableCell className="font-medium">{pet.name}</TableCell>
                       <TableCell>{pet.type}</TableCell>
                       <TableCell>{pet.breed || 'N/A'}</TableCell>
@@ -329,7 +329,7 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {trainerRequests.map((request) => (
-                    <TableRow key={request.id}>
+                    <TableRow key={request._id || request.id}>
                       <TableCell className="font-medium">{request.name}</TableCell>
                       <TableCell>{request.email}</TableCell>
                       <TableCell className="max-w-xs truncate">{request.experience}</TableCell>
@@ -352,14 +352,14 @@ export default function AdminDashboardPage() {
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => handleApproveRequest(request.id)}
+                              onClick={() => handleApproveRequest(request._id || request.id)}
                             >
                               <CheckCircle className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="destructive" 
                               size="sm"
-                              onClick={() => handleRejectRequest(request.id)}
+                              onClick={() => handleRejectRequest(request._id || request.id)}
                             >
                               <XCircle className="h-4 w-4" />
                             </Button>
