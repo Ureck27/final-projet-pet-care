@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect, authorizeRole } = require('../middleware/authMiddleware');
 const {
   submitCaregiverApplication,
   getCaregiverApplications,
@@ -15,10 +15,10 @@ const router = express.Router();
 router.post('/apply', protect, submitCaregiverApplication);
 
 // Admin only routes
-router.get('/pending', protect, authorize('admin'), getCaregiverApplications);
-router.get('/stats', protect, authorize('admin'), getCaregiverStats);
-router.put('/approve/:id', protect, authorize('admin'), approveCaregiverApplication);
-router.put('/reject/:id', protect, authorize('admin'), rejectCaregiverApplication);
-router.delete('/delete/:id', protect, authorize('admin'), deleteCaregiverApplication);
+router.get('/pending', protect, authorizeRole('admin'), getCaregiverApplications);
+router.get('/stats', protect, authorizeRole('admin'), getCaregiverStats);
+router.put('/approve/:id', protect, authorizeRole('admin'), approveCaregiverApplication);
+router.put('/reject/:id', protect, authorizeRole('admin'), rejectCaregiverApplication);
+router.delete('/delete/:id', protect, authorizeRole('admin'), deleteCaregiverApplication);
 
 module.exports = router;
