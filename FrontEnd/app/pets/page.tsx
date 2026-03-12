@@ -10,12 +10,15 @@ import { PetCard } from "@/components/features/pets/pet-card"
 import { Button } from "@/components/ui/button"
 import { Plus, PawPrint } from "lucide-react"
 import Link from "next/link"
+import { PetForm } from "@/components/features/pets/pet-form"
 
 export default function PetsPage() {
   const router = useRouter()
   const { user, isLoading: isAuthLoading } = useAuth()
   const [pets, setPets] = useState<Pet[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [editingPet, setEditingPet] = useState<Pet | null>(null)
+  const [isFormOpen, setIsFormOpen] = useState(false)
 
   useEffect(() => {
     if (!isAuthLoading && !user) {
@@ -35,6 +38,35 @@ export default function PetsPage() {
       console.error("Failed to fetch pets", err)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleDelete = async (pet: Pet) => {
+    if (confirm(`Are you sure you want to delete ${pet.name}?`)) {
+      try {
+        await petApi.deletePet(pet._id || pet.id)
+        fetchPets()
+      } catch (err) {
+        console.error("Failed to delete pet", err)
+      }
+    }
+  }
+
+  const handleEdit = (pet: Pet) => {
+    setEditingPet(pet)
+    setIsFormOpen(true)
+  }
+
+  const handleFormSubmit = async (data: any) => {
+    try {
+      if (editingPet) {
+        await petApi.updatePet(editingPet._id || editingPet.id, data)
+      } else {
+        await petApi.createPet({ ...data, ownerId: user!.id })
+      }
+      fetchPets()
+    } catch (err) {
+      console.error("Failed to save pet", err)
     }
   }
 
@@ -73,12 +105,23 @@ export default function PetsPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {userPets.map((pet) => (
-            <Link key={pet._id} href={`/pets?id=${pet._id}`}>
-              <PetCard pet={pet} className="cursor-pointer hover:shadow-lg transition-shadow" />
-            </Link>
+            <PetCard 
+              key={pet._id || pet.id} 
+              pet={pet} 
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              className="hover:shadow-lg transition-shadow" 
+            />
           ))}
         </div>
       )}
+
+      <PetForm 
+        open={isFormOpen} 
+        onOpenChange={setIsFormOpen} 
+        pet={editingPet} 
+        onSubmit={handleFormSubmit} 
+      />
     </main>
   )
 }
