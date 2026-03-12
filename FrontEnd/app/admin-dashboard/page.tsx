@@ -254,7 +254,11 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {users.map((user) => (
+<<<<<<< HEAD
                     <TableRow key={user._id || user.id}>
+=======
+                    <TableRow key={user.id}>
+>>>>>>> footer-comp-7ea8e
                       <TableCell className="font-medium">{user.fullName}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
@@ -271,7 +275,11 @@ export default function AdminDashboardPage() {
                           <Button 
                             variant="destructive" 
                             size="sm"
+<<<<<<< HEAD
                             onClick={() => handleDeleteUser(user._id || user.id)}
+=======
+                            onClick={() => handleDeleteUser(user.id)}
+>>>>>>> footer-comp-7ea8e
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -308,9 +316,13 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {pets.map((pet) => (
+<<<<<<< HEAD
                     <TableRow key={pet._id || pet.id}>
+=======
+                    <TableRow key={pet.id}>
+>>>>>>> footer-comp-7ea8e
                       <TableCell className="font-medium">{pet.name}</TableCell>
-                      <TableCell>{pet.type}</TableCell>
+                      <TableCell>{pet.species}</TableCell>
                       <TableCell>{pet.breed || 'N/A'}</TableCell>
                       <TableCell>{pet.age || 'N/A'}</TableCell>
                       <TableCell className="max-w-xs truncate">{pet.description || 'N/A'}</TableCell>
@@ -371,7 +383,11 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {trainerRequests.map((request) => (
+<<<<<<< HEAD
                     <TableRow key={request._id || request.id}>
+=======
+                    <TableRow key={request.id}>
+>>>>>>> footer-comp-7ea8e
                       <TableCell className="font-medium">{request.name}</TableCell>
                       <TableCell>{request.email}</TableCell>
                       <TableCell>{request.phone || 'N/A'}</TableCell>
@@ -427,14 +443,22 @@ export default function AdminDashboardPage() {
                             <Button 
                               variant="outline" 
                               size="sm"
+<<<<<<< HEAD
                               onClick={() => handleApproveRequest(request._id || request.id)}
+=======
+                              onClick={() => handleApproveRequest(request.id)}
+>>>>>>> footer-comp-7ea8e
                             >
                               <CheckCircle className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="destructive" 
                               size="sm"
+<<<<<<< HEAD
                               onClick={() => handleRejectRequest(request._id || request.id)}
+=======
+                              onClick={() => handleRejectRequest(request.id)}
+>>>>>>> footer-comp-7ea8e
                             >
                               <XCircle className="h-4 w-4" />
                             </Button>
