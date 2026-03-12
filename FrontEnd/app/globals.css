@@ -1,94 +1,94 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Modern, vibrant pet care color palette - premium & energetic */
+/* UI/UX Color Theme - Professional & Modern */
 :root {
-  /* Background: Crisp white with a hint of warm slate */
-  --background: oklch(0.99 0.005 250);
-  /* Text: Deep slate for high readability */
-  --foreground: oklch(0.20 0.02 250);
-  --card: oklch(0.99 0.005 250);
-  --card-foreground: oklch(0.20 0.02 250);
-  --popover: oklch(0.99 0.005 250);
-  --popover-foreground: oklch(0.20 0.02 250);
-  /* Primary: Vibrant Indigo - premium, trustworthy */
-  --primary: oklch(0.50 0.16 260);
-  --primary-foreground: oklch(0.99 0 0);
-  /* Secondary: Soft Peach/Coral - friendly, approachable */
-  --secondary: oklch(0.75 0.14 45);
-  --secondary-foreground: oklch(0.25 0.05 45);
-  /* Muted: Soft slate gray */
-  --muted: oklch(0.94 0.01 250);
-  --muted-foreground: oklch(0.40 0.02 250);
+  /* Background: Light with subtle blue tint */
+  --background: #f8f9fa;
+  /* Text: Deep navy for high readability */
+  --foreground: #222A59;
+  --card: #ffffff;
+  --card-foreground: #222A59;
+  --popover: #ffffff;
+  --popover-foreground: #222A59;
+  /* Primary: Medium blue - professional, trustworthy */
+  --primary: #5666BF;
+  --primary-foreground: #ffffff;
+  /* Secondary: Light blue - friendly, approachable */
+  --secondary: #5670BF;
+  --secondary-foreground: #ffffff;
+  /* Muted: Very light gray */
+  --muted: #f1f3f5;
+  --muted-foreground: #6c757d;
   /* Accent: Golden Yellow - joy, warmth */
-  --accent: oklch(0.85 0.14 85);
-  --accent-foreground: oklch(0.25 0.04 85);
-  /* Destructive */
-  --destructive: oklch(0.60 0.18 20);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.90 0.01 250);
-  --input: oklch(0.90 0.01 250);
-  --ring: oklch(0.50 0.16 260);
-  --chart-1: oklch(0.50 0.16 260);
-  --chart-2: oklch(0.75 0.14 45);
-  --chart-3: oklch(0.85 0.14 85);
-  --chart-4: oklch(0.65 0.16 300);
-  --chart-5: oklch(0.60 0.12 160);
+  --accent: #F2CD13;
+  --accent-foreground: #222A59;
+  /* Destructive: Red variant */
+  --destructive: #dc3545;
+  --destructive-foreground: #ffffff;
+  --border: #dee2e6;
+  --input: #dee2e6;
+  --ring: #5666BF;
+  --chart-1: #5666BF;
+  --chart-2: #5670BF;
+  --chart-3: #F2CD13;
+  --chart-4: #222A59;
+  --chart-5: #020E26;
   /* Rounded corners */
   --radius: 0.75rem;
-  --success: oklch(0.62 0.15 140);
-  --warning: oklch(0.80 0.15 80);
-  --sidebar: oklch(0.96 0.01 250);
-  --sidebar-foreground: oklch(0.20 0.02 250);
-  --sidebar-primary: oklch(0.50 0.16 260);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.85 0.14 85);
-  --sidebar-accent-foreground: oklch(0.25 0.04 85);
-  --sidebar-border: oklch(0.90 0.01 250);
-  --sidebar-ring: oklch(0.50 0.16 260);
+  --success: #28a745;
+  --warning: #ffc107;
+  --sidebar: #f8f9fa;
+  --sidebar-foreground: #222A59;
+  --sidebar-primary: #5666BF;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #F2CD13;
+  --sidebar-accent-foreground: #222A59;
+  --sidebar-border: #dee2e6;
+  --sidebar-ring: #5666BF;
 }
 
 .dark {
-  /* Background: Deep rich violet/slate for a premium dark mode */
-  --background: oklch(0.18 0.01 250);
-  /* Text: Almost white with a tint of blue */
-  --foreground: oklch(0.95 0.01 250);
-  --card: oklch(0.20 0.015 250);
-  --card-foreground: oklch(0.95 0.01 250);
-  --popover: oklch(0.20 0.015 250);
-  --popover-foreground: oklch(0.95 0.01 250);
-  /* Primary: Brighter Indigo */
-  --primary: oklch(0.65 0.16 260);
-  --primary-foreground: oklch(0.10 0.02 260);
-  /* Secondary: Soft Peach */
-  --secondary: oklch(0.70 0.12 45);
-  --secondary-foreground: oklch(0.20 0.05 45);
+  /* Background: Deep navy for dark mode */
+  --background: #020E26;
+  /* Text: Light gray for dark readability */
+  --foreground: #f8f9fa;
+  --card: #222A59;
+  --card-foreground: #f8f9fa;
+  --popover: #222A59;
+  --popover-foreground: #f8f9fa;
+  /* Primary: Lighter blue for dark mode */
+  --primary: #5670BF;
+  --primary-foreground: #ffffff;
+  /* Secondary: Medium blue */
+  --secondary: #5666BF;
+  --secondary-foreground: #ffffff;
   /* Muted: Dark gray-blue */
-  --muted: oklch(0.25 0.02 250);
-  --muted-foreground: oklch(0.65 0.03 250);
-  /* Accent */
-  --accent: oklch(0.75 0.12 85);
-  --accent-foreground: oklch(0.20 0.04 85);
-  --destructive: oklch(0.55 0.16 20);
-  --destructive-foreground: oklch(0.95 0.01 250);
-  --border: oklch(0.28 0.02 250);
-  --input: oklch(0.28 0.02 250);
-  --ring: oklch(0.65 0.16 260);
-  --chart-1: oklch(0.65 0.16 260);
-  --chart-2: oklch(0.70 0.12 45);
-  --chart-3: oklch(0.75 0.12 85);
-  --chart-4: oklch(0.60 0.16 300);
-  --chart-5: oklch(0.55 0.12 160);
-  --success: oklch(0.65 0.15 140);
-  --warning: oklch(0.75 0.15 80);
-  --sidebar: oklch(0.20 0.015 250);
-  --sidebar-foreground: oklch(0.95 0.01 250);
-  --sidebar-primary: oklch(0.65 0.16 260);
-  --sidebar-primary-foreground: oklch(0.10 0.02 260);
-  --sidebar-accent: oklch(0.75 0.12 85);
-  --sidebar-accent-foreground: oklch(0.20 0.04 85);
-  --sidebar-border: oklch(0.28 0.02 250);
-  --sidebar-ring: oklch(0.65 0.16 260);
+  --muted: #1a2b4d;
+  --muted-foreground: #a0a8b8;
+  /* Accent: Golden Yellow - maintains warmth */
+  --accent: #F2CD13;
+  --accent-foreground: #020E26;
+  --destructive: #e74c3c;
+  --destructive-foreground: #ffffff;
+  --border: #3a4a6c;
+  --input: #3a4a6c;
+  --ring: #5670BF;
+  --chart-1: #5670BF;
+  --chart-2: #5666BF;
+  --chart-3: #F2CD13;
+  --chart-4: #f8f9fa;
+  --chart-5: #a0a8b8;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --sidebar: #020E26;
+  --sidebar-foreground: #f8f9fa;
+  --sidebar-primary: #5670BF;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #F2CD13;
+  --sidebar-accent-foreground: #020E26;
+  --sidebar-border: #3a4a6c;
+  --sidebar-ring: #5670BF;
 }
 
 @theme inline {
