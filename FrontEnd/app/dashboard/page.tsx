@@ -388,11 +388,14 @@ export default function DashboardPage() {
                     daysLeft: proj.daysLeft,
                     bgColorClass: proj.bgColorClass
                   }
+                  console.log('Creating project with data:', apiProject);
                   const newProject = await projectApi.createProject(apiProject)
+                  console.log('Project created successfully:', newProject);
                   const transformedProject = transformProject(newProject)
                   setProjects((arr) => [transformedProject, ...arr]);
                 } catch (error) {
                   console.error("Failed to create project:", error)
+                  console.error("Error details:", error instanceof Error ? error.message : error)
                 }
               }}
               onProjectAction={async (id, action) => {
