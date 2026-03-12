@@ -123,11 +123,16 @@ exports.getProject = async (req, res) => {
 // @access  Private
 exports.createProject = async (req, res) => {
   try {
+    console.log('Create project request body:', req.body);
+    console.log('User from token:', req.user);
+    
     const projectData = {
       ...req.body,
       ownerId: req.user._id,
       order: await Project.countDocuments({ ownerId: req.user._id })
     };
+
+    console.log('Project data to save:', projectData);
 
     const project = new Project(projectData);
     await project.save();
@@ -149,10 +154,16 @@ exports.createProject = async (req, res) => {
       await message.save();
     }
 
+    console.log('Project created successfully:', project);
     res.status(201).json(project);
   } catch (error) {
     console.error('Create project error:', error);
-    res.status(500).json({ message: 'Failed to create project', error: error.message });
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ 
+      message: 'Failed to create project', 
+      error: error.message,
+      details: error.toString()
+    });
   }
 };
 
