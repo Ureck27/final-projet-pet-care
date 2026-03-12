@@ -114,8 +114,10 @@ export interface PetProfile {
 }
 
 export interface Trainer {
+  _id: string
   id: string
-  userId: string
+  userId: string | any
+  name?: string
   bio: string
   experience: number
   certifications: string[]
