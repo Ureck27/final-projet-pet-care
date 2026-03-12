@@ -1,5 +1,6 @@
 const Pet = require('../models/Pet');
 const PetProfile = require('../models/PetProfile');
+const { getFileUrl, deleteFile } = require('../middleware/uploadMiddleware');
 const { sendAdminNotification } = require('../services/emailService');
 
 // @desc    Get all pets
@@ -7,12 +8,13 @@ const { sendAdminNotification } = require('../services/emailService');
 const getPets = async (req, res) => {
   try {
     const filter = {};
-    if (req.query.ownerId) {
-      filter.ownerId = req.query.ownerId;
+    if (req.query.userId) {
+      filter.userId = req.query.userId;
     }
-    const pets = await Pet.find(filter).populate('ownerId', 'fullName email');
+    const pets = await Pet.find(filter).populate('userId', 'name email');
     res.json(pets);
   } catch (error) {
+    console.error('Error fetching pets:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -21,13 +23,13 @@ const getPets = async (req, res) => {
 // @route   GET /api/pets/:id
 const getPetById = async (req, res) => {
   try {
-    const pet = await Pet.findById(req.params.id).populate('ownerId', 'fullName email');
+    const pet = await Pet.findById(req.params.id).populate('userId', 'name email');
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });
     }
     
     // Security check: Only owner, admin, or assigned trainer can view pet
-    const isOwner = pet.ownerId._id.toString() === req.user._id.toString();
+    const isOwner = pet.userId._id.toString() === req.user._id.toString();
     const isAssignedTrainer = pet.trainerId && pet.trainerId.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
     
@@ -43,49 +45,56 @@ const getPetById = async (req, res) => {
       profile: petProfile || null
     });
   } catch (error) {
+    console.error('Error fetching pet:', error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Create new pet
+// @desc    Create new pet with image upload
 // @route   POST /api/pets
 const createPet = async (req, res) => {
   try {
-    const { ownerId, name, fullName, type, breed, age, gender, weight, color, medicalNotes, photo } = req.body;
+    const { name, type, breed, age, description, weight, color, medicalNotes } = req.body;
     
+    // Handle image upload
+    let imageUrl = null;
+    if (req.file) {
+      imageUrl = getFileUrl(req.file.filename, 'pet');
+    }
+
     const pet = await Pet.create({
-      ownerId,
+      userId: req.user._id,
       name,
-      fullName,
       type,
       breed,
       age,
-      gender,
+      description,
+      image: imageUrl,
       weight,
       color,
       medicalNotes,
-      photo
+      photo: imageUrl // Keep for backward compatibility
     });
 
-    // Send admin notification
-    await sendAdminNotification(
-      'New Pet Added',
-      `
-      <p><strong>A new pet has been added to the system:</strong></p>
-      <ul>
-        <li><strong>Pet Name:</strong> ${name}</li>
-        <li><strong>Type:</strong> ${type}</li>
-        <li><strong>Breed:</strong> ${breed || 'Not specified'}</li>
-        <li><strong>Age:</strong> ${age || 'Not specified'}</li>
-        <li><strong>Gender:</strong> ${gender || 'Not specified'}</li>
-        <li><strong>Owner ID:</strong> ${ownerId}</li>
-        <li><strong>Added Date:</strong> ${new Date().toLocaleDateString()}</li>
-      </ul>
-      `
-    );
+    // Send admin notification (commented out due to email config)
+    // await sendAdminNotification(
+    //   'New Pet Added',
+    //   `
+    //   <p><strong>A new pet has been added to the system:</strong></p>
+    //   <ul>
+    //     <li><strong>Pet Name:</strong> ${name}</li>
+    //     <li><strong>Type:</strong> ${type}</li>
+    //     <li><strong>Breed:</strong> ${breed || 'N/A'}</li>
+    //     <li><strong>Age:</strong> ${age || 'N/A'}</li>
+    //     <li><strong>Owner:</strong> ${req.user.name}</li>
+    //     <li><strong>Added Date:</strong> ${new Date().toLocaleDateString()}</li>
+    //   </ul>
+    //   `
+    // );
 
     res.status(201).json(pet);
   } catch (error) {
+    console.error('Error creating pet:', error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -99,27 +108,48 @@ const updatePet = async (req, res) => {
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });
     }
-    
+
     // Security check: Only owner or admin can update pet
-    const isOwner = pet.ownerId.toString() === req.user._id.toString();
+    const isOwner = pet.userId.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
     
     if (!isOwner && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to update this pet' });
     }
 
-    pet.name = req.body.name ?? pet.name;
-    pet.type = req.body.type ?? pet.type;
-    pet.breed = req.body.breed ?? pet.breed;
-    pet.age = req.body.age ?? pet.age;
-    pet.weight = req.body.weight ?? pet.weight;
-    pet.color = req.body.color ?? pet.color;
-    pet.medicalNotes = req.body.medicalNotes ?? pet.medicalNotes;
-    pet.photo = req.body.photo ?? pet.photo;
+    const { name, type, breed, age, description, weight, color, medicalNotes } = req.body;
 
-    const updatedPet = await pet.save();
+    // Handle image update
+    let imageUrl = pet.image || pet.photo;
+    if (req.file) {
+      // Delete old image if exists
+      if (imageUrl) {
+        const filename = imageUrl.split('/').pop();
+        deleteFile(`uploads/pets/${filename}`);
+      }
+      imageUrl = getFileUrl(req.file.filename, 'pet');
+    }
+
+    const updatedPet = await Pet.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        type,
+        breed,
+        age,
+        description,
+        image: imageUrl,
+        photo: imageUrl, // Keep for backward compatibility
+        weight,
+        color,
+        medicalNotes
+      },
+      { new: true, runValidators: true }
+    ).populate('userId', 'name email');
+
     res.json(updatedPet);
   } catch (error) {
+    console.error('Error updating pet:', error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -133,20 +163,52 @@ const deletePet = async (req, res) => {
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });
     }
-    
+
     // Security check: Only owner or admin can delete pet
-    const isOwner = pet.ownerId.toString() === req.user._id.toString();
+    const isOwner = pet.userId.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
     
     if (!isOwner && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to delete this pet' });
     }
 
-    // Also delete the pet profile
+    // Delete pet image if exists
+    if (pet.image || pet.photo) {
+      const imageUrl = pet.image || pet.photo;
+      const filename = imageUrl.split('/').pop();
+      deleteFile(`uploads/pets/${filename}`);
+    }
+
+    // Delete pet profile if exists
     await PetProfile.deleteOne({ petId: pet._id });
-    await Pet.deleteOne({ _id: pet._id });
-    res.json({ message: 'Pet and associated profile removed' });
+
+    await Pet.findByIdAndDelete(req.params.id);
+
+    res.json({ message: 'Pet deleted successfully' });
   } catch (error) {
+    console.error('Error deleting pet:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get pets by user ID
+// @route   GET /api/pets/user/:userId
+const getPetsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Security check: Only the user themselves or admin can view their pets
+    const isOwner = userId === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+    
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to view these pets' });
+    }
+
+    const pets = await Pet.find({ userId }).populate('userId', 'name email');
+    res.json(pets);
+  } catch (error) {
+    console.error('Error fetching pets by user:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -156,5 +218,6 @@ module.exports = {
   getPetById,
   createPet,
   updatePet,
-  deletePet
+  deletePet,
+  getPetsByUserId
 };

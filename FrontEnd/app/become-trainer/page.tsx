@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
+import { ImageUpload } from "@/components/ui/image-upload"
 import { 
   UserCheck, 
   Star, 
@@ -19,16 +20,23 @@ import {
   Clock, 
   Users,
   CheckCircle,
-  ArrowLeft
+  ArrowLeft,
+  Upload,
+  Phone,
+  FileText
 } from "lucide-react"
 
 export default function BecomeTrainerPage() {
   const router = useRouter()
   const { user, isLoading } = useAuth()
   const [formData, setFormData] = useState({
+    phone: '',
     experience: '',
+    certifications: '',
     message: ''
   })
+  const [profileImage, setProfileImage] = useState('')
+  const [certificateImages, setCertificateImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
@@ -66,7 +74,7 @@ export default function BecomeTrainerPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.experience.trim() || !formData.message.trim()) {
+    if (!formData.phone.trim() || !formData.experience.trim() || !formData.certifications.trim() || !formData.message.trim()) {
       setError('Please fill in all fields')
       return
     }
@@ -75,10 +83,21 @@ export default function BecomeTrainerPage() {
     setError('')
 
     try {
-      await trainerRequestApi.createRequest({
-        experience: formData.experience,
-        message: formData.message
+      const formDataToSend = new FormData()
+      formDataToSend.append('phone', formData.phone)
+      formDataToSend.append('experience', formData.experience)
+      formDataToSend.append('certifications', formData.certifications)
+      formDataToSend.append('message', formData.message)
+      
+      if (profileImage) {
+        formDataToSend.append('profileImage', profileImage)
+      }
+      
+      certificateImages.forEach((cert, index) => {
+        formDataToSend.append(`certificateImage`, cert)
       })
+
+      await trainerRequestApi.createRequest(formDataToSend)
       
       setSubmitted(true)
     } catch (error: any) {
@@ -141,7 +160,7 @@ export default function BecomeTrainerPage() {
                 Apply to Become a Trainer
               </CardTitle>
               <CardDescription>
-                Share your experience and tell us why you'd be a great addition to our trainer community.
+                Share your experience, upload your documents, and tell us why you'd be a great addition to our trainer community.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -151,6 +170,18 @@ export default function BecomeTrainerPage() {
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="+1 (555) 123-4567"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    required
+                  />
+                </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="experience">Experience</Label>
@@ -165,6 +196,18 @@ export default function BecomeTrainerPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="certifications">Certifications</Label>
+                  <Textarea
+                    id="certifications"
+                    placeholder="List your professional certifications (e.g., 'Certified Professional Dog Trainer - CPDT-KA, Pet First Aid Certified...')"
+                    value={formData.certifications}
+                    onChange={(e) => handleInputChange('certifications', e.target.value)}
+                    rows={3}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="message">Why do you want to join?</Label>
                   <Textarea
                     id="message"
@@ -174,6 +217,53 @@ export default function BecomeTrainerPage() {
                     rows={4}
                     required
                   />
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Profile Image</Label>
+                    <ImageUpload
+                      value={profileImage}
+                      onChange={setProfileImage}
+                      label="Upload Profile Photo"
+                      placeholder="Click to upload or drag and drop"
+                      accept="image/*"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Certificate Images</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Upload your professional certificates (up to 3 files)
+                    </p>
+                    <div className="grid gap-4">
+                      {certificateImages.map((cert, index) => (
+                        <ImageUpload
+                          key={index}
+                          value={cert}
+                          onChange={(value) => {
+                            const newCerts = [...certificateImages]
+                            newCerts[index] = value
+                            setCertificateImages(newCerts)
+                          }}
+                          label={`Certificate ${index + 1}`}
+                          placeholder="Click to upload or drag and drop"
+                          accept="image/*"
+                        />
+                      ))}
+                      {certificateImages.length < 3 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setCertificateImages([...certificateImages, ''])}
+                          className="w-full"
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          Add Certificate
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <Button 
@@ -264,6 +354,10 @@ export default function BecomeTrainerPage() {
                   <li className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-green-500" />
                     Passion for animal welfare
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-green-500" />
+                    Valid certificates and documentation
                   </li>
                 </ul>
               </CardContent>
