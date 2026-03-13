@@ -16,9 +16,15 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { HeroBackground, PremiumBackground } from "@/components/layout/premium-background"
 import { AnimationWrapper, animationPresets, useStaggeredAnimation } from "@/components/ui/animation-wrapper"
 import { PawPrintBackground, FloatingPets, AnimatedPawTrail, PetCareIcons } from "@/components/ui/pet-illustrations"
+
+// Simple HeroBackground component
+const HeroBackground = ({ children }: { children: React.ReactNode }) => (
+  <div className="relative">
+    {children}
+  </div>
+)
 import { cn } from "@/lib/utils"
 import { useScrollAnimation, useParallax } from "@/hooks/use-scroll-animation"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
