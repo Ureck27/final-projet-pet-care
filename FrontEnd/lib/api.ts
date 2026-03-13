@@ -169,37 +169,46 @@ export const authApi = {
 
 // Pet API
 export const petApi = {
-  getPets: (ownerId?: string) => {
-    const query = ownerId ? `?ownerId=${ownerId}` : '';
+  getPets: (userId?: string) => {
+    const query = userId ? `?userId=${userId}` : '';
     return api.get<Pet[]>(`/pets${query}`);
   },
   
   getPetById: (id: string) =>
     api.get<{ pet: Pet; profile: any }>(`/pets/${id}`),
   
-  createPet: (petData: Omit<Pet, 'id' | 'createdAt' | 'updatedAt'>) =>
+  createPet: (petData: FormData | Omit<Pet, 'id' | 'createdAt' | 'updatedAt'>) =>
     api.post<Pet>('/pets', petData),
   
-  updatePet: (id: string, petData: Partial<Pet>) =>
+  updatePet: (id: string, petData: FormData | Partial<Pet>) =>
     api.put<Pet>(`/pets/${id}`, petData),
   
   deletePet: (id: string) =>
     api.delete<{ message: string }>(`/pets/${id}`),
+  
+  getPetsByUserId: (userId: string) =>
+    api.get<Pet[]>(`/pets/user/${userId}`),
 };
 
 // Trainer Request API
 export const trainerRequestApi = {
-  createRequest: (requestData: { experience: string; message: string }) =>
+  createRequest: (requestData: FormData | { experience: string; message: string }) =>
     api.post<TrainerRequest>('/trainer-requests', requestData),
   
   getRequests: () =>
     api.get<TrainerRequest[]>('/trainer-requests'),
   
-  approveRequest: (id: string) =>
-    api.put<{ message: string }>(`/trainer-requests/${id}/approve`, {}),
+  getRequestById: (id: string) =>
+    api.get<TrainerRequest>(`/trainer-requests/${id}`),
   
-  rejectRequest: (id: string) =>
-    api.put<{ message: string }>(`/trainer-requests/${id}/reject`, {}),
+  approveRequest: (id: string) =>
+    api.put<{ message: string; request: TrainerRequest }>(`/trainer-requests/${id}/approve`),
+  
+  rejectRequest: (id: string, rejectionReason?: string) =>
+    api.put<{ message: string; request: TrainerRequest }>(`/trainer-requests/${id}/reject`, { rejectionReason }),
+  
+  deleteRequest: (id: string) =>
+    api.delete<{ message: string }>(`/trainer-requests/${id}`),
 };
 
 // Admin API

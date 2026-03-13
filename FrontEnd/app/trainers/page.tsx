@@ -189,7 +189,6 @@ export default function CaregiversPage() {
         <div className="grid gap-6 md:grid-cols-3">
           <Card className="text-center border-border">
             <CardContent className="p-6">
-              <div className="mb-4 text-4xl">✓</div>
               <h3 className="mb-2 font-semibold text-foreground">Verified Credentials</h3>
               <p className="text-sm text-muted-foreground">
                 All caregivers are vetted, background-checked, and certified professionals
@@ -198,7 +197,6 @@ export default function CaregiversPage() {
           </Card>
           <Card className="text-center border-border">
             <CardContent className="p-6">
-              <div className="mb-4 text-4xl">📸</div>
               <h3 className="mb-2 font-semibold text-foreground">Daily Updates</h3>
               <p className="text-sm text-muted-foreground">
                 Real-time photos, emotion detection, and activity verification
@@ -207,7 +205,6 @@ export default function CaregiversPage() {
           </Card>
           <Card className="text-center border-border">
             <CardContent className="p-6">
-              <div className="mb-4 text-4xl">🤝</div>
               <h3 className="mb-2 font-semibold text-foreground">Reliable & Professional</h3>
               <p className="text-sm text-muted-foreground">
                 Insurance covered, highly rated, and committed to excellence

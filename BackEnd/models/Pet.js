@@ -1,14 +1,10 @@
 const mongoose = require('mongoose');
 
 const petSchema = new mongoose.Schema({
-  ownerId: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  },
-  trainerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
   },
   name: {
     type: String,
@@ -19,20 +15,54 @@ const petSchema = new mongoose.Schema({
     required: true,
     enum: ['dog', 'cat', 'bird', 'rabbit', 'other']
   },
-  breed: { type: String },
-  age: { type: Number },
+  breed: { 
+    type: String,
+    required: false
+  },
+  age: { 
+    type: Number,
+    required: false
+  },
+  description: {
+    type: String,
+    required: false
+  },
+  image: {
+    type: String,
+    required: false
+  },
+  trainerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   gender: {
     type: String,
     enum: ['male', 'female', 'unknown'],
     default: 'unknown'
   },
-  weight: { type: Number },
-  color: { type: String },
-  medicalNotes: { type: String },
-  photo: { type: String }
+  weight: { 
+    type: Number,
+    required: false
+  },
+  color: { 
+    type: String,
+    required: false
+  },
+  medicalNotes: { 
+    type: String,
+    required: false
+  },
+  photo: { 
+    type: String,
+    required: false
+  }
 }, {
   timestamps: true
 });
+
+// Index for faster queries
+petSchema.index({ userId: 1 });
+petSchema.index({ type: 1 });
 
 const Pet = mongoose.model('Pet', petSchema);
 module.exports = Pet;
