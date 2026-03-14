@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 import { forwardRef } from "react"
 
-interface ProfessionalButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onDrag'> {
+interface ProfessionalButtonProps {
   variant?: "primary" | "secondary" | "outline" | "ghost" | "gradient"
   size?: "sm" | "md" | "lg" | "xl"
   loading?: boolean
@@ -15,26 +15,14 @@ interface ProfessionalButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLBu
   fullWidth?: boolean
   glow?: boolean
   shine?: boolean
+  className?: string
+  children: React.ReactNode
+  disabled?: boolean
+  onClick?: React.MouseEventHandler<HTMLButtonElement>
 }
 
 export const ProfessionalButton = forwardRef<HTMLButtonElement, ProfessionalButtonProps>(
-  (
-    {
-      className,
-      variant = "primary",
-      size = "md",
-      loading = false,
-      icon,
-      iconPosition = "left",
-      fullWidth = false,
-      glow = false,
-      shine = false,
-      children,
-      disabled,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, variant = "primary", size = "md", loading = false, icon, iconPosition = "left", fullWidth = false, glow = false, shine = false, disabled = false, onClick, children, ...props }, ref) => {
     const variants = {
       primary: "bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-medium hover:shadow-large",
       secondary: "bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 text-foreground border border-border/30",
@@ -67,7 +55,7 @@ export const ProfessionalButton = forwardRef<HTMLButtonElement, ProfessionalButt
         whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
         whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
         disabled={disabled || loading}
-        {...props}
+        onClick={onClick}
       >
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center">

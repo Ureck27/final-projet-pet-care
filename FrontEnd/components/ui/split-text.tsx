@@ -20,7 +20,7 @@ type SplitTextProps = {
   threshold?: number;
   rootMargin?: string;
   textAlign?: React.CSSProperties["textAlign"];
-  tag?: keyof JSX.IntrinsicElements;
+  tag?: "div" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "span" | "p";
   onLetterAnimationComplete?: () => void;
 };
 

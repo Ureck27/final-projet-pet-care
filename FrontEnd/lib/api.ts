@@ -202,7 +202,7 @@ export const trainerRequestApi = {
     api.get<TrainerRequest>(`/trainer-requests/${id}`),
   
   approveRequest: (id: string) =>
-    api.put<{ message: string; request: TrainerRequest }>(`/trainer-requests/${id}/approve`),
+    api.put<{ message: string; request: TrainerRequest }>(`/trainer-requests/${id}/approve`, {}),
   
   rejectRequest: (id: string, rejectionReason?: string) =>
     api.put<{ message: string; request: TrainerRequest }>(`/trainer-requests/${id}/reject`, { rejectionReason }),

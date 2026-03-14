@@ -449,6 +449,3 @@ class AIService {
 
 // Export singleton instance
 export const aiService = new AIService()
-
-// Export types for use in components
-export type { AIAnalysisRequest, AIAnalysisResponse, AIChatRequest, AIChatResponse, AIHealthInsights }
