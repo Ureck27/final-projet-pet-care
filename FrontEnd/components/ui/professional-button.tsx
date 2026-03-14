@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 import { forwardRef } from "react"
 
-interface ProfessionalButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ProfessionalButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onDrag'> {
   variant?: "primary" | "secondary" | "outline" | "ghost" | "gradient"
   size?: "sm" | "md" | "lg" | "xl"
   loading?: boolean
@@ -50,10 +50,8 @@ export const ProfessionalButton = forwardRef<HTMLButtonElement, ProfessionalButt
       xl: "h-15 px-10 text-lg",
     }
 
-    const MotionButton = motion(Button)
-
     return (
-      <MotionButton
+      <motion.button
         ref={ref}
         className={cn(
           "relative overflow-hidden rounded-xl font-medium transition-all duration-300",
@@ -82,7 +80,7 @@ export const ProfessionalButton = forwardRef<HTMLButtonElement, ProfessionalButt
           {children}
           {icon && iconPosition === "right" && icon}
         </span>
-      </MotionButton>
+      </motion.button>
     )
   }
 )

@@ -44,10 +44,11 @@ export const mockUsers: User[] = [
 
 export const mockPets: Pet[] = [
   {
+    _id: "1",
     id: "1",
     ownerId: "1",
     name: "Max",
-    species: "dog",
+    type: "dog",
     breed: "Golden Retriever",
     age: 3,
     medicalNotes: "Allergic to chicken",
@@ -55,20 +56,22 @@ export const mockPets: Pet[] = [
     createdAt: new Date("2024-01-20"),
   },
   {
+    _id: "2",
     id: "2",
     ownerId: "1",
     name: "Luna",
-    species: "cat",
+    type: "cat",
     breed: "Persian",
     age: 2,
     photo: "/fluffy-persian-cat.png",
     createdAt: new Date("2024-01-25"),
   },
   {
+    _id: "3",
     id: "3",
     ownerId: "1",
     name: "Buddy",
-    species: "dog",
+    type: "dog",
     breed: "Labrador",
     age: 5,
     medicalNotes: "Takes daily vitamins",

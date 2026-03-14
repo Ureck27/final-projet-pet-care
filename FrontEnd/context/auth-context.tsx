@@ -43,8 +43,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await authApi.login({ email, password });
       
       const loggedUser: User = {
+        _id: data._id,
         id: data._id,
         email: data.email,
+        name: data.name,
         fullName: data.name,
         phone: '',
         role: data.role as UserRole,
@@ -72,8 +74,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       
       const newUser: User = {
+        _id: resData._id,
         id: resData._id,
         email: resData.email,
+        name: resData.name,
         fullName: resData.name,
         phone: data.phone,
         role: resData.role as UserRole,
