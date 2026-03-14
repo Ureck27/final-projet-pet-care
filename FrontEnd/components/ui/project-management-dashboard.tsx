@@ -509,7 +509,7 @@ export function ProjectDashboard({
     date: "",
     progress: 0,
     status: "inProgress",
-    accentColor: "#6366f1",
+    accentColor: "#6367ff",
     participants: [],
   });
   const [detailProject, setDetailProject] = useState<Project | null>(null);
@@ -696,7 +696,7 @@ export function ProjectDashboard({
       date: "",
       progress: 0,
       status: "inProgress",
-      accentColor: "#6366f1",
+      accentColor: "#6367ff",
       participants: [],
     });
   };
@@ -1088,7 +1088,7 @@ export function ProjectDashboard({
             )}
 
             {!loading && visibleProjects.map((p) => {
-              const accent = p.accentColor || "#6366f1";
+              const accent = p.accentColor || "#6367ff";
               const isEditing = editingId === p.id;
 
               return (
@@ -1627,7 +1627,7 @@ export function ProjectDashboard({
                     className="h-2 rounded-full transition-all"
                     style={{
                       width: `${detailProject.progress ?? 0}%`,
-                      backgroundColor: detailProject.accentColor || "#6366f1",
+                      backgroundColor: detailProject.accentColor || "#6367ff",
                     }}
                   />
                 </div>

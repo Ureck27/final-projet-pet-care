@@ -62,12 +62,17 @@ const footerLinks: FooterSection[] = [
 
 export function Footer() {
   return (
-    <footer className="md:rounded-t-6xl relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center rounded-t-4xl border-t bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-6 py-12 lg:py-16">
-      <div className="bg-foreground/20 absolute left-1/2 right-1/2 top-0 h-px w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full blur" />
+    <footer className="md:rounded-t-6xl relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center rounded-t-4xl border-t border-border/50 bg-background/50 px-6 py-12 lg:py-16 backdrop-blur-sm">
+      <div className="bg-primary/20 absolute left-1/2 right-1/2 top-0 h-px w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full blur" />
 
       <div className="grid w-full gap-8 xl:grid-cols-3 xl:gap-8">
         <AnimatedContainer className="space-y-4">
-          <FrameIcon className="size-8" />
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-medium glow-primary">
+              <FrameIcon className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-xl font-heading font-bold text-primary">PetCare</span>
+          </div>
           <p className="text-muted-foreground mt-8 text-sm md:mt-0">
             © {new Date().getFullYear()} PetCare. All rights reserved.
           </p>

@@ -9,7 +9,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:scale-105 hover:shadow-lg hover-lift btn-shine',
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 hover:shadow-lg hover-lift btn-shine',
         destructive:
           'bg-destructive text-white hover:scale-105 hover:shadow-lg hover-lift btn-shine focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
@@ -19,7 +19,7 @@ const buttonVariants = cva(
         ghost:
           'hover:scale-105 hover:bg-accent hover:text-accent-foreground hover:shadow-md dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline hover:text-primary/80',
-        gradient: 'gradient-primary text-primary-foreground hover:scale-105 hover:shadow-lg hover-lift btn-shine',
+        gradient: 'bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:scale-105 hover:shadow-lg hover-lift btn-shine',
         glass: 'glass-effect hover:scale-105 hover:bg-background/90 hover:shadow-lg hover-lift',
         neon: 'bg-primary text-primary-foreground hover:scale-105 hover:shadow-lg hover-lift glow-primary btn-shine',
       },

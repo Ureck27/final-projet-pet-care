@@ -63,11 +63,11 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-border/30 glass-effect shadow-medium backdrop-blur-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-secondary shadow-medium group-hover:shadow-large group-hover:scale-105 transition-all duration-300 glow-primary">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary shadow-medium group-hover:shadow-large group-hover:scale-105 transition-all duration-300 glow-primary">
             <PawPrint className="h-7 w-7 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-2xl font-heading font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent group-hover:from-primary/80 group-hover:to-secondary/80 transition-all duration-300">PetCare</span>
+            <span className="text-2xl font-heading font-bold text-primary group-hover:text-primary/80 transition-all duration-300">PetCare</span>
             <span className="text-xs text-muted-foreground font-body font-medium">Professional Pet Services</span>
           </div>
         </Link>
@@ -80,8 +80,8 @@ export function Navbar() {
               className={cn(
                 "rounded-xl px-4 py-2.5 text-sm font-body font-medium transition-all duration-300 hover-lift tracking-tight",
                 pathname === link.href
-                  ? "bg-gradient-to-r from-primary to-secondary text-white shadow-medium glow-primary"
-                  : "text-muted-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 hover:text-foreground hover:shadow-soft",
+                  ? "bg-primary text-white shadow-medium glow-primary"
+                  : "text-muted-foreground hover:bg-primary/10 hover:text-primary hover:shadow-soft",
               )}
             >
               {link.label}
