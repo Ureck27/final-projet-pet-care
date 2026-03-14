@@ -248,7 +248,7 @@ export default function AdminDashboardPage() {
                   {pets.map((pet) => (
                     <TableRow key={pet.id}>
                       <TableCell className="font-medium">{pet.name}</TableCell>
-                      <TableCell>{pet.species}</TableCell>
+                      <TableCell>{pet.type}</TableCell>
                       <TableCell>{pet.breed || 'N/A'}</TableCell>
                       <TableCell>{pet.age || 'N/A'}</TableCell>
                       <TableCell>{pet.ownerId}</TableCell>

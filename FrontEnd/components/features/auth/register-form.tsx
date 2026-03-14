@@ -45,6 +45,7 @@ export function RegisterForm() {
       password: data.password,
       fullName: data.fullName,
       phone: data.phone,
+      role: 'user'
     })
 
     if (success) {

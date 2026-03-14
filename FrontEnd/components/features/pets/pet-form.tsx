@@ -37,16 +37,16 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
       ? {
           name: pet.name,
           fullName: pet.fullName || "",
-          species: pet.type,
+          type: pet.type,
           breed: pet.breed,
           age: pet.age,
-          weight: pet.weight || "",
+          weight: pet.weight || 0,
           color: pet.color || "",
           medicalNotes: pet.medicalNotes || "",
           photo: pet.photo || "",
         }
       : {
-          species: "dog",
+          type: "dog",
           age: 0,
           photo: "",
         },
@@ -96,8 +96,8 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="species">Type</Label>
-              <Select value={watch("species")} onValueChange={(value) => setValue("species", value as "dog" | "cat")}>
+              <Label htmlFor="type">Type</Label>
+              <Select value={watch("type")} onValueChange={(value) => setValue("type", value as "dog" | "cat")}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>

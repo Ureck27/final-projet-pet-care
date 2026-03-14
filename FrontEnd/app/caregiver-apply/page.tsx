@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { caregiverApplicationSchema, type CaregiverApplication } from "@/lib/api"
+import { type CaregiverApplication } from "@/lib/api"
 import { caregiverApi } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Upload, User, Mail, Phone, MapPin, Award, FileText, CheckCircle } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
-import ImageUpload from "@/components/ui/image-upload"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 export default function CaregiverApplicationPage() {
   const router = useRouter()
@@ -32,7 +32,6 @@ export default function CaregiverApplicationPage() {
     setValue,
     watch,
   } = useForm<CaregiverApplication>({
-    resolver: zodResolver(caregiverApplicationSchema),
     defaultValues: {
       name: user?.name || "",
       email: user?.email || "",
