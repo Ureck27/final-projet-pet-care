@@ -17,7 +17,7 @@ export const mockUsers: User[] = [
   },
   {
     _id: "2",
-    _id: "2",
+    id: "2",
     email: "sarah@example.com",
     name: "Sarah Johnson",
     fullName: "Sarah Johnson",
@@ -66,6 +66,7 @@ export const mockPets: Pet[] = [
   },
   {
     _id: "2",
+    id: "2",
     ownerId: "1",
     name: "Luna",
     type: "cat",
@@ -77,6 +78,7 @@ export const mockPets: Pet[] = [
   },
   {
     _id: "3",
+    id: "3",
     ownerId: "1",
     name: "Buddy",
     type: "dog",
@@ -139,6 +141,7 @@ export const mockBookings: Booking[] = [
   },
   {
     _id: "2",
+    id: "2",
     petId: "2",
     trainerId: "2",
     ownerId: "1",
@@ -157,6 +160,7 @@ export const mockBookings: Booking[] = [
   },
   {
     _id: "3",
+    id: "3",
     petId: "3",
     trainerId: "1",
     ownerId: "1",
@@ -203,8 +207,7 @@ export const mockNotifications: Notification[] = [
     createdAt: new Date("2024-03-14"),
   },
   {
-    _id: "2",
-    _id: "2",
+    id: "2",
     userId: "1",
     type: "activity-update",
     priority: "medium",
@@ -254,7 +257,7 @@ export const mockTasks: Task[] = [
   },
   {
     _id: "2",
-    _id: "2",
+    id: "2",
     petId: "1",
     ownerId: "1",
     title: "Breakfast feeding",
@@ -273,6 +276,7 @@ export const mockTasks: Task[] = [
     updatedAt: new Date("2024-03-15T08:10:00"),
   },
   {
+    _id: "3",
     id: "3",
     petId: "1",
     ownerId: "1",
@@ -293,6 +297,7 @@ export const mockTasks: Task[] = [
     updatedAt: new Date("2024-03-15T15:25:00"),
   },
   {
+    _id: "4",
     id: "4",
     petId: "1",
     ownerId: "1",
@@ -311,6 +316,7 @@ export const mockTasks: Task[] = [
     updatedAt: new Date("2024-03-15T12:15:00"),
   },
   {
+    _id: "5",
     id: "5",
     petId: "1",
     ownerId: "1",
@@ -328,6 +334,7 @@ export const mockTasks: Task[] = [
     updatedAt: new Date("2024-03-15"),
   },
   {
+    _id: "6",
     id: "6",
     petId: "1",
     ownerId: "1",
@@ -369,8 +376,7 @@ export const mockDailyActivities: DailyActivity[] = [
     createdAt: new Date("2024-03-15T09:25:00"),
   },
   {
-    _id: "2",
-    _id: "2",
+    id: "2",
     petId: "1",
     caregiverId: "2",
     activityType: "meal",
@@ -447,8 +453,7 @@ export const mockMoodEntries: MoodEntry[] = [
     caregiverNotes: "Happy and energetic",
   },
   {
-    _id: "2",
-    _id: "2",
+    id: "2",
     petId: "1",
     emotion: "content",
     confidence: 88,
@@ -489,8 +494,7 @@ export const mockCarePackages: CarePackage[] = [
     features: ["Daily activity tracking", "Photo updates", "Emotion detection", "Task management"],
   },
   {
-    _id: "2",
-    _id: "2",
+    id: "2",
     type: "overnight",
     name: "Overnight Care Package",
     description: "Overnight care while you're away",
@@ -598,8 +602,7 @@ export const mockCarePlans: CarePlan[] = [
     updatedAt: new Date("2024-03-10"),
   },
   {
-    _id: "2",
-    _id: "2",
+    id: "2",
     bookingId: "3",
     petId: "3",
     trainerId: "1",
@@ -725,8 +728,7 @@ export const mockPetProfiles: PetProfile[] = [
     updatedAt: new Date("2024-02-20"),
   },
   {
-    _id: "2",
-    _id: "2",
+    id: "2",
     petId: "3",
     ownerId: "1",
     dateOfBirth: new Date("2022-06-10"),

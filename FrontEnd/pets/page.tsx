@@ -40,15 +40,17 @@ export default function PetsPage() {
 
   const handleAddPet = (data: PetFormData) => {
     const newPet: Pet = {
+      _id: String(pets.length + 10),
       id: String(pets.length + 10),
       ownerId: user.id,
       name: data.name,
-      species: data.species,
+      type: data.type,
       breed: data.breed,
       age: data.age,
       medicalNotes: data.medicalNotes,
-      photo: `/placeholder.svg?height=200&width=200&query=${data.species} ${data.breed}`,
+      photo: `/placeholder.svg?height=200&width=200&query=${data.type} ${data.breed}`,
       createdAt: new Date(),
+      updatedAt: new Date().toISOString(),
     }
     setPets([...pets, newPet])
   }
