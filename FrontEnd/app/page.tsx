@@ -197,7 +197,7 @@ export default function HomePage() {
                   <SplitText
                     text="One App. One Routine."
                     tag="h1"
-                    className="block text-balance text-5xl font-extrabold tracking-tight text-white md:text-6xl lg:text-7xl"
+                    className="block text-balance text-5xl font-extrabold tracking-tight hero-text-white md:text-6xl lg:text-7xl"
                     delay={40}
                     duration={1.1}
                     ease="power3.out"

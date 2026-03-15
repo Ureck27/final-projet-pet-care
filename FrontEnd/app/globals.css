@@ -475,6 +475,10 @@
   .text-secondary { color: #1A1A1A !important; }
   .text-muted-foreground { color: #64748B !important; }
   .text-foreground { color: #1A1A1A !important; }
+  
+  /* Hero text visibility in light mode */
+  .hero-text-purple { color: #6367FF !important; }
+  .hero-text-white { color: #FFFFFF !important; }
 }
 
 /* Dark mode specific fixes */
@@ -496,6 +500,10 @@
   .text-secondary { color: #F8F9FA !important; }
   .text-muted-foreground { color: #94A3B8 !important; }
   .text-foreground { color: #F8F9FA !important; }
+  
+  /* Hero text visibility in dark mode */
+  .hero-text-purple { color: #A78BFA !important; }
+  .hero-text-white { color: #FFFFFF !important; }
 }
 
 /* Ensure proper contrast for badges */
