@@ -479,6 +479,23 @@
   /* Hero text visibility in light mode */
   .hero-text-purple { color: #6367FF !important; }
   .hero-text-white { color: #FFFFFF !important; }
+  
+  /* Gradient text visibility for both modes */
+  .gradient-text-light { 
+    background: linear-gradient(135deg, #6367FF 0%, #EC4899 50%, #3B82F6 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    color: transparent !important;
+  }
+  
+  .gradient-text-dark { 
+    background: linear-gradient(135deg, #A78BFA 0%, #F472B6 50%, #60A5FA 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    color: transparent !important;
+  }
 }
 
 /* Dark mode specific fixes */

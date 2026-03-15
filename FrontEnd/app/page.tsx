@@ -211,7 +211,7 @@ export default function HomePage() {
                   <SplitText
                     text="Total Peace of Mind."
                     tag="h1"
-                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold gradient-text md:text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400"
+                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold gradient-text-light dark:gradient-text-dark md:text-transparent bg-clip-text"
                     delay={50}
                     duration={1.2}
                     ease="power3.out"
