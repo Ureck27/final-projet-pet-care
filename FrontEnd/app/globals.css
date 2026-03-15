@@ -455,6 +455,49 @@
   border-color: var(--border) !important;
 }
 
+/* Light mode specific fixes */
+.light {
+  /* Ensure proper contrast for light mode */
+  .text-purple-100 { color: #6B21A8 !important; }
+  .text-purple-200 { color: #581C87 !important; }
+  .text-purple-300 { color: #4C1D95 !important; }
+  .text-green-400 { color: #10B981 !important; }
+  .text-green-600 { color: #059669 !important; }
+  .text-red-600 { color: #DC2626 !important; }
+  .text-amber-500 { color: #D97706 !important; }
+  .text-violet-500 { color: #7C3AED !important; }
+  .text-blue-500 { color: #3B82F6 !important; }
+  .text-pink-500 { color: #EC4899 !important; }
+  
+  /* Ensure icon visibility in light mode */
+  .icon-visible { color: #1A1A1A !important; }
+  .text-primary { color: #1A1A1A !important; }
+  .text-secondary { color: #1A1A1A !important; }
+  .text-muted-foreground { color: #64748B !important; }
+  .text-foreground { color: #1A1A1A !important; }
+}
+
+/* Dark mode specific fixes */
+.dark {
+  .text-purple-100 { color: #DDD6FE !important; }
+  .text-purple-200 { color: #C4B5FD !important; }
+  .text-purple-300 { color: #A78BFA !important; }
+  .text-green-400 { color: #4ADE80 !important; }
+  .text-green-600 { color: #22C55E !important; }
+  .text-red-600 { color: #F87171 !important; }
+  .text-amber-500 { color: #FBBF24 !important; }
+  .text-violet-500 { color: #A78BFA !important; }
+  .text-blue-500 { color: #60A5FA !important; }
+  .text-pink-500 { color: #F472B6 !important; }
+  
+  /* Ensure icon visibility in dark mode */
+  .icon-visible { color: #F8F9FA !important; }
+  .text-primary { color: #F8F9FA !important; }
+  .text-secondary { color: #F8F9FA !important; }
+  .text-muted-foreground { color: #94A3B8 !important; }
+  .text-foreground { color: #F8F9FA !important; }
+}
+
 /* Ensure proper contrast for badges */
 .badge-visible {
   color: var(--primary-foreground) !important;
@@ -469,6 +512,37 @@
 .badge-muted-visible {
   color: var(--muted-foreground) !important;
   background-color: var(--muted) !important;
+}
+
+/* Ensure all badge variants are visible */
+.light .badge-visible {
+  color: #FFFFFF !important;
+  background-color: #6367FF !important;
+}
+
+.light .badge-secondary-visible {
+  color: #FFFFFF !important;
+  background-color: #8494FF !important;
+}
+
+.light .badge-muted-visible {
+  color: #64748B !important;
+  background-color: #F1F5F9 !important;
+}
+
+.dark .badge-visible {
+  color: #FFFFFF !important;
+  background-color: #6367FF !important;
+}
+
+.dark .badge-secondary-visible {
+  color: #FFFFFF !important;
+  background-color: #8494FF !important;
+}
+
+.dark .badge-muted-visible {
+  color: #94A3B8 !important;
+  background-color: #1E293B !important;
 }
 
 /* Input visibility */

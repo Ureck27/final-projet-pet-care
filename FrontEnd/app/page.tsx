@@ -302,12 +302,12 @@ export default function HomePage() {
                         whileHover={{ scale: 1.1, rotate: 5 }}
                         className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-animated transition-smooth group-hover:scale-110 float-element shadow-soft-lg"
                       >
-                        {item.icon && <item.icon className="h-8 w-8 text-white" />}
+                        {item.icon && <item.icon className="h-8 w-8 icon-visible" />}
                       </motion.div>
                       <p className="mb-6 text-base font-medium text-purple-100 leading-relaxed">{item.problem}</p>
                       <div className="pt-6 border-t border-purple-400/20 bg-gradient-to-r from-purple-500/10 to-blue-500/10 p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-purple-500/20 group-hover:to-blue-500/20 transition-smooth">
                         <p className="text-base text-purple-200 font-medium flex items-start gap-2">
-                          <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-green-400" />
+                          <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 icon-visible" />
                           {item.solution}
                         </p>
                       </div>
@@ -343,7 +343,7 @@ export default function HomePage() {
                         whileHover={{ scale: 1.1, rotate: -5 }} 
                         className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary shadow-soft group-hover:shadow-lg float-element"
                       >
-                        <feature.icon className="h-8 w-8 text-primary-foreground" />
+                        <feature.icon className="h-8 w-8 icon-visible text-primary-foreground" />
                       </motion.div>
                       <h3 className="mb-3 text-xl font-semibold text-foreground group-hover:text-primary transition-colors">{feature.title}</h3>
                       <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
@@ -384,7 +384,7 @@ export default function HomePage() {
                       {index + 1}
                     </div>
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                      {step.icon && <step.icon className="h-6 w-6 text-primary" />}
+                      {step.icon && <step.icon className="h-6 w-6 icon-visible text-primary" />}
                     </div>
                     <h3 className="mb-2 font-semibold text-foreground group-hover:text-primary transition-colors">{step.title}</h3>
                     <p className="text-sm text-muted-foreground">{step.description}</p>
@@ -396,7 +396,7 @@ export default function HomePage() {
                         animate={{ x: [0, 5, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       >
-                        <ArrowRight className="h-6 w-6 text-primary/40" />
+                        <ArrowRight className="h-6 w-6 icon-visible text-primary/40" />
                       </motion.div>
                     </div>
                   )}
@@ -474,31 +474,31 @@ export default function HomePage() {
           <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12 md:grid-rows-3 lg:gap-6 xl:max-h-[34rem] xl:grid-rows-2">
             <TimelineGridItem
               area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
-              icon={<Coffee className="h-4 w-4 text-amber-500" />}
+              icon={<Coffee className="h-4 w-4 icon-visible" />}
               title="Morning Routine & Hydration"
               description="Fresh water, breakfast, and a happy tail to start the day right."
             />
             <TimelineGridItem
               area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
-              icon={<PawPrint className="h-4 w-4 text-primary" />}
+              icon={<PawPrint className="h-4 w-4 icon-visible" />}
               title="Adventure Walk & Sniff Time"
               description="Guided walk with GPS proof, photos, and mood check-ins from the trainer."
             />
             <TimelineGridItem
               area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
-              icon={<Video className="h-4 w-4 text-violet-500" />}
+              icon={<Video className="h-4 w-4 icon-visible" />}
               title="Training & Enrichment Session"
               description="Short videos, AI-verified progress, and badges earned for good behavior."
             />
             <TimelineGridItem
               area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]"
-              icon={<Moon className="h-4 w-4 text-blue-500" />}
+              icon={<Moon className="h-4 w-4 icon-visible" />}
               title="Cozy Nap & Calm Time"
               description="Heart rate, mood, and comfort logged—see exactly how relaxed they are."
             />
             <TimelineGridItem
               area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
-              icon={<Sparkles className="h-4 w-4 text-pink-500" />}
+              icon={<Sparkles className="h-4 w-4 icon-visible" />}
               title="End-of-Day Story Recap"
               description={
                 <>
@@ -531,7 +531,7 @@ export default function HomePage() {
             <Card className="border-border shadow-soft bg-glass">
               <CardContent className="p-6">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
-                  <UserCheck className="h-7 w-7 text-primary" />
+                  <UserCheck className="h-7 w-7 icon-visible" />
                 </div>
                 <h3 className="mb-2 font-bold text-foreground">Professional Human Caregivers</h3>
                 <p className="text-sm text-muted-foreground">
@@ -543,7 +543,7 @@ export default function HomePage() {
             <Card className="border-border shadow-soft bg-glass">
               <CardContent className="p-6">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
-                  <Calendar className="h-7 w-7 text-primary" />
+                  <Calendar className="h-7 w-7 icon-visible" />
                 </div>
                 <h3 className="mb-2 font-bold text-foreground">Structured Daily Routines</h3>
                 <p className="text-sm text-muted-foreground">
@@ -555,7 +555,7 @@ export default function HomePage() {
             <Card className="border-border shadow-soft bg-glass">
               <CardContent className="p-6">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15">
-                  <Bot className="h-7 w-7 text-primary" />
+                  <Bot className="h-7 w-7 icon-visible" />
                 </div>
                 <h3 className="mb-2 font-bold text-foreground">AI-Assisted Verification</h3>
                 <p className="text-sm text-muted-foreground">
@@ -583,7 +583,7 @@ export default function HomePage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {caregiverBenefits.map((benefit) => (
               <div key={benefit} className="flex items-start gap-3">
-                <Star className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+                <Star className="h-5 w-5 icon-visible flex-shrink-0 mt-0.5" />
                 <p className="font-medium text-foreground">{benefit}</p>
               </div>
             ))}
@@ -640,7 +640,7 @@ export default function HomePage() {
                 <CardContent className="p-6">
                   <div className="mb-4 flex gap-1">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-accent text-accent" />
+                      <Star key={i} className="h-4 w-4 icon-visible fill-accent text-accent" />
                     ))}
                   </div>
                   <p className="mb-4 text-sm text-muted-foreground italic">{`"${testimonial.content}"`}</p>
@@ -673,14 +673,14 @@ export default function HomePage() {
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: Users, title: "Curated Professionals", desc: "Not a marketplace—only vetted caregivers" },
+              { icon: BookOpen, title: "Complete Ecosystem", desc: "Activity management + booking + tracking" },
               { icon: BookOpen, title: "Complete Ecosystem", desc: "Activity management + booking + tracking" },
               { icon: CheckSquare, title: "Verified Proof", desc: "AI-verified updates, not just promises" },
               { icon: Target, title: "Unified Platform", desc: "Replace 5+ services with one app" },
             ].map((item) => (
               <Card key={item.title} className="border-border shadow-soft text-center p-6 bg-glass transition-smooth hover:shadow-md hover:border-primary/30">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15 mx-auto">
-                  <item.icon className="h-7 w-7 text-primary" />
+                  <item.icon className="h-7 w-7 icon-visible" />
                 </div>
                 <h3 className="mb-2 font-bold text-foreground">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
