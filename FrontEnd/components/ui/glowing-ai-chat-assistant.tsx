@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { Paperclip, Link, Code, Mic, Send, Info, Bot, X } from 'lucide-react'
+import { Mic, Send, Bot, X } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
 import { aiService } from '@/lib/ai-service'
 import type { UserRole } from '@/lib/types'
@@ -11,6 +11,7 @@ type ChatMessage = {
   role: 'user' | 'assistant'
   content: string
   timestamp: Date
+  type: 'text' | 'audio'
 }
 
 const FloatingAiAssistant: React.FC = () => {
@@ -19,17 +20,15 @@ const FloatingAiAssistant: React.FC = () => {
 
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [message, setMessage] = useState('')
-  const [charCount, setCharCount] = useState(0)
   const [isSending, setIsSending] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
-  const maxChars = 2000
   const chatRef = useRef<HTMLDivElement | null>(null)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value.slice(0, maxChars)
-    setMessage(value)
-    setCharCount(value.length)
+    setMessage(e.target.value)
   }
 
   useEffect(() => {
@@ -68,11 +67,11 @@ const FloatingAiAssistant: React.FC = () => {
       role: 'user',
       content: trimmed,
       timestamp: new Date(),
+      type: 'text'
     }
     const nextMessages = [...messages, userMsg]
     setMessages(nextMessages)
     setMessage('')
-    setCharCount(0)
     setIsSending(true)
 
     try {
@@ -91,6 +90,7 @@ const FloatingAiAssistant: React.FC = () => {
         role: 'assistant',
         content: res.success ? res.response : (res.error || 'Sorry, something went wrong.'),
         timestamp: new Date(),
+        type: 'text'
       }
       setMessages((prev) => [...prev, assistantMsg])
     } catch (err) {
@@ -101,10 +101,33 @@ const FloatingAiAssistant: React.FC = () => {
           role: 'assistant',
           content: 'Sorry, I could not respond right now. Please try again.',
           timestamp: new Date(),
+          type: 'text'
         },
       ])
     } finally {
       setIsSending(false)
+    }
+  }
+
+  const handleStartRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mediaRecorder = new MediaRecorder(stream)
+      mediaRecorderRef.current = mediaRecorder
+      setIsRecording(true)
+
+      mediaRecorder.start()
+    } catch (error) {
+      console.error('Error accessing microphone:', error)
+    }
+  }
+
+  const handleStopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.onstop = () => {
+        setIsRecording(false)
+      }
+      mediaRecorderRef.current.stop()
     }
   }
 
@@ -138,34 +161,25 @@ const FloatingAiAssistant: React.FC = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      {/* Floating 3D Glowing AI Logo */}
+      {/* Floating AI Button */}
       <button
-        className={`floating-ai-button relative flex h-16 w-16 transform items-center justify-center rounded-full transition-all duration-500 ${
-          isChatOpen ? 'rotate-90' : 'rotate-0'
+        className={`floating-ai-button relative flex h-14 w-14 transform items-center justify-center rounded-full transition-all duration-300 ${
+          isChatOpen ? 'scale-110' : 'hover:scale-110'
         }`}
         onClick={() => setIsChatOpen(!isChatOpen)}
         style={{
           background:
-            'linear-gradient(135deg, rgba(99,102,241,0.8) 0%, rgba(168,85,247,0.8) 100%)',
+            'linear-gradient(135deg, var(--primary), var(--accent))',
           boxShadow:
-            '0 0 20px rgba(139, 92, 246, 0.7), 0 0 40px rgba(124, 58, 237, 0.5), 0 0 60px rgba(109, 40, 217, 0.3)',
-          border: '2px solid rgba(255, 255, 255, 0.2)',
+            '0 4px 12px rgba(168, 85, 247, 0.4)',
         }}
         aria-label={isChatOpen ? 'Close AI assistant' : 'Open AI assistant'}
       >
-        {/* 3D effect */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent opacity-30" />
-
-        {/* Inner glow */}
-        <div className="absolute inset-0 rounded-full border-2 border-white/10" />
-
-        {/* AI Icon */}
-        <div className="relative z-10">
-          {isChatOpen ? <X /> : <Bot className="h-8 w-8 text-white" />}
-        </div>
-
-        {/* Glowing animation */}
-        <div className="absolute inset-0 animate-ping rounded-full bg-indigo-500 opacity-20" />
+        {isChatOpen ? (
+          <X className="h-6 w-6 text-white" />
+        ) : (
+          <Bot className="h-6 w-6 text-white" />
+        )}
       </button>
 
       {/* Chat Interface */}
@@ -178,197 +192,85 @@ const FloatingAiAssistant: React.FC = () => {
               'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
           }}
         >
-          <div className="relative flex flex-col overflow-hidden rounded-3xl border border-zinc-500/50 bg-gradient-to-br from-zinc-800/80 to-zinc-900/90 shadow-2xl backdrop-blur-3xl">
+          <div className="relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl backdrop-blur-xl min-w-[360px]">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 pb-2 pt-4">
-              <div className="flex items-center gap-1.5">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-700/30 dark:border-zinc-700/30">
+              <div className="flex items-center gap-2">
                 <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-                <span className="text-xs font-medium text-zinc-400">
+                <span className="font-medium text-foreground">
                   PetCare AI
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="rounded-2xl bg-zinc-800/60 px-2 py-1 text-xs font-medium text-zinc-300">
-                  {effectiveRole.toUpperCase()}
-                </span>
-                <span className="rounded-2xl border border-red-500/20 bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400">
-                  Assistant
-                </span>
-                <button
-                  onClick={() => setIsChatOpen(false)}
-                  className="rounded-full p-1.5 transition-colors hover:bg-zinc-700/50"
-                  aria-label="Close chat"
-                >
-                  <X className="h-4 w-4 text-zinc-400" />
-                </button>
-              </div>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="rounded-full p-2 transition-colors hover:bg-muted"
+                aria-label="Close chat"
+              >
+                <X className="h-5 w-5 text-muted-foreground" />
+              </button>
             </div>
 
             {/* Messages */}
-            <div className="max-h-[320px] overflow-y-auto px-6 pb-2">
-              <div className="space-y-3">
-                {messages.map((m) => (
+            <div className="max-h-[350px] overflow-y-auto px-6 py-4 space-y-4">
+              {messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
                   <div
-                    key={m.id}
-                    className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    className={`max-w-[80%] rounded-lg px-4 py-2 text-sm leading-relaxed ${
+                      m.role === 'user'
+                        ? 'bg-primary text-primary-foreground rounded-br-none'
+                        : 'bg-muted text-foreground rounded-bl-none'
+                    }`}
                   >
-                    <div
-                      className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
-                        m.role === 'user'
-                          ? 'bg-red-600/90 text-white'
-                          : 'bg-zinc-800/60 text-zinc-100'
-                      }`}
-                    >
-                      {m.content}
-                    </div>
+                    {m.content}
                   </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Input Section */}
-            <div className="relative overflow-hidden">
+            <div className="border-t border-zinc-700/30 dark:border-zinc-700/30 px-6 py-4 bg-card/50">
               <textarea
                 value={message}
                 onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                rows={4}
-                className="min-h-[120px] w-full resize-none border-none bg-transparent px-6 py-4 text-base font-normal leading-relaxed text-zinc-100 outline-none placeholder-zinc-500 scrollbar-none"
-                placeholder={
-                  effectiveRole === 'visitor'
-                    ? 'Ask about services, pricing, or pet-care basics...'
-                    : 'Ask about pet care, bookings, routines, or training...'
-                }
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              />
-              <div
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-800/5 to-transparent"
-                style={{
-                  background:
-                    'linear-gradient(to top, rgba(39, 39, 42, 0.05), transparent)',
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    handleSend()
+                  }
                 }}
+                rows={3}
+                className="w-full resize-none border border-input rounded-lg bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Type your message... (Shift+Enter for new line)"
               />
-            </div>
+              
+              {/* Controls */}
+              <div className="mt-4 flex items-center gap-3">
+                <button
+                  onClick={isRecording ? handleStopRecording : handleStartRecording}
+                  className={`p-2.5 rounded-lg transition-all ${
+                    isRecording
+                      ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30'
+                      : 'bg-muted text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                  aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+                >
+                  <Mic className="h-5 w-5" />
+                </button>
 
-            {/* Controls Section */}
-            <div className="px-4 pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {/* Attachment Group */}
-                  <div className="flex items-center gap-1.5 rounded-xl border border-zinc-700/50 bg-zinc-800/40 p-1">
-                    {/* File Upload */}
-                    <button className="group relative cursor-pointer rounded-lg border-none bg-transparent p-2.5 text-zinc-500 transition-all duration-300 hover:-rotate-3 hover:scale-105 hover:bg-zinc-800/80 hover:text-zinc-200">
-                      <Paperclip className="h-4 w-4 transition-all duration-300 group-hover:-rotate-12 group-hover:scale-125" />
-                      <div className="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 transform whitespace-nowrap rounded-lg border border-zinc-700/50 bg-zinc-900/95 px-3 py-2 text-xs text-zinc-200 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:opacity-100">
-                        Upload files
-                        <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-900/95" />
-                      </div>
-                    </button>
-
-                    {/* Link */}
-                    <button className="group relative cursor-pointer rounded-lg border-none bg-transparent p-2.5 text-zinc-500 transition-all duration-300 hover:rotate-6 hover:scale-105 hover:bg-zinc-800/80 hover:text-red-400">
-                      <Link className="h-4 w-4 transition-all duration-300 group-hover:rotate-12 group-hover:scale-125" />
-                      <div className="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 transform whitespace-nowrap rounded-lg border border-zinc-700/50 bg-zinc-900/95 px-3 py-2 text-xs text-zinc-200 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:opacity-100">
-                        Web link
-                        <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-900/95" />
-                      </div>
-                    </button>
-
-                    {/* Code */}
-                    <button className="group relative cursor-pointer rounded-lg border-none bg-transparent p-2.5 text-zinc-500 transition-all duration-300 hover:rotate-3 hover:scale-105 hover:bg-zinc-800/80 hover:text-green-400">
-                      <Code className="h-4 w-4 transition-all duration-300 group-hover:-rotate-6 group-hover:scale-125" />
-                      <div className="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 transform whitespace-nowrap rounded-lg border border-zinc-700/50 bg-zinc-900/95 px-3 py-2 text-xs text-zinc-200 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:opacity-100">
-                        Code repo
-                        <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-900/95" />
-                      </div>
-                    </button>
-
-                    {/* Design (Figma-like icon) */}
-                    <button className="group relative cursor-pointer rounded-lg border-none bg-transparent p-2.5 text-zinc-500 transition-all duration-300 hover:-rotate-6 hover:scale-105 hover:bg-zinc-800/80 hover:text-purple-400">
-                      <svg
-                        className="h-4 w-4 transition-all duration-300 group-hover:rotate-12 group-hover:scale-125"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path d="M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.354-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.015-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117v-6.038H8.148zm7.704 0c-2.476 0-4.49 2.015-4.49 4.49s2.014 4.49 4.49 4.49 4.49-2.015 4.49-4.49-2.014-4.49-4.49-4.49zm0 7.509c-1.665 0-3.019-1.355-3.019-3.019s1.355-3.019 3.019-3.019 3.019 1.354 3.019 3.019-1.354 3.019-3.019 3.019zM8.148 24c-2.476 0-4.49-2.015-4.49-4.49s2.014-4.49 4.49-4.49h4.588V24H8.148zm3.117-1.471V16.49H8.148c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.02 3.019 3.02h3.117z" />
-                      </svg>
-                      <div className="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 transform whitespace-nowrap rounded-lg border border-zinc-700/50 bg-zinc-900/95 px-3 py-2 text-xs text-zinc-200 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:opacity-100">
-                        Design file
-                        <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-900/95" />
-                      </div>
-                    </button>
-                  </div>
-
-                  {/* Voice Button */}
-                  <button className="group relative cursor-pointer transform rounded-lg border border-zinc-700/30 bg-transparent p-2.5 text-zinc-500 transition-all duration-300 hover:scale-110 hover:rotate-2 hover:border-red-500/30 hover:bg-zinc-800/80 hover:text-red-400">
-                    <Mic className="h-4 w-4 transition-all duration-300 group-hover:-rotate-3 group-hover:scale-125" />
-                    <div className="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 transform whitespace-nowrap rounded-lg border border-zinc-700/50 bg-zinc-900/95 px-3 py-2 text-xs text-zinc-200 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:opacity-100">
-                      Voice input
-                      <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-900/95" />
-                    </div>
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {/* Character Counter */}
-                  <div className="text-xs font-medium text-zinc-500">
-                    <span>{charCount}</span>
-                    <span className="text-zinc-400">/{maxChars}</span>
-                  </div>
-
-                  {/* Send Button */}
-                  <button
-                    onClick={handleSend}
-                    disabled={isSending || !message.trim()}
-                    className="group relative transform cursor-pointer rounded-xl border-none bg-gradient-to-r from-red-600 to-red-500 p-3 text-white shadow-lg transition-all duration-300 hover:-rotate-2 hover:scale-110 hover:from-red-500 hover:to-red-400 hover:shadow-xl hover:shadow-red-500/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:rotate-0 disabled:hover:scale-100"
-                    style={{
-                      boxShadow:
-                        '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 0 0 0 rgba(239, 68, 68, 0.4)',
-                    }}
-                  >
-                    <Send className="h-5 w-5 transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:rotate-12 group-hover:scale-110" />
-
-                    {/* Animated background glow */}
-                    <div className="absolute inset-0 scale-110 rounded-xl bg-gradient-to-r from-red-600 to-red-500 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-50" />
-
-                    {/* Ripple effect on click */}
-                    <div className="absolute inset-0 overflow-hidden rounded-xl">
-                      <div className="absolute inset-0 scale-0 rounded-xl bg-white/20 transition-transform duration-200 group-active:scale-100" />
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Footer Info */}
-              <div className="mt-3 flex items-center justify-between gap-6 border-t border-zinc-800/50 pt-3 text-xs text-zinc-500">
-                <div className="flex items-center gap-2">
-                  <Info className="h-3 w-3" />
-                  <span>
-                    Press{' '}
-                    <kbd className="shadow-sm inline-flex items-center justify-center rounded border border-zinc-600 bg-zinc-800 px-1.5 py-1 font-mono text-xs text-zinc-400">
-                      Shift + Enter
-                    </kbd>{' '}
-                    for new line
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                  <span>{isSending ? 'Thinking…' : 'Ready'}</span>
-                </div>
+                <button
+                  onClick={handleSend}
+                  disabled={isSending || !message.trim()}
+                  className="ml-auto px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium text-sm flex items-center gap-2"
+                >
+                  <Send className="h-4 w-4" />
+                  Send
+                </button>
               </div>
             </div>
-
-            {/* Floating Overlay */}
-            <div
-              className="pointer-events-none absolute inset-0 rounded-3xl"
-              style={{
-                background:
-                  'linear-gradient(135deg, rgba(239, 68, 68, 0.05), transparent, rgba(147, 51, 234, 0.05))',
-              }}
-            />
           </div>
         </div>
       )}
