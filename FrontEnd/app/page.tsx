@@ -673,12 +673,12 @@ export default function HomePage() {
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: BookOpen, title: "Complete Ecosystem", desc: "Activity management + booking + tracking" },
-              { icon: BookOpen, title: "Complete Ecosystem", desc: "Activity management + booking + tracking" },
-              { icon: CheckSquare, title: "Verified Proof", desc: "AI-verified updates, not just promises" },
-              { icon: Target, title: "Unified Platform", desc: "Replace 5+ services with one app" },
-            ].map((item) => (
-              <Card key={item.title} className="border-border shadow-soft text-center p-6 bg-glass transition-smooth hover:shadow-md hover:border-primary/30">
+            { icon: BookOpen, title: "Complete Ecosystem", desc: "Activity management + booking + tracking" },
+            { icon: BookOpen, title: "Complete Ecosystem", desc: "Activity management + booking + tracking" },
+            { icon: CheckSquare, title: "Verified Proof", desc: "AI-verified updates, not just promises" },
+            { icon: Target, title: "Unified Platform", desc: "Replace 5+ services with one app" },
+          ].map((item, index) => (
+            <Card key={`${item.title}-${index}`} className="border-border shadow-soft text-center p-6 bg-glass transition-smooth hover:shadow-md hover:border-primary/30">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/15 mx-auto">
                   <item.icon className="h-7 w-7 icon-visible" />
                 </div>
