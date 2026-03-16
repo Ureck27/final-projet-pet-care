@@ -227,7 +227,7 @@ export default function HomePage() {
               <FadeIn direction="up" delay={0.2}>
                 <p className="mb-8 text-pretty text-lg text-purple-200 md:text-xl leading-relaxed">
                   All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
-                  <strong className="text-white block mt-2 font-medium">Professional care meets transparency.</strong>
+                  <strong className="text-emerald-500 block mt-2 font-medium">Professional care meets transparency.</strong>
                 </p>
               </FadeIn>
               
@@ -696,7 +696,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[url('/subtle-paw-print-pattern.jpg')] bg-repeat" />
         </div>
         <div className="container relative z-10 mx-auto text-center">
-          <h2 className="mb-4 text-4xl font-bold text-primary-foreground">
+          <h2 className="mb-4 text-4xl font-bold text-purple-600">
             One App. One Routine. Total Peace of Mind.
           </h2>
           <p className="mx-auto mb-8 max-w-2xl text-primary-foreground/90 text-lg">
