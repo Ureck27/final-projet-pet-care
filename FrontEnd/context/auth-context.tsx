@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fullName: data.name,
         phone: '',
         role: data.role as UserRole,
-        status: data.status as "pending" | "active" | "suspended" | "rejected" || "active",
+        status: (data.status as "pending" | "active" | "suspended" | "rejected") || "active",
         createdAt: new Date(),
         updatedAt: new Date().toISOString()
       }

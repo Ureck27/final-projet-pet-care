@@ -191,7 +191,7 @@ export default function NewBookingPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {userPets.map((pet) => (
-                          <SelectItem key={pet._id || pet.id} value={pet._id as string || pet.id}>
+                          <SelectItem key={pet._id || pet.id} value={(pet._id || pet.id) as string}>
                             {pet.name} ({pet.type})
                           </SelectItem>
                         ))}
@@ -234,7 +234,7 @@ export default function NewBookingPage() {
                       <SelectContent>
                         {trainers.map((trainer) => {
                           return (
-                            <SelectItem key={trainer._id as string || trainer.id} value={trainer._id as string || trainer.id}>
+                            <SelectItem key={(trainer._id || trainer.id) as string} value={(trainer._id || trainer.id) as string}>
                               {trainer.name} ⭐ {trainer.rating}
                             </SelectItem>
                           )

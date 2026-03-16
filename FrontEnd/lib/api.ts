@@ -166,8 +166,14 @@ export const authApi = {
   login: (credentials: { email: string; password: string }) =>
     api.post<AuthResponse>('/auth/login', credentials),
   
+  adminLogin: (credentials: { email: string; password: string }) =>
+    api.post<AuthResponse>('/auth/admin-login', credentials),
+  
   forgotPassword: (email: string) =>
     api.post<{ message: string }>('/auth/forgot-password', { email }),
+  
+  resetPassword: (token: string, newPassword: string) =>
+    api.post<{ message: string }>('/auth/reset-password', { token, newPassword }),
 };
 
 // Pet API
