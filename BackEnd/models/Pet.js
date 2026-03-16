@@ -55,6 +55,11 @@ const petSchema = new mongoose.Schema({
   photo: { 
     type: String,
     required: false
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending' // Pets start as pending until admin approval
   }
 }, {
   timestamps: true

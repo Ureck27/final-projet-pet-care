@@ -19,7 +19,8 @@ import {
   XCircle, 
   Eye,
   Trash2,
-  Shield
+  Shield,
+  Ban
 } from "lucide-react"
 
 export default function AdminDashboardPage() {
@@ -89,6 +90,24 @@ export default function AdminDashboardPage() {
       } catch (error) {
         console.error('Failed to delete user:', error)
       }
+    }
+  }
+
+  const handleUpdateUserStatus = async (userId: string, newStatus: string) => {
+    try {
+      await adminApi.updateUserStatus(userId, newStatus)
+      fetchDashboardData()
+    } catch (error) {
+      console.error(`Failed to update user status to ${newStatus}:`, error)
+    }
+  }
+
+  const handleUpdatePetStatus = async (petId: string, newStatus: string) => {
+    try {
+      await adminApi.updatePetStatus(petId, newStatus)
+      fetchDashboardData()
+    } catch (error) {
+      console.error(`Failed to update pet status to ${newStatus}:`, error)
     }
   }
 
@@ -189,30 +208,64 @@ export default function AdminDashboardPage() {
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Joined</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.fullName}</TableCell>
-                      <TableCell>{user.email}</TableCell>
+                  {users.map((u) => (
+                    <TableRow key={u.id}>
+                      <TableCell className="font-medium">{u.fullName}</TableCell>
+                      <TableCell>{u.email}</TableCell>
                       <TableCell>
-                        <Badge variant={user.role === 'admin' ? 'default' : user.role === 'trainer' ? 'secondary' : 'outline'}>
-                          {user.role}
+                        <Badge variant={u.role === 'admin' ? 'default' : u.role === 'trainer' ? 'secondary' : 'outline'}>
+                          {u.role}
                         </Badge>
                       </TableCell>
-                      <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Badge variant={u.status === 'active' ? 'default' : u.status === 'suspended' ? 'destructive' : 'secondary'}>
+                          {u.status || 'active'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{new Date(u.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                          {(u.status === 'pending' || u.status === 'suspended') && (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleUpdateUserStatus(u.id, 'active')}
+                              title="Approve User"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {u.status === 'active' && u.role !== 'admin' && (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleUpdateUserStatus(u.id, 'suspended')}
+                              title="Suspend User"
+                            >
+                              <Ban className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {u.status === 'pending' && (
+                             <Button 
+                              variant="destructive" 
+                              size="sm"
+                              onClick={() => handleUpdateUserStatus(u.id, 'rejected')}
+                              title="Reject User"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button 
                             variant="destructive" 
                             size="sm"
-                            onClick={() => handleDeleteUser(user.id)}
+                            onClick={() => handleDeleteUser(u.id)}
+                            title="Delete User"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -241,7 +294,9 @@ export default function AdminDashboardPage() {
                     <TableHead>Breed</TableHead>
                     <TableHead>Age</TableHead>
                     <TableHead>Owner</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Added</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -251,8 +306,37 @@ export default function AdminDashboardPage() {
                       <TableCell>{pet.type}</TableCell>
                       <TableCell>{pet.breed || 'N/A'}</TableCell>
                       <TableCell>{pet.age || 'N/A'}</TableCell>
-                      <TableCell>{pet.ownerId}</TableCell>
+                      <TableCell>{pet.ownerId || (pet as any).userId?._id || 'Unknown'}</TableCell>
+                      <TableCell>
+                         <Badge variant={pet.status === 'approved' ? 'default' : pet.status === 'rejected' ? 'destructive' : 'secondary'}>
+                          {pet.status || 'approved'}
+                        </Badge>
+                      </TableCell>
                       <TableCell>{new Date(pet.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          {pet.status === 'pending' && (
+                            <>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleUpdatePetStatus(pet.id, 'approved')}
+                                title="Approve Pet"
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="destructive" 
+                                size="sm"
+                                onClick={() => handleUpdatePetStatus(pet.id, 'rejected')}
+                                title="Reject Pet"
+                              >
+                                <XCircle className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

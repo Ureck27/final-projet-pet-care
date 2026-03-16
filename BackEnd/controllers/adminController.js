@@ -89,6 +89,24 @@ const acceptTrainerRequest = async (req, res) => {
       if (user) {
         user.role = 'trainer';
         await user.save();
+        
+        // Check if a trainer profile already exists
+        const existingTrainer = await Trainer.findOne({ userId: user._id });
+        if (!existingTrainer) {
+          // Create the Trainer profile document
+          await Trainer.create({
+            userId: user._id,
+            name: user.name,
+            email: user.email,
+            bio: request.message || 'Experienced pet trainer.',
+            experience: parseInt(request.experience) || 1,
+            certifications: [request.certifications],
+            services: ['Basic Training'], // Default service
+            pricing: 50, // Default pricing
+            availability: ['Weekdays'],
+            status: 'accepted'
+          });
+        }
       }
 
       // Send admin notification
@@ -105,7 +123,7 @@ const acceptTrainerRequest = async (req, res) => {
         `
       );
 
-      res.json({ message: 'Trainer request accepted', request });
+      res.json({ message: 'Trainer request accepted and Trainer profile created', request });
     } else {
       res.status(404).json({ message: 'Request not found' });
     }
@@ -173,6 +191,58 @@ const updateUserRole = async (req, res) => {
   }
 };
 
+// @desc    Update user status
+// @route   PUT /api/admin/users/:id/status
+const updateUserStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!['pending', 'active', 'suspended', 'rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.status = status;
+    await user.save();
+    
+    // If the user's role is trainer and status is suspended/rejected, we should probably update their Trainer object status too.
+    if (user.role === 'trainer') {
+      const trainer = await Trainer.findOne({ userId: user._id });
+      if (trainer) {
+        trainer.status = status === 'active' ? 'accepted' : status;
+        await trainer.save();
+      }
+    }
+    
+    const userObj = user.toObject();
+    delete userObj.password;
+    res.json(userObj);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update pet status
+// @route   PUT /api/admin/pets/:id/status
+const updatePetStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!['pending', 'approved', 'rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+    const pet = await Pet.findById(req.params.id);
+    if (!pet) {
+      return res.status(404).json({ message: 'Pet not found' });
+    }
+    pet.status = status;
+    await pet.save();
+    res.json(pet);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Delete user
 // @route   DELETE /api/admin/users/:id
 const deleteUser = async (req, res) => {
@@ -181,8 +251,13 @@ const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+    // Delete associated pets and trainer objects
+    await Pet.deleteMany({ userId: req.params.id });
+    await Trainer.deleteOne({ userId: req.params.id });
+    await TrainerRequest.deleteMany({ userId: req.params.id });
+    
     await User.deleteOne({ _id: req.params.id });
-    res.json({ message: 'User deleted' });
+    res.json({ message: 'User and associated data deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -197,5 +272,7 @@ module.exports = {
   acceptTrainerRequest,
   rejectTrainerRequest,
   updateUserRole,
+  updateUserStatus,
+  updatePetStatus,
   deleteUser
 };

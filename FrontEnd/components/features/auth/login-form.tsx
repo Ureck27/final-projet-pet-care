@@ -38,12 +38,12 @@ export function LoginForm() {
     setIsLoading(true)
     setError(null)
 
-    const success = await login(data.email, data.password)
+    const result = await login(data.email, data.password)
 
-    if (success) {
+    if (result.success) {
       router.push("/dashboard")
     } else {
-      setError("Invalid email or password. Try: john@example.com")
+      setError(result.message || "Invalid email or password. Try: john@example.com")
     }
 
     setIsLoading(false)

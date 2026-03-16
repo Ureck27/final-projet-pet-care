@@ -24,7 +24,12 @@ const userSchema = new mongoose.Schema({
     default: 'user'
   },
   resetPasswordToken: String,
-  resetPasswordExpiry: Date
+  resetPasswordExpiry: Date,
+  status: {
+    type: String,
+    enum: ['pending', 'active', 'suspended', 'rejected'],
+    default: 'pending' // Users start as pending until admin approval
+  }
 }, {
   timestamps: true // Automatically adds createdAt and updatedAt
 });

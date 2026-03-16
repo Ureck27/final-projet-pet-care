@@ -40,7 +40,7 @@ export function RegisterForm() {
     setIsLoading(true)
     setError(null)
 
-    const success = await registerUser({
+    const result = await registerUser({
       email: data.email,
       password: data.password,
       fullName: data.fullName,
@@ -48,10 +48,10 @@ export function RegisterForm() {
       role: 'user'
     })
 
-    if (success) {
+    if (result.success) {
       router.push("/dashboard")
     } else {
-      setError("Registration failed. Please try again.")
+      setError(result.message || "Registration failed. Please try again.")
     }
 
     setIsLoading(false)

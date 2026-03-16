@@ -7,8 +7,8 @@ import { authApi } from "@/lib/api"
 interface AuthContextType {
   user: User | null
   isLoading: boolean
-  login: (email: string, password: string) => Promise<boolean>
-  register: (data: RegisterData) => Promise<boolean>
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>
+  register: (data: RegisterData) => Promise<{ success: boolean; message?: string }>
   logout: () => void
   forgotPassword: (email: string) => Promise<boolean>
 }
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true)
     try {
       const data = await authApi.login({ email, password });
@@ -50,21 +50,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fullName: data.name,
         phone: '',
         role: data.role as UserRole,
+        status: data.status as "pending" | "active" | "suspended" | "rejected" || "active",
         createdAt: new Date(),
+        updatedAt: new Date().toISOString()
       }
       setUser(loggedUser)
       localStorage.setItem("petcare_user", JSON.stringify(loggedUser))
       localStorage.setItem("petcare_token", data.token)
       setIsLoading(false)
-      return true
-    } catch (err) {
+      return { success: true }
+    } catch (err: any) {
       console.error('Login failed', err)
       setIsLoading(false)
-      return false
+      return { success: false, message: err.message || 'Login failed' }
     }
   }
 
-  const register = async (data: RegisterData): Promise<boolean> => {
+  const register = async (data: RegisterData): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true)
     try {
       const resData = await authApi.register({ 
@@ -81,17 +83,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fullName: resData.name,
         phone: data.phone,
         role: resData.role as UserRole,
+        status: "pending", // All new users are pending
         createdAt: new Date(),
+        updatedAt: new Date().toISOString()
       }
       setUser(newUser)
       localStorage.setItem("petcare_user", JSON.stringify(newUser))
       localStorage.setItem("petcare_token", resData.token)
       setIsLoading(false)
-      return true
-    } catch (err) {
+      return { success: true }
+    } catch (err: any) {
       console.error('Register failed', err)
       setIsLoading(false)
-      return false
+      return { success: false, message: err.message || 'Registration failed' }
     }
   }
 

@@ -65,6 +65,7 @@ export interface User {
   fullName: string;
   phone: string;
   role: "user" | "trainer" | "worker" | "admin";
+  status: "pending" | "active" | "suspended" | "rejected";
   avatar?: string;
   createdAt: Date;
   updatedAt: string;
@@ -83,6 +84,7 @@ export interface Pet {
   color?: string;
   medicalNotes?: string;
   photo?: string;
+  status: "pending" | "approved" | "rejected";
   createdAt: Date;
   updatedAt: string;
 }
@@ -145,6 +147,7 @@ export interface AuthResponse {
   fullName: string;
   email: string;
   role: string;
+  status: string;
   token: string;
 }
 
@@ -230,6 +233,12 @@ export const adminApi = {
   
   updateUserRole: (id: string, role: string) =>
     api.put<User>(`/admin/users/${id}/role`, { role }),
+    
+  updateUserStatus: (id: string, status: string) =>
+    api.put<User>(`/admin/users/${id}/status`, { status }),
+    
+  updatePetStatus: (id: string, status: string) =>
+    api.put<Pet>(`/admin/pets/${id}/status`, { status }),
   
   acceptTrainerRequest: (id: string) =>
     api.put<{ message: string; request: TrainerRequest }>(`/admin/trainer-requests/${id}/accept`, {}),

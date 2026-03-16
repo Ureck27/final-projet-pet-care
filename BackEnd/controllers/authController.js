@@ -78,6 +78,16 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+      if (user.status === 'pending') {
+         return res.status(403).json({ message: 'Account is pending admin approval' });
+      }
+      if (user.status === 'suspended') {
+         return res.status(403).json({ message: 'Account is suspended. Please contact support.' });
+      }
+      if (user.status === 'rejected') {
+         return res.status(403).json({ message: 'Account application was rejected.' });
+      }
+
       res.json({
         _id: user._id,
         id: user._id.toString(),
@@ -85,6 +95,7 @@ const loginUser = async (req, res) => {
         fullName: user.fullName || user.name,
         email: user.email,
         role: user.role,
+        status: user.status,
         token: generateToken(user._id),
       });
     } else {
