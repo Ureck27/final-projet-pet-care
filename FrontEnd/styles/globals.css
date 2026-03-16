@@ -227,4 +227,16 @@
     background-image: radial-gradient(circle at 20% 80%, transparent 50%, rgba(168, 85, 247, 0.1) 50%);
     background-size: 20px 20px;
   }
+
+  /* Split Char - Light mode purple, dark mode white */
+  .split-char {
+    color: #a855f7; /* purple-600 in light mode */
+    transition: color 0.3s ease;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .split-char {
+      color: #ffffff; /* white in dark mode */
+    }
+  }
 }

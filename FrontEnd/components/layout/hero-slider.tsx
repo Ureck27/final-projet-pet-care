@@ -24,7 +24,7 @@ export function HeroSlider() {
   }, [])
 
   return (
-    <div className="relative w-full aspect-square md:aspect-[4/3] lg:aspect-[5/4] rounded-3xl overflow-hidden shadow-2xl border border-border/50 dark:border-slate-800 bg-muted">
+    <div className="relative w-full aspect-video md:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-border/50 dark:border-slate-800 bg-muted">
       {images.map((src, index) => (
         <div
           key={src}

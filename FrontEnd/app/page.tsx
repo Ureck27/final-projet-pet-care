@@ -33,7 +33,7 @@ import SplitText from "@/components/ui/split-text"
 // Lazy load the HeroSlider because it has heavy embla carousel logic and images 
 const HeroSlider = dynamic(() => import('@/components/layout/hero-slider').then(mod => mod.HeroSlider), {
   ssr: false, // Ensure it's purely client side to avoid hydration mismatches with carousels
-  loading: () => <div className="w-full h-[300px] md:h-[400px] bg-muted/20 animate-pulse rounded-2xl" />
+  loading: () => <div className="w-full aspect-video md:aspect-[4/3] bg-muted/20 animate-pulse rounded-2xl" />
 })
 
 export default function HomePage() {
@@ -181,9 +181,9 @@ export default function HomePage() {
       <HeroBackground>
         <PawPrintBackground />
         <FloatingPets />
-        <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+        <section className="relative py-16 md:py-20 lg:py-24 overflow-hidden">
           <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start lg:items-center">
             {/* Text Content */}
             <div className="flex flex-col items-start text-left max-w-2xl">
               <FadeIn direction="up">
@@ -696,7 +696,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[url('/subtle-paw-print-pattern.jpg')] bg-repeat" />
         </div>
         <div className="container relative z-10 mx-auto text-center">
-          <h2 className="mb-4 text-4xl font-bold text-purple-600">
+          <h2 className="mb-4 text-4xl font-bold text-purple-600 dark:text-white">
             One App. One Routine. Total Peace of Mind.
           </h2>
           <p className="mx-auto mb-8 max-w-2xl text-primary-foreground/90 text-lg">
