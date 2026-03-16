@@ -31,15 +31,30 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
     }
   }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+  const fullUrl = `${API_BASE_URL}${endpoint}`;
+  console.log(`[API] ${config.method || 'GET'} ${fullUrl}`);
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const errorMessage = errorData.message || `HTTP ${response.status}: ${response.statusText}`;
-    throw new Error(errorMessage);
+  try {
+    const response = await fetch(fullUrl, config);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+      console.error(`[API Error] ${response.status}: ${errorMessage}`);
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    console.log(`[API Success] ${config.method || 'GET'} ${endpoint}`);
+    return data;
+  } catch (error: any) {
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      console.error(`[API Connection Error] Cannot reach backend at ${API_BASE_URL}`);
+      console.error('[API Help] Check if backend is running: http://localhost:5000');
+      throw new Error(`Connection failed. Backend not running at ${API_BASE_URL}`);
+    }
+    throw error;
   }
-
-  return response.json();
 }
 
 export const api = {
