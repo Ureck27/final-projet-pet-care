@@ -3,6 +3,18 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { sendAdminNotification } = require('../services/emailService');
 
+// Validation helper functions
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const isStrongPassword = (password) => {
+  // At least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  return passwordRegex.test(password);
+};
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
@@ -16,22 +28,33 @@ const registerUser = async (req, res) => {
     console.log('Registration request body:', req.body);
     const { name, email, password } = req.body;
 
+    // Input validation
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Please provide name, email, and password' });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address' });
+    }
+
+    if (!isStrongPassword(password)) {
+      return res.status(400).json({ 
+        message: 'Password must be at least 8 characters long and contain an uppercase letter, lowercase letter, number, and special character (@$!%*?&)' 
+      });
+    }
+
     const userExists = await User.findOne({ email });
 
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash password before creating user
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     console.log('Creating user with data:', { name, email, password: '***' });
     const user = await User.create({
       name,
       fullName: name,
       email,
-      password: hashedPassword,
+      password, // Pre-save hook will hash this
       role: 'user' // Force role to 'user' for registration
     });
     console.log('User created successfully:', user);
@@ -161,4 +184,47 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, forgotPassword, resetPassword };
+// @desc    Admin login
+// @route   POST /api/auth/admin-login
+const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please provide email and password' });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address' });
+    }
+
+    // Find user and verify it's an admin
+    const user = await User.findOne({ email, role: 'admin' });
+
+    if (!user || !(await user.matchPassword(password))) {
+      return res.status(401).json({ message: 'Invalid admin credentials' });
+    }
+
+    // Check admin account status
+    if (user.status === 'suspended') {
+      return res.status(403).json({ message: 'Admin account is suspended. Please contact system administrator.' });
+    }
+
+    res.json({
+      _id: user._id,
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      token: generateToken(user._id),
+      redirect: '/admin-dashboard'
+    });
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, adminLogin, forgotPassword, resetPassword };
