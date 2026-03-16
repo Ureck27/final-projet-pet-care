@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false)
       return { success: true }
     } catch (err: any) {
-      console.error('Login failed', err)
+      console.error('Login failed:', err.message)
       setIsLoading(false)
       return { success: false, message: err.message || 'Login failed' }
     }
@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false)
       return { success: true }
     } catch (err: any) {
-      console.error('Register failed', err)
+      console.error('Register failed:', err.message)
       setIsLoading(false)
       return { success: false, message: err.message || 'Registration failed' }
     }
@@ -109,8 +109,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authApi.forgotPassword(email)
       return true
-    } catch (err) {
-      console.error(err)
+    } catch (err: any) {
+      console.error('Forgot password failed:', err.message)
       return false
     }
   }

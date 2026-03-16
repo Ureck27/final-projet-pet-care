@@ -241,15 +241,15 @@ export interface DailyActivity {
 }
 
 // Notification Types
-export type NotificationType = 
-  | "task-reminder" 
-  | "task-overdue" 
-  | "activity-update" 
-  | "emotion-alert" 
-  | "health-alert" 
-  | "booking-update" 
-  | "message" 
-  | "review" 
+export type NotificationType =
+  | "task-reminder"
+  | "task-overdue"
+  | "activity-update"
+  | "emotion-alert"
+  | "health-alert"
+  | "booking-update"
+  | "message"
+  | "review"
   | "platform-update"
 
 export type NotificationPriority = "critical" | "high" | "medium" | "low"
