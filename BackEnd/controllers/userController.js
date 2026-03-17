@@ -34,7 +34,7 @@ const getUserById = async (req, res) => {
 // @route   POST /api/users
 const createUser = async (req, res) => {
   try {
-    const { name, fullName, email, password, role } = req.body;
+    const { name, fullName, email, password, role, phone, avatar } = req.body;
     
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -51,7 +51,9 @@ const createUser = async (req, res) => {
       fullName: fullName || name,
       email,
       password,
-      role: role || 'user'
+      role: role || 'user',
+      phone,
+      avatar
     });
 
     res.status(201).json(user);
@@ -70,7 +72,14 @@ const updateUser = async (req, res) => {
       user.name = req.body.name || user.name;
       user.fullName = req.body.fullName || user.fullName;
       user.email = req.body.email || user.email;
+      user.phone = req.body.phone || user.phone;
+      user.avatar = req.body.avatar || user.avatar;
       if (req.body.role) user.role = req.body.role;
+ Aurora: Note - if avatar is uploaded via multer, it might need getFileUrl. 
+ But for now I will just handle regular updates. 
+ Looking at petController, it uses req.file.
+ Let me check if userController should also handle file uploads.
+ Looking at server.js, userRoutes are used. Let me check the routes.
 
       const updatedUser = await user.save();
       res.json(updatedUser);
