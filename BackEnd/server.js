@@ -38,7 +38,7 @@ const limiter = rateLimit({
 // Stricter rate limiting for auth endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 login attempts per windowMs
+  max: process.env.NODE_ENV === 'production' ? 5 : 10, // 5 for production, 10 for development
   message: 'Too many login attempts, please try again later',
   skipSuccessfulRequests: true // Don't count successful requests
 });
@@ -71,6 +71,48 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 // Basic route
 app.get('/', (req, res) => {
   res.send('API is running...');
+});
+
+// Health check and test endpoint
+app.get('/api/test', async (req, res) => {
+  try {
+    // Test database connection
+    const db = require('mongoose').connection;
+    
+    if (db.readyState !== 1) {
+      return res.status(503).json({
+        status: 'error',
+        message: 'Database not connected',
+        readyState: db.readyState
+      });
+    }
+
+    // Test database operation
+    const adminCheck = await require('./models/User').findOne({ role: 'admin' });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Backend and database are connected!',
+      timestamp: new Date().toISOString(),
+      database: {
+        connected: true,
+        host: db.host,
+        database: db.name
+      },
+      admin: {
+        exists: !!adminCheck,
+        email: adminCheck?.email || 'No admin found'
+      },
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Test endpoint error',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Global error handler
