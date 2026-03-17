@@ -1,0 +1,69 @@
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  fullName: {
+    type: String,
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  role: {
+    type: String,
+    enum: ['user', 'trainer', 'worker', 'caregiver', 'admin'],
+    default: 'user'
+  },
+  resetPasswordToken: String,
+  resetPasswordExpiry: Date,
+  status: {
+    type: String,
+    enum: ['pending', 'active', 'suspended', 'rejected'],
+    default: 'pending' // Users start as pending until admin approval
+  },
+  profileImage: {
+    type: String,
+    required: false
+  }
+}, {
+  timestamps: true // Automatically adds createdAt and updatedAt
+});
+
+// Method to check if entered password matches hashed password in DB
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Pre-save hook to hash password before saving
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Ensure password is not selected by default in queries
+userSchema.pre(/^find/, function (next) {
+  if (this.options._recursed) {
+    return next();
+  }
+  this.select('-password');
+  next();
+});
+
+const User = mongoose.model('User', userSchema);
+module.exports = User;
