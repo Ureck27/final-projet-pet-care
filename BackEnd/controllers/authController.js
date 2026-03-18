@@ -10,7 +10,7 @@ const isValidEmail = (email) => {
 };
 
 const isStrongPassword = (password) => {
-  // At least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
+  // At least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character (@$!%*?&)
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return passwordRegex.test(password);
 };
@@ -39,7 +39,7 @@ const registerUser = async (req, res) => {
 
     if (!isStrongPassword(password)) {
       return res.status(400).json({ 
-        message: 'Password must be at least 8 characters long and contain an uppercase letter, lowercase letter, number, and special character (@$!%*?&)' 
+        message: 'Password must be at least 8 characters long and contain: 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (@$!%*?&)' 
       });
     }
 

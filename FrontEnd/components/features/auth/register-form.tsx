@@ -14,7 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Loader2, AlertCircle, User, GraduationCap } from "lucide-react"
+import { Loader2, AlertCircle, User, GraduationCap, Eye, EyeOff, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function RegisterForm() {
@@ -22,6 +22,8 @@ export function RegisterForm() {
   const { register: registerUser } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const {
     register,
@@ -35,6 +37,17 @@ export function RegisterForm() {
       acceptTerms: false,
     },
   })
+
+  const password = watch("password") || ""
+  const confirmPassword = watch("confirmPassword") || ""
+
+  const passwordRequirements = [
+    { label: "At least 8 characters", test: (pw: string) => pw.length >= 8 },
+    { label: "At least 1 uppercase letter", test: (pw: string) => /[A-Z]/.test(pw) },
+    { label: "At least 1 lowercase letter", test: (pw: string) => /[a-z]/.test(pw) },
+    { label: "At least 1 number", test: (pw: string) => /\d/.test(pw) },
+    { label: "At least 1 special character (@$!%*?&)", test: (pw: string) => /[@$!%*?&]/.test(pw) },
+  ]
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true)
@@ -116,31 +129,73 @@ export function RegisterForm() {
             {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                {...register("password")}
-                className={errors.password ? "border-destructive" : ""}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  {...register("password")}
+                  className={cn("pr-10", errors.password ? "border-destructive" : "")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                {...register("confirmPassword")}
-                className={errors.confirmPassword ? "border-destructive" : ""}
-              />
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  {...register("confirmPassword")}
+                  className={cn("pr-10", errors.confirmPassword ? "border-destructive" : "")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>}
             </div>
           </div>
+
+          {/* Password Requirements Checklist */}
+          {password && (
+            <div className="p-3 bg-accent/50 rounded-lg space-y-2 border border-border/50">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Password Requirements</p>
+              <div className="grid grid-cols-1 gap-1.5">
+                {passwordRequirements.map((req, index) => {
+                  const isMet = req.test(password)
+                  return (
+                    <div key={index} className="flex items-center gap-2 text-xs">
+                      {isMet ? (
+                        <Check className="h-3.5 w-3.5 text-green-500 stroke-[3]" />
+                      ) : (
+                        <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30 ml-1" />
+                      )}
+                      <span className={isMet ? "text-foreground font-medium" : "text-muted-foreground"}>
+                        {req.label}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           <div className="flex items-start space-x-2">
             <Checkbox
