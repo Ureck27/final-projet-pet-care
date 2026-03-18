@@ -45,16 +45,25 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+// Bonus: Add method to compare password as requested
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
 // Pre-save hook to hash password before saving
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
   
+  console.log('--- Hashing Password ---');
+  console.log('Original Password:', this.password);
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
+    console.log('Hashed Password:', this.password);
   } catch (error) {
-    next(error);
+    console.error('Password hashing error:', error);
+    throw error;
   }
 });
 
