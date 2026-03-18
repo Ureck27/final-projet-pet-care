@@ -98,7 +98,7 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password');
 
     if (user && (await user.matchPassword(password))) {
       if (user.status === 'pending') {
@@ -200,7 +200,7 @@ const adminLogin = async (req, res) => {
     }
 
     // Find user and verify it's an admin
-    const user = await User.findOne({ email, role: 'admin' });
+    const user = await User.findOne({ email, role: 'admin' }).select('+password');
 
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: 'Invalid admin credentials' });

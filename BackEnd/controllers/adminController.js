@@ -70,104 +70,6 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
-// @desc    Accept trainer request
-// @route   PUT /api/admin/trainer-requests/:id/accept
-const acceptTrainerRequest = async (req, res) => {
-  try {
-    const request = await TrainerRequest.findById(req.params.id);
-
-    if (request) {
-      if (request.status !== 'pending') {
-        return res.status(400).json({ message: 'Request is already processed' });
-      }
-
-      request.status = 'accepted';
-      await request.save();
-
-      // Update user role
-      const user = await User.findById(request.userId);
-      if (user) {
-        user.role = 'trainer';
-        await user.save();
-        
-        // Check if a trainer profile already exists
-        const existingTrainer = await Trainer.findOne({ userId: user._id });
-        if (!existingTrainer) {
-          // Create the Trainer profile document
-          await Trainer.create({
-            userId: user._id,
-            name: user.name,
-            email: user.email,
-            bio: request.message || 'Experienced pet trainer.',
-            experience: parseInt(request.experience) || 1,
-            certifications: [request.certifications],
-            services: ['Basic Training'], // Default service
-            pricing: 50, // Default pricing
-            availability: ['Weekdays'],
-            status: 'accepted'
-          });
-        }
-      }
-
-      // Send admin notification
-      await sendAdminNotification(
-        'Trainer Request Accepted',
-        `
-        <p><strong>Trainer request has been accepted:</strong></p>
-        <ul>
-          <li><strong>Name:</strong> ${request.name}</li>
-          <li><strong>Email:</strong> ${request.email}</li>
-          <li><strong>Experience:</strong> ${request.experience}</li>
-          <li><strong>Acceptance Date:</strong> ${new Date().toLocaleDateString()}</li>
-        </ul>
-        `
-      );
-
-      res.json({ message: 'Trainer request accepted and Trainer profile created', request });
-    } else {
-      res.status(404).json({ message: 'Request not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// @desc    Reject trainer request
-// @route   PUT /api/admin/trainer-requests/:id/reject
-const rejectTrainerRequest = async (req, res) => {
-  try {
-    const request = await TrainerRequest.findById(req.params.id);
-
-    if (request) {
-      if (request.status !== 'pending') {
-        return res.status(400).json({ message: 'Request is already processed' });
-      }
-
-      request.status = 'rejected';
-      await request.save();
-
-      // Send admin notification
-      await sendAdminNotification(
-        'Trainer Request Rejected',
-        `
-        <p><strong>Trainer request has been rejected:</strong></p>
-        <ul>
-          <li><strong>Name:</strong> ${request.name}</li>
-          <li><strong>Email:</strong> ${request.email}</li>
-          <li><strong>Experience:</strong> ${request.experience}</li>
-          <li><strong>Rejection Date:</strong> ${new Date().toLocaleDateString()}</li>
-        </ul>
-        `
-      );
-
-      res.json({ message: 'Trainer request rejected', request });
-    } else {
-      res.status(404).json({ message: 'Request not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 // @desc    Update user role
 // @route   PUT /api/admin/users/:id/role
@@ -269,8 +171,6 @@ module.exports = {
   getTrainerRequests,
   getAllTrainers,
   getDashboardStats,
-  acceptTrainerRequest,
-  rejectTrainerRequest,
   updateUserRole,
   updateUserStatus,
   updatePetStatus,

@@ -109,7 +109,7 @@ const handleUploadError = (error, req, res, next) => {
 
 // Helper function to get file URL
 const getFileUrl = (filename, type = 'general') => {
-  const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const baseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
   let path = '/uploads/';
   
   if (type === 'pet') {

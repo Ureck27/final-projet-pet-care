@@ -129,9 +129,16 @@ const approveTrainerRequest = async (req, res) => {
         certificateImages: request.certificateImages,
         services: ['Basic Training', 'Behavioral Training'], // Default services
         pricing: 50, // Default pricing
-        rating: 0,
-        reviews: []
+        availability: ['Weekdays', 'Weekends'], // Default availability
+        status: 'accepted'
       });
+    } else {
+      // Update existing trainer if needed
+      existingTrainer.status = 'accepted';
+      existingTrainer.phone = request.phone;
+      existingTrainer.profileImage = request.profileImage;
+      existingTrainer.certificateImages = request.certificateImages;
+      await existingTrainer.save();
     }
 
     // Send admin notification (commented out due to email config)

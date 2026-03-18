@@ -59,12 +59,11 @@ userSchema.pre('save', async function (next) {
 });
 
 // Ensure password is not selected by default in queries
-userSchema.pre(/^find/, function (next) {
+userSchema.pre(/^find/, function () {
   if (this.options._recursed) {
-    return next();
+    return;
   }
   this.select('-password');
-  next();
 });
 
 const User = mongoose.model('User', userSchema);

@@ -6,13 +6,15 @@ const {
   getTrainerRequests,
   getAllTrainers,
   getDashboardStats,
-  acceptTrainerRequest,
-  rejectTrainerRequest,
   updateUserRole,
   updateUserStatus,
   updatePetStatus,
   deleteUser
 } = require('../controllers/adminController');
+const {
+  approveTrainerRequest,
+  rejectTrainerRequest
+} = require('../controllers/trainerRequestController');
 const { protect, authorizeRole } = require('../middleware/authMiddleware');
 
 // All routes here are protected and restricted to admin
@@ -27,7 +29,7 @@ router.put('/users/:id/role', updateUserRole);
 router.put('/users/:id/status', updateUserStatus);
 router.delete('/users/:id', deleteUser);
 router.put('/pets/:id/status', updatePetStatus);
-router.put('/trainer-requests/:id/accept', acceptTrainerRequest);
+router.put('/trainer-requests/:id/accept', approveTrainerRequest);
 router.put('/trainer-requests/:id/reject', rejectTrainerRequest);
 
 module.exports = router;
