@@ -53,7 +53,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 // Pre-save hook to hash password before saving
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
-  
+
   console.log('--- Hashing Password ---');
   console.log('Original Password:', this.password);
 
