@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const petSchema = new mongoose.Schema({
-  userId: {
+  owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
@@ -27,7 +27,7 @@ const petSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  image: {
+  imageUrl: {
     type: String,
     required: false
   },
@@ -66,7 +66,7 @@ const petSchema = new mongoose.Schema({
 });
 
 // Index for faster queries
-petSchema.index({ userId: 1 });
+petSchema.index({ owner: 1 });
 petSchema.index({ type: 1 });
 
 const Pet = mongoose.model('Pet', petSchema);

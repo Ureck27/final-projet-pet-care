@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const {
   getAllUsers,
-  getAllPets,
+  getPendingPets,
   getTrainerRequests,
   getAllTrainers,
   getDashboardStats,
   updateUserRole,
   updateUserStatus,
-  updatePetStatus,
+  approvePet,
+  rejectPet,
   deleteUser
 } = require('../controllers/adminController');
 const {
@@ -21,14 +22,15 @@ const { protect, authorizeRole } = require('../middleware/authMiddleware');
 router.use(protect, authorizeRole('admin'));
 
 router.get('/users', getAllUsers);
-router.get('/pets', getAllPets);
+router.get('/pets', getPendingPets);
 router.get('/trainer-requests', getTrainerRequests);
 router.get('/trainers', getAllTrainers);
 router.get('/dashboard', getDashboardStats);
 router.put('/users/:id/role', updateUserRole);
 router.put('/users/:id/status', updateUserStatus);
 router.delete('/users/:id', deleteUser);
-router.put('/pets/:id/status', updatePetStatus);
+router.patch('/pets/:id/approve', approvePet);
+router.patch('/pets/:id/reject', rejectPet);
 router.put('/trainer-requests/:id/accept', approveTrainerRequest);
 router.put('/trainer-requests/:id/reject', rejectTrainerRequest);
 

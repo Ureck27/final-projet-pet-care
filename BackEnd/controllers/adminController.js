@@ -15,11 +15,11 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// @desc    Get all pets
+// @desc    Get pending pets
 // @route   GET /api/admin/pets
-const getAllPets = async (req, res) => {
+const getPendingPets = async (req, res) => {
   try {
-    const pets = await Pet.find({}).populate('ownerId', 'name email');
+    const pets = await Pet.find({ status: 'pending' }).populate('owner', 'name email');
     res.json(pets);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -125,20 +125,28 @@ const updateUserStatus = async (req, res) => {
   }
 };
 
-// @desc    Update pet status
-// @route   PUT /api/admin/pets/:id/status
-const updatePetStatus = async (req, res) => {
+// @desc    Approve pet
+// @route   PATCH /api/admin/pets/:id/approve
+const approvePet = async (req, res) => {
   try {
-    const { status } = req.body;
-    if (!['pending', 'approved', 'rejected'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status' });
-    }
-    const pet = await Pet.findById(req.params.id);
+    const pet = await Pet.findByIdAndUpdate(req.params.id, { status: 'approved' }, { new: true });
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });
     }
-    pet.status = status;
-    await pet.save();
+    res.json(pet);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Reject pet
+// @route   PATCH /api/admin/pets/:id/reject
+const rejectPet = async (req, res) => {
+  try {
+    const pet = await Pet.findByIdAndUpdate(req.params.id, { status: 'rejected' }, { new: true });
+    if (!pet) {
+      return res.status(404).json({ message: 'Pet not found' });
+    }
     res.json(pet);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -154,7 +162,7 @@ const deleteUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     // Delete associated pets and trainer objects
-    await Pet.deleteMany({ userId: req.params.id });
+    await Pet.deleteMany({ owner: req.params.id });
     await Trainer.deleteOne({ userId: req.params.id });
     await TrainerRequest.deleteMany({ userId: req.params.id });
     
@@ -167,12 +175,14 @@ const deleteUser = async (req, res) => {
 
 module.exports = {
   getAllUsers,
-  getAllPets,
+  getPendingPets,
   getTrainerRequests,
   getAllTrainers,
   getDashboardStats,
   updateUserRole,
   updateUserStatus,
-  updatePetStatus,
+  approvePet,
+  rejectPet,
   deleteUser
 };
+

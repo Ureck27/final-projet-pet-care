@@ -8,10 +8,11 @@ const { sendAdminNotification } = require('../services/emailService');
 const getPets = async (req, res) => {
   try {
     const filter = {};
-    if (req.query.userId) {
-      filter.userId = req.query.userId;
+    if (req.query.owner) {
+      filter.owner = req.query.owner;
     }
-    const pets = await Pet.find(filter).populate('userId', 'name email');
+    filter.status = 'approved';
+    const pets = await Pet.find(filter).populate('owner', 'name email');
     res.json(pets);
   } catch (error) {
     console.error('Error fetching pets:', error);
@@ -23,13 +24,13 @@ const getPets = async (req, res) => {
 // @route   GET /api/pets/:id
 const getPetById = async (req, res) => {
   try {
-    const pet = await Pet.findById(req.params.id).populate('userId', 'name email');
+    const pet = await Pet.findById(req.params.id).populate('owner', 'name email');
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });
     }
     
     // Security check: Only owner, admin, or assigned trainer can view pet
-    const isOwner = pet.userId._id.toString() === req.user._id.toString();
+    const isOwner = pet.owner._id.toString() === req.user._id.toString();
     const isAssignedTrainer = pet.trainerId && pet.trainerId.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
     
@@ -63,13 +64,13 @@ const createPet = async (req, res) => {
     }
 
     const pet = await Pet.create({
-      userId: req.user._id,
+      owner: req.user._id,
       name,
       type,
       breed,
       age,
       description,
-      image: imageUrl,
+      imageUrl: imageUrl,
       weight,
       color,
       medicalNotes,
@@ -110,7 +111,7 @@ const updatePet = async (req, res) => {
     }
 
     // Security check: Only owner or admin can update pet
-    const isOwner = pet.userId.toString() === req.user._id.toString();
+    const isOwner = pet.owner.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
     
     if (!isOwner && !isAdmin) {
@@ -120,7 +121,7 @@ const updatePet = async (req, res) => {
     const { name, type, breed, age, description, weight, color, medicalNotes } = req.body;
 
     // Handle image update
-    let imageUrl = pet.image || pet.photo;
+    let imageUrl = pet.imageUrl || pet.photo;
     if (req.file) {
       // Delete old image if exists
       if (imageUrl) {
@@ -138,14 +139,14 @@ const updatePet = async (req, res) => {
         breed,
         age,
         description,
-        image: imageUrl,
+        imageUrl: imageUrl,
         photo: imageUrl, // Keep for backward compatibility
         weight,
         color,
         medicalNotes
       },
       { new: true, runValidators: true }
-    ).populate('userId', 'name email');
+    ).populate('owner', 'name email');
 
     res.json(updatedPet);
   } catch (error) {
@@ -165,7 +166,7 @@ const deletePet = async (req, res) => {
     }
 
     // Security check: Only owner or admin can delete pet
-    const isOwner = pet.userId.toString() === req.user._id.toString();
+    const isOwner = pet.owner.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
     
     if (!isOwner && !isAdmin) {
@@ -173,8 +174,8 @@ const deletePet = async (req, res) => {
     }
 
     // Delete pet image if exists
-    if (pet.image || pet.photo) {
-      const imageUrl = pet.image || pet.photo;
+    if (pet.imageUrl || pet.photo) {
+      const imageUrl = pet.imageUrl || pet.photo;
       const filename = imageUrl.split('/').pop();
       deleteFile(`uploads/pets/${filename}`);
     }
@@ -205,7 +206,7 @@ const getPetsByUserId = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to view these pets' });
     }
 
-    const pets = await Pet.find({ userId }).populate('userId', 'name email');
+    const pets = await Pet.find({ owner: userId }).populate('owner', 'name email');
     res.json(pets);
   } catch (error) {
     console.error('Error fetching pets by user:', error);
