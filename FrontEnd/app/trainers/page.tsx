@@ -18,16 +18,20 @@ export default function CaregiversPage() {
   let filtered = mockTrainers
 
   if (searchTerm) {
-    filtered = filtered.filter((trainer) =>
-      trainer.bio.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trainer.services.some((s) => s.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
+    filtered = filtered.filter((trainer) => {
+      const bioMatch = trainer.bio?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
+      const serviceMatch = trainer.services.some((s) => {
+        const serviceName = typeof s === "string" ? s : s.serviceName;
+        return serviceName?.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+      return bioMatch || serviceMatch;
+    });
   }
 
   filtered.sort((a, b) => {
     if (sortBy === "rating") return b.rating - a.rating
     if (sortBy === "experience") return b.experience - a.experience
-    if (sortBy === "price") return a.pricing - b.pricing
+    if (sortBy === "price") return (a.pricing || 0) - (b.pricing || 0)
     return 0
   })
 
@@ -131,11 +135,14 @@ export default function CaregiversPage() {
 
                   {/* Services */}
                   <div className="flex flex-wrap gap-1">
-                    {caregiver.services.slice(0, 2).map((service) => (
-                      <Badge key={service} variant="secondary" className="text-xs">
-                        {service}
-                      </Badge>
-                    ))}
+                    {caregiver.services.slice(0, 2).map((service, idx) => {
+                      const serviceName = typeof service === "string" ? service : service.serviceName;
+                      return (
+                        <Badge key={idx} variant="secondary" className="text-xs">
+                          {serviceName}
+                        </Badge>
+                      );
+                    })}
                     {caregiver.services.length > 2 && (
                       <Badge variant="outline" className="text-xs">
                         +{caregiver.services.length - 2}
@@ -158,10 +165,18 @@ export default function CaregiversPage() {
                   {/* Pricing and CTA */}
                   <div className="flex items-center justify-between pt-2 border-t gap-2">
                     <div>
-                      <span className="text-2xl font-bold text-primary">
-                        ${caregiver.pricing}
-                      </span>
-                      <span className="text-xs text-muted-foreground ml-1">/visit</span>
+                      {caregiver.pricing ? (
+                        <>
+                          <span className="text-2xl font-bold text-primary">
+                            ${caregiver.pricing}
+                          </span>
+                          <span className="text-xs text-muted-foreground ml-1">/hr</span>
+                        </>
+                      ) : (
+                        <span className="text-lg font-bold text-primary">
+                          Contact for price
+                        </span>
+                      )}
                     </div>
                     <div className="flex gap-2">
                       <Button size="sm" variant="outline" asChild>

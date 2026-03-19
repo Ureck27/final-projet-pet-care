@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { TrainerServicesManager } from "@/components/features/trainers/trainer-services-manager"
 import { Camera, Mail, Phone, Calendar, Award, Star, Briefcase, Clock, Save, Loader2 } from "lucide-react"
 
 export default function ProfilePage() {
@@ -203,15 +204,8 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Services Offered</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {trainerProfile.services.map((service) => (
-                        <Badge key={service} variant="secondary">
-                          {service}
-                        </Badge>
-                      ))}
-                    </div>
+                  <div className="pt-4 border-t pb-4">
+                    <TrainerServicesManager />
                   </div>
 
                   <div className="space-y-2">

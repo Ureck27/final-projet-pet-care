@@ -43,18 +43,22 @@ export function TrainerCard({ trainer, user, onBook }: TrainerCardProps) {
                 {trainer.experience} years
               </span>
               <span className="flex items-center gap-1">
-                <DollarSign className="h-4 w-4" />${trainer.pricing}/hr
+                <DollarSign className="h-4 w-4" />
+                {trainer.pricing ? `$${trainer.pricing}/hr` : "Contact for price"}
               </span>
             </div>
 
             <p className="mb-3 text-sm text-muted-foreground line-clamp-2">{trainer.bio}</p>
 
             <div className="mb-4 flex flex-wrap gap-1">
-              {trainer.services.slice(0, 3).map((service) => (
-                <Badge key={service} variant="secondary" className="text-xs">
-                  {service}
-                </Badge>
-              ))}
+              {trainer.services.slice(0, 3).map((service, idx) => {
+                const serviceName = typeof service === "string" ? service : service.serviceName;
+                return (
+                  <Badge key={idx} variant="secondary" className="text-xs">
+                    {serviceName}
+                  </Badge>
+                );
+              })}
               {trainer.services.length > 3 && (
                 <Badge variant="secondary" className="text-xs">
                   +{trainer.services.length - 3}

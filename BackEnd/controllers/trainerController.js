@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Trainer = require('../models/Trainer');
 
 // @desc    Get all trainers
@@ -103,10 +104,134 @@ const deleteTrainer = async (req, res) => {
   }
 };
 
+// @desc    Get all services for a trainer
+// @route   GET /api/trainers/:id/services
+const getTrainerServices = async (req, res) => {
+  try {
+    const trainer = await Trainer.findById(req.params.id);
+    if (!trainer) return res.status(404).json({ message: 'Trainer not found' });
+    res.json(trainer.services || []);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Add a service for a trainer
+// @route   POST /api/trainers/:id/services
+const addTrainerService = async (req, res) => {
+  try {
+    const trainer = await Trainer.findById(req.params.id);
+    if (!trainer) return res.status(404).json({ message: 'Trainer not found' });
+    
+    if (trainer.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    const { serviceName, price, priceType, isActive } = req.body;
+    if (!serviceName) return res.status(400).json({ message: 'Service name is required' });
+
+    const newService = {
+      _id: new mongoose.Types.ObjectId(),
+      serviceName,
+      price: price === '' || price === null || price === undefined ? null : Number(price),
+      priceType: priceType || 'fixed',
+      isActive: isActive !== undefined ? isActive : true
+    };
+
+    if (!trainer.services) trainer.services = [];
+    trainer.services.push(newService);
+    trainer.markModified('services');
+    await trainer.save();
+
+    res.status(201).json(newService);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// @desc    Update a service for a trainer
+// @route   PUT /api/trainers/:id/services/:serviceId
+const updateTrainerService = async (req, res) => {
+  try {
+    const trainer = await Trainer.findById(req.params.id);
+    if (!trainer) return res.status(404).json({ message: 'Trainer not found' });
+
+    if (trainer.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    const { serviceId } = req.params;
+    const { serviceName, price, priceType, isActive } = req.body;
+
+    const serviceIndex = (trainer.services || []).findIndex(s => {
+      if (typeof s === 'string') return false;
+      return s._id && s._id.toString() === serviceId;
+    });
+
+    if (serviceIndex === -1) {
+      return res.status(404).json({ message: 'Service not found' });
+    }
+
+    const service = trainer.services[serviceIndex];
+    if (serviceName !== undefined) service.serviceName = serviceName;
+    if (price !== undefined) {
+      service.price = price === '' || price === null ? null : Number(price);
+    }
+    if (priceType !== undefined) service.priceType = priceType;
+    if (isActive !== undefined) service.isActive = isActive;
+
+    trainer.services[serviceIndex] = service;
+    trainer.markModified('services');
+    await trainer.save();
+
+    res.json(service);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// @desc    Delete a service for a trainer
+// @route   DELETE /api/trainers/:id/services/:serviceId
+const deleteTrainerService = async (req, res) => {
+  try {
+    const trainer = await Trainer.findById(req.params.id);
+    if (!trainer) return res.status(404).json({ message: 'Trainer not found' });
+
+    if (trainer.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    const { serviceId } = req.params;
+    
+    if (!trainer.services) trainer.services = [];
+    const initialLength = trainer.services.length;
+    
+    trainer.services = trainer.services.filter(s => {
+      if (typeof s === 'string') return true;
+      return s._id && s._id.toString() !== serviceId;
+    });
+
+    if (trainer.services.length === initialLength) {
+       return res.status(404).json({ message: 'Service not found' });
+    }
+
+    trainer.markModified('services');
+    await trainer.save();
+
+    res.json({ message: 'Service removed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getTrainers,
   getTrainerById,
   createTrainer,
   updateTrainer,
-  deleteTrainer
+  deleteTrainer,
+  getTrainerServices,
+  addTrainerService,
+  updateTrainerService,
+  deleteTrainerService
 };

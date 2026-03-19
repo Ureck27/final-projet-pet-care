@@ -10,8 +10,8 @@ const trainerSchema = new mongoose.Schema({
   certifications: [String],
   profileImage: { type: String },
   certificateImages: [String],
-  services: [String],
-  pricing: { type: Number, required: true }, // hourly rate or base price
+  services: [{ type: mongoose.Schema.Types.Mixed }], // Can contain old connection string or new object { serviceName, price, priceType, isActive, _id }
+  pricing: { type: Number }, // optional now
   availability: [String],
   rating: { type: Number, default: 0 },
   status: {

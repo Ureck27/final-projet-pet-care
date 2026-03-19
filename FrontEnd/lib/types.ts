@@ -113,16 +113,24 @@ export interface PetProfile {
   updatedAt: Date
 }
 
+export interface TrainerService {
+  _id?: string;
+  serviceName: string;
+  price?: number | null;
+  priceType?: 'fixed' | 'hourly' | 'custom';
+  isActive?: boolean;
+}
+
 export interface Trainer {
-  _id: string
+  _id?: string // Optional _id for new trainers
   id: string
-  userId: string | any
+  userId: string
   name?: string
-  bio: string
+  bio?: string
   experience: number
   certifications: string[]
-  services: string[]
-  pricing: number
+  services: (string | TrainerService)[]
+  pricing?: number
   availability: string[]
   rating: number
 }

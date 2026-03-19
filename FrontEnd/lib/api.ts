@@ -145,6 +145,14 @@ export interface CaregiverApplication {
   updatedAt: string;
 }
 
+export interface TrainerService {
+  _id?: string;
+  serviceName: string;
+  price?: number | null;
+  priceType?: 'fixed' | 'hourly' | 'custom';
+  isActive?: boolean;
+}
+
 export interface Trainer {
   _id: string;
   id: string;
@@ -154,8 +162,8 @@ export interface Trainer {
   bio: string;
   experience: number;
   certifications: string[];
-  services: string[];
-  pricing: number;
+  services: (string | TrainerService)[];
+  pricing?: number;
   availability: string[];
   rating: number;
   status: 'pending' | 'accepted' | 'rejected';
@@ -277,6 +285,17 @@ export const adminApi = {
   
   deleteUser: (id: string) =>
     api.delete<{ message: string }>(`/admin/users/${id}`),
+};
+
+// Trainer API
+export const trainerApi = {
+  getTrainers: () => api.get<Trainer[]>('/trainers'),
+  getTrainerById: (id: string) => api.get<Trainer>(`/trainers/${id}`),
+  updateTrainer: (id: string, trainerData: Partial<Trainer>) => api.put<Trainer>(`/trainers/${id}`, trainerData),
+  getTrainerServices: (id: string) => api.get<TrainerService[]>(`/trainers/${id}/services`),
+  addTrainerService: (id: string, serviceData: TrainerService) => api.post<TrainerService>(`/trainers/${id}/services`, serviceData),
+  updateTrainerService: (id: string, serviceId: string, serviceData: Partial<TrainerService>) => api.put<TrainerService>(`/trainers/${id}/services/${serviceId}`, serviceData),
+  deleteTrainerService: (id: string, serviceId: string) => api.delete<{ message: string }>(`/trainers/${id}/services/${serviceId}`),
 };
 
 // Task API

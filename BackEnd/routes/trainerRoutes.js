@@ -5,7 +5,11 @@ const {
   getTrainerById,
   createTrainer,
   updateTrainer,
-  deleteTrainer
+  deleteTrainer,
+  getTrainerServices,
+  addTrainerService,
+  updateTrainerService,
+  deleteTrainerService
 } = require('../controllers/trainerController');
 const { protect, authorizeRole } = require('../middleware/authMiddleware');
 
@@ -17,5 +21,13 @@ router.route('/:id')
   .get(protect, getTrainerById)
   .put(protect, authorizeRole('trainer', 'admin'), updateTrainer)
   .delete(protect, authorizeRole('trainer', 'admin'), deleteTrainer);
+
+router.route('/:id/services')
+  .get(getTrainerServices)
+  .post(protect, authorizeRole('trainer', 'admin'), addTrainerService);
+
+router.route('/:id/services/:serviceId')
+  .put(protect, authorizeRole('trainer', 'admin'), updateTrainerService)
+  .delete(protect, authorizeRole('trainer', 'admin'), deleteTrainerService);
 
 module.exports = router;
