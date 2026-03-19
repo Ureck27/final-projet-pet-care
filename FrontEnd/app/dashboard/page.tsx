@@ -22,7 +22,8 @@ import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PawPrint, Calendar, Bell, TrendingUp, Plus, MessageCircle } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { PawPrint, Calendar, Bell, TrendingUp, Plus, MessageCircle, RefreshCw, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 
 export default function DashboardPage() {
@@ -33,6 +34,8 @@ export default function DashboardPage() {
   const [pets, setPets] = useState<Pet[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isRetrying, setIsRetrying] = useState(false)
 
   useEffect(() => {
     if (!isAuthLoading && !user) {
@@ -48,29 +51,112 @@ export default function DashboardPage() {
     }
   }, [user, isAuthLoading, router])
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (isRetry = false) => {
     if (!user) return
     setIsLoading(true)
+    setError(null)
+    if (isRetry) setIsRetrying(true)
+    
     try {
       const [petsData, bookingsData] = await Promise.all([
-        api.get<Pet[]>(`/pets?ownerId=${user.id}`),
-        api.get<Booking[]>(`/bookings?ownerId=${user.id}`)
+        api.get<Pet[]>(`/pets?ownerId=${user.id}`, {
+          timeout: 20000, // 20s timeout for dashboard data
+          retries: isRetry ? 3 : 2, // More retries on manual retry
+          retryDelay: 1500 // 1.5s delay between retries
+        }),
+        api.get<Booking[]>(`/bookings?ownerId=${user.id}`, {
+          timeout: 20000,
+          retries: isRetry ? 3 : 2,
+          retryDelay: 1500
+        })
       ])
-      setPets(petsData)
-      setBookings(bookingsData)
-    } catch (err) {
+      setPets(petsData || [])
+      setBookings(bookingsData || [])
+      setError(null)
+    } catch (err: any) {
       console.error("Failed to fetch dashboard data", err)
+      
+      // Handle specific backend down error
+      if (err.message && err.message.startsWith('BACKEND_DOWN')) {
+        setError('The server is currently unavailable. Please try again later or contact support if the problem persists.')
+      } else if (err.message && err.message.includes('timed out')) {
+        setError('Request timed out. The server may be slow to respond. Please try again.')
+      } else {
+        setError(err.message || 'Failed to load dashboard data. Please try again.')
+      }
     } finally {
       setIsLoading(false)
+      setIsRetrying(false)
     }
+  }
+
+  const handleRetry = () => {
+    fetchDashboardData(true)
   }
 
 
 
-  if (isAuthLoading || isLoading || !user) {
+  if (isAuthLoading || (!isLoading && !error && !user)) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />
+      </div>
+    )
+  }
+
+  // Error state
+  if (error && !isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto">
+          <Alert className="mb-6 border-red-200 bg-red-50">
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-800">
+              {error}
+            </AlertDescription>
+          </Alert>
+          
+          <div className="flex gap-4 justify-center">
+            <Button 
+              onClick={handleRetry} 
+              disabled={isRetrying}
+              className="min-w-[120px]"
+            >
+              {isRetrying ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Retrying...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Try Again
+                </>
+              )}
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => router.push('/')}
+            >
+              Go Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Loading state
+  if (isLoading || !user) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="text-center">
+          <Loader size="lg" />
+          <p className="mt-4 text-muted-foreground">
+            {isRetrying ? 'Retrying connection...' : 'Loading your dashboard...'}
+          </p>
+        </div>
       </div>
     )
   }

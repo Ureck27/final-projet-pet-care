@@ -14,12 +14,16 @@ interface RequestOptions extends RequestInit {
   body?: any;
   timeout?: number;
   retries?: number;
+  retryDelay?: number;
+  enableRetry?: boolean;
 }
 
 export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('petcare_token') : null;
-  const timeoutMs = options.timeout || 8000;
-  const maxRetries = options.retries || 0;
+  const timeoutMs = options.timeout || 15000; // Increased default timeout to 15s
+  const maxRetries = options.retries !== undefined ? options.retries : 2; // Default 2 retries
+  const retryDelay = options.retryDelay || 1000; // Default 1s delay
+  const enableRetry = options.enableRetry !== false; // Enable retry by default
   let attempt = 0;
   
   const headers = new Headers(options.headers || {});
@@ -50,14 +54,17 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
   
   while (attempt <= maxRetries) {
     const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeoutMs);
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, timeoutMs);
+    
     config.signal = controller.signal;
 
-    console.log(`[API] ${config.method || 'GET'} ${fullUrl} (Attempt ${attempt + 1})`);
+    console.log(`[API] ${config.method || 'GET'} ${fullUrl} (Attempt ${attempt + 1}/${maxRetries + 1}, Timeout: ${timeoutMs}ms)`);
 
     try {
       const response = await fetch(fullUrl, config);
-      clearTimeout(id);
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -67,40 +74,60 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
           status: response.status,
           statusText: response.statusText,
           error: errorData,
-          message: errorMessage
+          message: errorMessage,
+          attempt: attempt + 1
         });
         
-        throw new Error(errorMessage);
+        // Don't retry on client errors (4xx) except for 429 (rate limit) and 408 (timeout)
+        const shouldRetry = enableRetry && 
+          (response.status >= 500 || response.status === 429 || response.status === 408) && 
+          attempt < maxRetries;
+        
+        if (!shouldRetry) {
+          throw new Error(errorMessage);
+        }
+      } else {
+        const data = await response.json();
+        console.log(`[API Success] ${config.method || 'GET'} ${endpoint} (Attempt ${attempt + 1})`);
+        return data;
       }
-
-      const data = await response.json();
-      console.log(`[API Success] ${config.method || 'GET'} ${endpoint}`);
-      return data;
     } catch (error: any) {
-      clearTimeout(id);
+      clearTimeout(timeoutId);
       const isLastAttempt = attempt === maxRetries;
       
       if (error.name === 'AbortError') {
-        if (isLastAttempt) throw new Error(`Request timed out after ${timeoutMs}ms.`);
+        console.error(`[API Timeout] Request aborted after ${timeoutMs}ms (Attempt ${attempt + 1})`);
+        if (isLastAttempt) {
+          throw new Error(`Request timed out after ${timeoutMs}ms. Please check your connection and try again.`);
+        }
       } else if (error instanceof TypeError && error.message === 'Failed to fetch') {
-        console.error(`[API Connection Error] Cannot reach backend at ${API_BASE_URL}`);
+        console.error(`[API Connection Error] Cannot reach backend at ${API_BASE_URL} (Attempt ${attempt + 1})`);
         
         if (isLastAttempt) {
-            // Specific backend down identifier for boundary catching
-            throw new Error(`BACKEND_DOWN: Connection failed to ${API_BASE_URL}`);
+          // Specific backend down identifier for boundary catching
+          throw new Error(`BACKEND_DOWN: Unable to connect to the server. Please check if the backend is running at ${API_BASE_URL}`);
         }
+      } else if (error.message && error.message.startsWith('BACKEND_DOWN')) {
+        // Re-throw backend down errors immediately
+        throw error;
       } else {
-        if (isLastAttempt) throw error;
-      }
-      
-      attempt++;
-      // Exponential backoff
-      if (!isLastAttempt) {
-          await new Promise(res => setTimeout(res, 1000 * attempt));
+        console.error(`[API Error] Unexpected error (Attempt ${attempt + 1}):`, error);
+        if (isLastAttempt) {
+          throw error;
+        }
       }
     }
+    
+    // Retry logic with exponential backoff
+    if (attempt < maxRetries) {
+      attempt++;
+      const delay = retryDelay * Math.pow(2, attempt - 1); // Exponential backoff
+      console.log(`[API Retry] Waiting ${delay}ms before retry ${attempt + 1}...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
   }
-  throw new Error("Unexpected error after retries");
+  
+  throw new Error("Request failed after all retry attempts. Please try again later.");
 }
 
 export const api = {
