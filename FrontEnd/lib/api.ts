@@ -1,11 +1,26 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    // Client-side requests ALWAYS go to the public URL
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  }
+  // Server-side (React Server Components, SSR)
+  // Use INTERNAL_API_URL if needed for docker, fallback to public
+  return process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 interface RequestOptions extends RequestInit {
   body?: any;
+  timeout?: number;
+  retries?: number;
 }
 
 export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('petcare_token') : null;
+  const timeoutMs = options.timeout || 8000;
+  const maxRetries = options.retries || 0;
+  let attempt = 0;
   
   const headers = new Headers(options.headers || {});
   const isFormData = options.body instanceof FormData;
@@ -32,37 +47,60 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
   }
 
   const fullUrl = `${API_BASE_URL}${endpoint}`;
-  console.log(`[API] ${config.method || 'GET'} ${fullUrl}`);
+  
+  while (attempt <= maxRetries) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    config.signal = controller.signal;
 
-  try {
-    const response = await fetch(fullUrl, config);
+    console.log(`[API] ${config.method || 'GET'} ${fullUrl} (Attempt ${attempt + 1})`);
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+    try {
+      const response = await fetch(fullUrl, config);
+      clearTimeout(id);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+        
+        console.error(`[API Error] ${response.status} ${config.method} ${endpoint}:`, {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData,
+          message: errorMessage
+        });
+        
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      console.log(`[API Success] ${config.method || 'GET'} ${endpoint}`);
+      return data;
+    } catch (error: any) {
+      clearTimeout(id);
+      const isLastAttempt = attempt === maxRetries;
       
-      // Detailed error logging for development
-      console.error(`[API Error] ${response.status} ${config.method} ${endpoint}:`, {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorData,
-        message: errorMessage
-      });
+      if (error.name === 'AbortError') {
+        if (isLastAttempt) throw new Error(`Request timed out after ${timeoutMs}ms.`);
+      } else if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        console.error(`[API Connection Error] Cannot reach backend at ${API_BASE_URL}`);
+        
+        if (isLastAttempt) {
+            // Specific backend down identifier for boundary catching
+            throw new Error(`BACKEND_DOWN: Connection failed to ${API_BASE_URL}`);
+        }
+      } else {
+        if (isLastAttempt) throw error;
+      }
       
-      throw new Error(errorMessage);
+      attempt++;
+      // Exponential backoff
+      if (!isLastAttempt) {
+          await new Promise(res => setTimeout(res, 1000 * attempt));
+      }
     }
-
-    const data = await response.json();
-    console.log(`[API Success] ${config.method || 'GET'} ${endpoint}`);
-    return data;
-  } catch (error: any) {
-    if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      console.error(`[API Connection Error] Cannot reach backend at ${API_BASE_URL}`);
-      console.error('[API Help] Check if backend is running: http://localhost:5000');
-      throw new Error(`Connection failed. Backend not running at ${API_BASE_URL}`);
-    }
-    throw error;
   }
+  throw new Error("Unexpected error after retries");
 }
 
 export const api = {
