@@ -102,12 +102,21 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const handleUpdatePetStatus = async (petId: string, newStatus: string) => {
+  const handleApprovePet = async (petId: string) => {
     try {
-      await adminApi.updatePetStatus(petId, newStatus)
+      await adminApi.approvePet(petId)
       fetchDashboardData()
     } catch (error) {
-      console.error(`Failed to update pet status to ${newStatus}:`, error)
+      console.error('Failed to approve pet:', error)
+    }
+  }
+
+  const handleRejectPet = async (petId: string) => {
+    try {
+      await adminApi.rejectPet(petId)
+      fetchDashboardData()
+    } catch (error) {
+      console.error('Failed to reject pet:', error)
     }
   }
 
@@ -282,8 +291,8 @@ export default function AdminDashboardPage() {
         <TabsContent value="pets">
           <Card>
             <CardHeader>
-              <CardTitle>All Pets</CardTitle>
-              <CardDescription>View all registered pets in the system</CardDescription>
+              <CardTitle>Pending Pets</CardTitle>
+              <CardDescription>View all pending pet applications</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -320,7 +329,7 @@ export default function AdminDashboardPage() {
                               <Button 
                                 variant="outline" 
                                 size="sm"
-                                onClick={() => handleUpdatePetStatus(pet.id, 'approved')}
+                                onClick={() => handleApprovePet(pet.id || (pet as any)._id)}
                                 title="Approve Pet"
                               >
                                 <CheckCircle className="h-4 w-4" />
@@ -328,7 +337,7 @@ export default function AdminDashboardPage() {
                               <Button 
                                 variant="destructive" 
                                 size="sm"
-                                onClick={() => handleUpdatePetStatus(pet.id, 'rejected')}
+                                onClick={() => handleRejectPet(pet.id || (pet as any)._id)}
                                 title="Reject Pet"
                               >
                                 <XCircle className="h-4 w-4" />

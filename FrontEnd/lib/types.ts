@@ -24,6 +24,8 @@ export interface Pet {
   weight?: number // Changed from string to number
   color?: string
   medicalNotes?: string
+  description?: string
+  imageUrl?: string
   photo?: string
   createdAt: Date
   updatedAt: string

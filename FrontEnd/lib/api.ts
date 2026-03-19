@@ -106,6 +106,8 @@ export interface Pet {
   weight?: number;
   color?: string;
   medicalNotes?: string;
+  description?: string;
+  imageUrl?: string;
   photo?: string;
   status: "pending" | "approved" | "rejected";
   createdAt: Date;
@@ -274,8 +276,11 @@ export const adminApi = {
   updateUserStatus: (id: string, status: string) =>
     api.put<User>(`/admin/users/${id}/status`, { status }),
     
-  updatePetStatus: (id: string, status: string) =>
-    api.put<Pet>(`/admin/pets/${id}/status`, { status }),
+  approvePet: (id: string) =>
+    api.patch<Pet>(`/admin/pets/${id}/approve`, {}),
+    
+  rejectPet: (id: string) =>
+    api.patch<Pet>(`/admin/pets/${id}/reject`, {}),
   
   acceptTrainerRequest: (id: string) =>
     api.put<{ message: string; request: TrainerRequest }>(`/admin/trainer-requests/${id}/accept`, {}),

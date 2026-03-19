@@ -79,6 +79,7 @@ export default function AddPetPage() {
       formData.append('weight', data.weight?.toString() || '')
       formData.append('color', data.color || '')
       formData.append('medicalNotes', data.medicalNotes || '')
+      formData.append('description', data.description || '')
       
       // Add image if provided
       if (data.photo && data.photo !== "/placeholder.svg") {
@@ -87,7 +88,7 @@ export default function AddPetPage() {
 
       await petApi.createPet(formData)
 
-      setSuccessMessage(`${data.name} has been added successfully!`)
+      setSuccessMessage("Pet submitted for approval")
       setShowSuccessMessage(true)
       reset()
       fetchUserPets() // Refresh list
@@ -252,6 +253,20 @@ export default function AddPetPage() {
                       className="text-base"
                     />
                   </div>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-base font-semibold">
+                    Description (optional)
+                  </Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Tell us a little bit about your pet's personality..."
+                    {...register("description")}
+                    rows={3}
+                    className="text-base"
+                  />
                 </div>
 
                 {/* Medical Notes */}

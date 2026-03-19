@@ -78,7 +78,8 @@ export function PetCard({ pet, onEdit, onDelete, onBook, className }: PetCardPro
         <p className="text-sm text-muted-foreground">{pet.age} years old</p>
         {pet.weight && <p className="text-xs text-muted-foreground">Weight: {pet.weight}</p>}
         {pet.color && <p className="text-xs text-muted-foreground">Color: {pet.color}</p>}
-        {pet.medicalNotes && <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{pet.medicalNotes}</p>}
+        {pet.medicalNotes && <p className="mt-2 text-xs text-muted-foreground line-clamp-2"><strong>Med:</strong> {pet.medicalNotes}</p>}
+        {pet.description && <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{pet.description}</p>}
       </CardContent>
     </Card>
   )

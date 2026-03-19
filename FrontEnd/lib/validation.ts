@@ -39,6 +39,7 @@ export const petSchema = z.object({
   weight: z.number().optional(), // Changed from string to number
   color: z.string().optional(),
   medicalNotes: z.string().optional(),
+  description: z.string().optional(),
   photo: z.string().optional(),
 })
 
