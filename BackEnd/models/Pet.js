@@ -31,6 +31,29 @@ const petSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  images: [{
+    type: String
+  }],
+  videos: [{
+    type: String
+  }],
+  healthStatus: {
+    type: String,
+    enum: ['healthy', 'warning', 'critical'],
+    default: 'healthy'
+  },
+  healthDescription: {
+    type: String,
+    required: false
+  },
+  recommendations: {
+    type: String,
+    required: false
+  },
+  isApproved: {
+    type: Boolean,
+    default: false
+  },
   trainerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

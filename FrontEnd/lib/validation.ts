@@ -40,7 +40,8 @@ export const petSchema = z.object({
   color: z.string().optional(),
   medicalNotes: z.string().optional(),
   description: z.string().optional(),
-  photo: z.string().optional(),
+  photo: z.any().optional(),
+  video: z.any().optional(),
 })
 
 export const caregiverApplicationSchema = z.object({

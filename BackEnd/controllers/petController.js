@@ -2,6 +2,7 @@ const Pet = require('../models/Pet');
 const PetProfile = require('../models/PetProfile');
 const { getFileUrl, deleteFile } = require('../middleware/uploadMiddleware');
 const { sendAdminNotification } = require('../services/emailService');
+const { analyzePetMedia } = require('../services/aiScannerService');
 
 // @desc    Get all pets
 // @route   GET /api/pets
@@ -57,11 +58,21 @@ const createPet = async (req, res) => {
   try {
     const { name, type, breed, age, description, weight, color, medicalNotes } = req.body;
     
-    // Handle image upload
+    // Handle media upload
     let imageUrl = null;
-    if (req.file) {
-      imageUrl = getFileUrl(req.file.filename, 'pet');
+    let videoUrl = null;
+    
+    // upload.fields puts files in req.files, NOT req.file
+    if (req.files) {
+      if (req.files.petImage && req.files.petImage.length > 0) {
+        imageUrl = getFileUrl(req.files.petImage[0].filename, 'pet');
+      }
+      if (req.files.petVideo && req.files.petVideo.length > 0) {
+        videoUrl = getFileUrl(req.files.petVideo[0].filename, 'video');
+      }
     }
+
+    const aiResult = await analyzePetMedia(imageUrl, videoUrl);
 
     const pet = await Pet.create({
       owner: req.user._id,
@@ -71,10 +82,15 @@ const createPet = async (req, res) => {
       age,
       description,
       imageUrl: imageUrl,
+      images: imageUrl ? [imageUrl] : [],
+      videos: videoUrl ? [videoUrl] : [],
       weight,
       color,
       medicalNotes,
-      photo: imageUrl // Keep for backward compatibility
+      photo: imageUrl, // Keep for backward compatibility
+      healthStatus: aiResult.status,
+      healthDescription: aiResult.description,
+      recommendations: aiResult.recommendations
     });
 
     // Send admin notification (commented out due to email config)
@@ -120,16 +136,29 @@ const updatePet = async (req, res) => {
 
     const { name, type, breed, age, description, weight, color, medicalNotes } = req.body;
 
-    // Handle image update
+    // Handle image and video update
     let imageUrl = pet.imageUrl || pet.photo;
-    if (req.file) {
-      // Delete old image if exists
-      if (imageUrl) {
-        const filename = imageUrl.split('/').pop();
-        deleteFile(`uploads/pets/${filename}`);
+    let videosArray = pet.videos || [];
+    
+    if (req.files) {
+      if (req.files.petImage && req.files.petImage.length > 0) {
+        if (imageUrl) {
+          const filename = imageUrl.split('/').pop();
+          deleteFile(`uploads/pets/${filename}`);
+        }
+        imageUrl = getFileUrl(req.files.petImage[0].filename, 'pet');
       }
-      imageUrl = getFileUrl(req.file.filename, 'pet');
+      
+      if (req.files.petVideo && req.files.petVideo.length > 0) {
+        if (videosArray.length > 0) {
+          const filename = videosArray[0].split('/').pop();
+          deleteFile(`uploads/videos/${filename}`);
+        }
+        videosArray = [getFileUrl(req.files.petVideo[0].filename, 'video')];
+      }
     }
+    
+    const aiResult = await analyzePetMedia(imageUrl, videosArray.length > 0 ? videosArray[0] : null);
 
     const updatedPet = await Pet.findByIdAndUpdate(
       req.params.id,
@@ -140,10 +169,15 @@ const updatePet = async (req, res) => {
         age,
         description,
         imageUrl: imageUrl,
+        images: imageUrl ? [imageUrl] : [],
+        videos: videosArray,
         photo: imageUrl, // Keep for backward compatibility
         weight,
         color,
-        medicalNotes
+        medicalNotes,
+        healthStatus: aiResult.status,
+        healthDescription: aiResult.description,
+        recommendations: aiResult.recommendations
       },
       { new: true, runValidators: true }
     ).populate('owner', 'name email');

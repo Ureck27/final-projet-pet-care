@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { VideoUpload } from "@/components/ui/video-upload"
 import { Loader2 } from "lucide-react"
 import { useState } from "react"
 import type { Pet } from "@/lib/types"
@@ -48,7 +49,8 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
       : {
           type: "dog",
           age: 0,
-          photo: "",
+          photo: null,
+          video: null,
         },
   })
 
@@ -167,10 +169,17 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
           </div>
 
           <ImageUpload
-            value={watch("photo")}
-            onChange={(value) => setValue("photo", value)}
+            value={typeof watch("photo") === 'string' ? watch("photo") as string : undefined}
+            onChange={(file, previewUrl) => setValue("photo", file || previewUrl)}
             label="Pet Photo (optional)"
             placeholder="Upload a photo of your pet"
+          />
+
+          <VideoUpload
+            value={typeof watch("video") === 'string' ? watch("video") as string : undefined}
+            onChange={(file, previewUrl) => setValue("video", file || previewUrl)}
+            label="Pet Video (AI Health Scan)"
+            placeholder="Upload a short video for AI health analysis"
           />
 
           <div className="flex justify-end gap-2">

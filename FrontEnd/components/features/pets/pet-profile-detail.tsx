@@ -24,7 +24,7 @@ import { format } from "date-fns"
 
 interface PetProfileDetailProps {
   pet: Pet
-  profile: PetProfile
+  profile?: PetProfile | null
 }
 
 export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
@@ -47,18 +47,94 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="health" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="health">Health</TabsTrigger>
-          <TabsTrigger value="diet">Diet</TabsTrigger>
-          <TabsTrigger value="behavior">Behavior</TabsTrigger>
-          <TabsTrigger value="emergency">Emergency</TabsTrigger>
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-5 overflow-x-auto">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="health" disabled={!profile}>Health</TabsTrigger>
+          <TabsTrigger value="diet" disabled={!profile}>Diet</TabsTrigger>
+          <TabsTrigger value="behavior" disabled={!profile}>Behavior</TabsTrigger>
+          <TabsTrigger value="emergency" disabled={!profile}>Emergency</TabsTrigger>
         </TabsList>
+
+        {/* Overview Tab (AI Scan & Media) */}
+        <TabsContent value="overview" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-primary" />
+                AI Health Scan Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-4">
+                <p className="font-semibold">Status:</p>
+                <Badge 
+                  variant={
+                    pet.healthStatus === 'healthy' ? 'default' : 
+                    pet.healthStatus === 'warning' ? 'secondary' : 
+                    'destructive'
+                  }
+                  className={pet.healthStatus === 'warning' ? 'bg-yellow-500 hover:bg-yellow-600 outline-none border-none text-white' : ''}
+                >
+                  {pet.healthStatus?.toUpperCase() || "PENDING"}
+                </Badge>
+              </div>
+              <div>
+                <p className="font-semibold mb-1">Analysis Description:</p>
+                <p className="text-muted-foreground">{pet.healthDescription || "No analysis available."}</p>
+              </div>
+              {pet.recommendations && (
+                <div>
+                  <p className="font-semibold mb-1">Recommendations:</p>
+                  <Alert className="bg-primary/5 border-primary/20">
+                    <Info className="h-4 w-4 text-primary" />
+                    <AlertDescription className="text-primary/90">{pet.recommendations}</AlertDescription>
+                  </Alert>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {(pet.imageUrl || pet.photo || (pet.images && pet.images.length > 0)) && (
+             <Card>
+              <CardHeader>
+                <CardTitle>Photos</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-4">
+                {(pet.images?.length ? pet.images : [pet.imageUrl || pet.photo]).map((img, i) => (
+                   img && <img key={i} src={img} alt={`${pet.name}`} className="w-full max-w-sm rounded-lg object-cover" />
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {pet.videos && pet.videos.length > 0 && (
+             <Card>
+              <CardHeader>
+                <CardTitle>Videos</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-4">
+                {pet.videos.map((vid, i) => (
+                  <video key={i} src={vid} controls className="w-full max-w-lg rounded-lg" />
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {!profile && (
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                This pet doesn't have a detailed profile yet. Click "Edit Profile" to add medical history, dietary requirements, and behavioral notes.
+              </AlertDescription>
+            </Alert>
+          )}
+        </TabsContent>
 
         {/* Health Tab */}
         <TabsContent value="health" className="space-y-4">
           {/* Veterinarian Card */}
-          {profile.veterinarian && (
+          {profile?.veterinarian && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -101,25 +177,25 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                {profile.weight && (
+                {profile?.weight && (
                   <div>
                     <p className="text-sm text-muted-foreground">Weight</p>
                     <p className="text-lg font-semibold">{profile.weight} lbs</p>
                   </div>
                 )}
-                {profile.color && (
+                {profile?.color && (
                   <div>
                     <p className="text-sm text-muted-foreground">Color</p>
                     <p className="text-lg font-semibold">{profile.color}</p>
                   </div>
                 )}
-                {profile.microchipId && (
+                {profile?.microchipId && (
                   <div>
                     <p className="text-sm text-muted-foreground">Microchip ID</p>
                     <p className="font-mono text-sm">{profile.microchipId}</p>
                   </div>
                 )}
-                {profile.dateOfBirth && (
+                {profile?.dateOfBirth && (
                   <div>
                     <p className="text-sm text-muted-foreground">Date of Birth</p>
                     <p className="font-medium">{format(new Date(profile.dateOfBirth), "MMM d, yyyy")}</p>
@@ -128,7 +204,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
               </div>
 
               {/* Allergies Alert */}
-              {profile.allergies && profile.allergies.length > 0 && (
+              {profile?.allergies && profile.allergies.length > 0 && (
                 <Alert className="border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
@@ -140,7 +216,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
           </Card>
 
           {/* Medical History */}
-          {profile.medicalHistory.length > 0 && (
+          {profile?.medicalHistory && profile.medicalHistory.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Medical History</CardTitle>
@@ -159,7 +235,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
           )}
 
           {/* Vaccinations */}
-          {profile.vaccinations.length > 0 && (
+          {profile?.vaccinations && profile.vaccinations.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Vaccination Records</CardTitle>
@@ -209,25 +285,25 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                {profile.dietaryRequirements && (
+                {profile?.dietaryRequirements && (
                   <div>
                     <p className="text-sm text-muted-foreground">Dietary Requirements</p>
                     <p className="font-medium">{profile.dietaryRequirements}</p>
                   </div>
                 )}
-                {profile.foodBrand && (
+                {profile?.foodBrand && (
                   <div>
                     <p className="text-sm text-muted-foreground">Current Food</p>
                     <p className="font-medium">{profile.foodBrand}</p>
                   </div>
                 )}
-                {profile.mealsPerDay && (
+                {profile?.mealsPerDay && (
                   <div>
                     <p className="text-sm text-muted-foreground">Meals Per Day</p>
                     <p className="font-medium">{profile.mealsPerDay}</p>
                   </div>
                 )}
-                {profile.waterIntakeGoal && (
+                {profile?.waterIntakeGoal && (
                   <div>
                     <p className="text-sm text-muted-foreground">Water Intake Goal</p>
                     <p className="font-medium">{profile.waterIntakeGoal} ml/day</p>
@@ -235,7 +311,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                 )}
               </div>
 
-              {profile.mealTimes && profile.mealTimes.length > 0 && (
+              {profile?.mealTimes && profile.mealTimes.length > 0 && (
                 <div>
                   <p className="mb-2 text-sm font-medium">Meal Times</p>
                   <div className="flex gap-2">
@@ -248,7 +324,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                 </div>
               )}
 
-              {profile.restrictions && profile.restrictions.length > 0 && (
+              {profile?.restrictions && profile.restrictions.length > 0 && (
                 <Alert className="border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
@@ -257,7 +333,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                 </Alert>
               )}
 
-              {profile.treats && profile.treats.length > 0 && (
+              {profile?.treats && profile.treats.length > 0 && (
                 <div className="rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-900 dark:bg-green-950">
                   <p className="text-sm font-medium">Approved Treats</p>
                   <p className="text-sm text-muted-foreground">{profile.treats.join(", ")}</p>
@@ -267,7 +343,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
           </Card>
 
           {/* Medications & Supplements */}
-          {(profile.medications.length > 0 || profile.supplements.length > 0) && (
+          {profile && (profile.medications.length > 0 || profile.supplements.length > 0) && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -327,7 +403,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {profile.temperament && profile.temperament.length > 0 && (
+              {profile?.temperament && profile.temperament.length > 0 && (
                 <div>
                   <p className="mb-2 font-medium">Temperament</p>
                   <div className="flex flex-wrap gap-2">
@@ -340,7 +416,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                 </div>
               )}
 
-              {profile.positiveBehaviors && profile.positiveBehaviors.length > 0 && (
+              {profile?.positiveBehaviors && profile.positiveBehaviors.length > 0 && (
                 <div className="rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-900 dark:bg-green-950">
                   <p className="mb-2 font-medium">Positive Behaviors ✓</p>
                   <ul className="space-y-1 text-sm">
@@ -351,7 +427,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                 </div>
               )}
 
-              {profile.knownBehaviors && profile.knownBehaviors.length > 0 && (
+              {profile?.knownBehaviors && profile.knownBehaviors.length > 0 && (
                 <div className="rounded-lg border border-secondary/20 bg-secondary/10 p-3">
                   <p className="mb-2 font-medium">Known Behaviors</p>
                   <ul className="space-y-1 text-sm">
@@ -362,7 +438,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                 </div>
               )}
 
-              {profile.fears && profile.fears.length > 0 && (
+              {profile?.fears && profile.fears.length > 0 && (
                 <Alert className="border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-950">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
@@ -371,7 +447,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                 </Alert>
               )}
 
-              {profile.triggers && profile.triggers.length > 0 && (
+              {profile?.triggers && profile.triggers.length > 0 && (
                 <Alert className="border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
@@ -380,14 +456,14 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                 </Alert>
               )}
 
-              {profile.trainingStatus && (
+              {profile?.trainingStatus && (
                 <div className="rounded-lg border border-border bg-muted p-3">
                   <p className="text-sm text-muted-foreground">Training Status</p>
                   <p className="font-medium">{profile.trainingStatus}</p>
                 </div>
               )}
 
-              {profile.preferredActivities && profile.preferredActivities.length > 0 && (
+              {profile?.preferredActivities && profile.preferredActivities.length > 0 && (
                 <div>
                   <p className="mb-2 font-medium">Preferred Activities</p>
                   <div className="flex flex-wrap gap-2">
@@ -400,7 +476,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
                 </div>
               )}
 
-              {profile.exerciseNeeds && (
+              {profile?.exerciseNeeds && (
                 <div className="rounded-lg border border-border bg-muted p-3">
                   <p className="text-sm text-muted-foreground">Exercise Needs</p>
                   <p className="font-medium capitalize">{profile.exerciseNeeds}</p>
@@ -409,7 +485,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
             </CardContent>
           </Card>
 
-          {profile.sleepSchedule && (
+          {profile?.sleepSchedule && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Sleep Schedule</CardTitle>
@@ -427,7 +503,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
             </Card>
           )}
 
-          {profile.grooming && (
+          {profile?.grooming && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Grooming</CardTitle>
@@ -458,7 +534,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
 
         {/* Emergency Tab */}
         <TabsContent value="emergency" className="space-y-4">
-          {profile.emergencyContacts.length > 0 && (
+          {profile?.emergencyContacts && profile.emergencyContacts.length > 0 && (
             <Card className="border-red-200 dark:border-red-900">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -478,7 +554,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
             </Card>
           )}
 
-          {(profile.insuranceProvider || profile.insurancePolicyNumber) && (
+          {profile && (profile.insuranceProvider || profile.insurancePolicyNumber) && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -503,7 +579,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
             </Card>
           )}
 
-          {profile.specialInstructions && (
+          {profile?.specialInstructions && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

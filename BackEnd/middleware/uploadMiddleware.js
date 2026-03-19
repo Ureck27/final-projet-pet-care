@@ -14,6 +14,7 @@ ensureDirectoryExists(path.join(__dirname, '../uploads'));
 ensureDirectoryExists(path.join(__dirname, '../uploads/pets'));
 ensureDirectoryExists(path.join(__dirname, '../uploads/trainers'));
 ensureDirectoryExists(path.join(__dirname, '../uploads/certificates'));
+ensureDirectoryExists(path.join(__dirname, '../uploads/videos'));
 
 // Storage configuration
 const storage = multer.diskStorage({
@@ -23,6 +24,8 @@ const storage = multer.diskStorage({
     // Determine upload path based on field name or file type
     if (file.fieldname === 'petImage' || req.path.includes('/pets')) {
       uploadPath = '../uploads/pets/';
+    } else if (file.fieldname === 'petVideo') {
+      uploadPath = '../uploads/videos/';
     } else if (file.fieldname === 'certificateImage' || file.fieldname === 'certificates') {
       uploadPath = '../uploads/certificates/';
     } else if (file.fieldname === 'profileImage' || req.path.includes('/trainers')) {
@@ -45,13 +48,12 @@ const storage = multer.diskStorage({
   }
 });
 
-// File filter for images only
+// File filter for images and videos
 const fileFilter = (req, file, cb) => {
-  // Accept images only
-  if (file.mimetype.startsWith('image/')) {
+  if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
     cb(null, true);
   } else {
-    cb(new Error('Only image files are allowed (JPEG, PNG, GIF, WebP)'), false);
+    cb(new Error('Only image and video files are allowed'), false);
   }
 };
 
@@ -60,7 +62,7 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: 20 * 1024 * 1024, // 20MB limit for video support
     files: 3 // Maximum 3 files per request
   }
 });
@@ -82,7 +84,8 @@ const uploadTrainerFiles = upload.fields([
 ]);
 
 const uploadPetFiles = upload.fields([
-  { name: 'petImage', maxCount: 1 }
+  { name: 'petImage', maxCount: 1 },
+  { name: 'petVideo', maxCount: 1 }
 ]);
 
 // Error handling middleware for multer
@@ -100,7 +103,7 @@ const handleUploadError = (error, req, res, next) => {
     return res.status(400).json({ message: 'File upload error: ' + error.message });
   }
   
-  if (error.message.includes('Only image files are allowed')) {
+  if (error.message.includes('Only image and video files are allowed')) {
     return res.status(400).json({ message: error.message });
   }
   
@@ -114,6 +117,8 @@ const getFileUrl = (filename, type = 'general') => {
   
   if (type === 'pet') {
     path = '/uploads/pets/';
+  } else if (type === 'video') {
+    path = '/uploads/videos/';
   } else if (type === 'trainer') {
     path = '/uploads/trainers/';
   } else if (type === 'certificate') {

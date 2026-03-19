@@ -14,11 +14,13 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { VideoUpload } from "@/components/ui/video-upload"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, ArrowLeft, CheckCircle, PawPrint, Plus } from "lucide-react"
 import { petApi } from "@/lib/api"
 import type { Pet } from "@/lib/types"
+import { toast } from "sonner"
 
 export default function AddPetPage() {
   const router = useRouter()
@@ -62,7 +64,8 @@ export default function AddPetPage() {
     defaultValues: {
       type: "dog",
       age: 0,
-      photo: "",
+      photo: null,
+      video: null,
     },
   })
 
@@ -82,12 +85,19 @@ export default function AddPetPage() {
       formData.append('description', data.description || '')
       
       // Add image if provided
-      if (data.photo && data.photo !== "/placeholder.svg") {
+      if (data.photo instanceof File) {
         formData.append('petImage', data.photo)
+      } else if (typeof data.photo === 'string' && data.photo !== "/placeholder.svg") {
+        // Do nothing, it's already uploaded. Wait, backend createPet might not care.
+      }
+
+      if (data.video instanceof File) {
+        formData.append('petVideo', data.video)
       }
 
       await petApi.createPet(formData)
 
+      toast.success("Pet added successfully!")
       setSuccessMessage("Pet submitted for approval")
       setShowSuccessMessage(true)
       reset()
@@ -97,8 +107,9 @@ export default function AddPetPage() {
       setTimeout(() => {
         setShowSuccessMessage(false)
       }, 3000)
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to add pet", err)
+      toast.error(err.message || "Failed to add pet. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -286,10 +297,18 @@ export default function AddPetPage() {
 
                 {/* Photo Upload */}
                 <ImageUpload
-                  value={watch("photo")}
-                  onChange={(value) => setValue("photo", value)}
+                  value={typeof watch("photo") === 'string' ? watch("photo") as string : undefined}
+                  onChange={(file, previewUrl) => setValue("photo", file || previewUrl)}
                   label="Pet Photo (optional)"
                   placeholder="Upload a photo of your pet"
+                />
+
+                {/* Video Upload */}
+                <VideoUpload
+                  value={typeof watch("video") === 'string' ? watch("video") as string : undefined}
+                  onChange={(file, previewUrl) => setValue("video", file || previewUrl)}
+                  label="Pet Video (AI Health Scan)"
+                  placeholder="Upload a short video. Our AI will analyze it to provide health feedback!"
                 />
 
                 {/* Submit Button */}

@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null
   isLoading: boolean
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>
+  adminLogin: (email: string, password: string) => Promise<{ success: boolean; message?: string }>
   register: (data: RegisterData) => Promise<{ success: boolean; message?: string }>
   logout: () => void
   forgotPassword: (email: string) => Promise<boolean>
@@ -72,6 +73,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const adminLogin = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
+    setIsLoading(true)
+    try {
+      console.log('[Auth] Attempting admin login:', email);
+      const data = await authApi.adminLogin({ email, password });
+      
+      console.log('[Auth] Admin login successful, storing credentials');
+      const loggedUser: User = {
+        _id: data._id,
+        id: data._id,
+        email: data.email,
+        name: data.name,
+        fullName: data.name,
+        phone: '',
+        role: data.role as UserRole,
+        status: (data.status as "pending" | "active" | "suspended" | "rejected") || "active",
+        createdAt: new Date(),
+        updatedAt: new Date().toISOString()
+      }
+      setUser(loggedUser)
+      localStorage.setItem("petcare_user", JSON.stringify(loggedUser))
+      localStorage.setItem("petcare_token", data.token)
+      setIsLoading(false)
+      return { success: true }
+    } catch (err: any) {
+      const errorMessage = err.message || 'Admin Login failed';
+      console.error('[Auth Error] Admin Login failed:', errorMessage);
+      setIsLoading(false)
+      return { 
+        success: false, 
+        message: errorMessage || 'Admin Login failed. Please check your credentials and connection.' 
+      }
+    }
+  }
+
   const register = async (data: RegisterData): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true)
     try {
@@ -130,7 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, forgotPassword }}>
+    <AuthContext.Provider value={{ user, isLoading, login, adminLogin, register, logout, forgotPassword }}>
       {children}
     </AuthContext.Provider>
   )

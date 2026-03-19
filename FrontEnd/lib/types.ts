@@ -8,6 +8,7 @@ export interface User {
   fullName: string
   phone: string
   role: UserRole
+  status?: "pending" | "active" | "suspended" | "rejected"
   avatar?: string
   createdAt: Date
 }
@@ -26,7 +27,14 @@ export interface Pet {
   medicalNotes?: string
   description?: string
   imageUrl?: string
+  images?: string[]
+  videos?: string[]
   photo?: string
+  healthStatus?: "healthy" | "warning" | "critical"
+  healthDescription?: string
+  recommendations?: string
+  status: "pending" | "approved" | "rejected"
+  isApproved?: boolean
   createdAt: Date
   updatedAt: string
 }

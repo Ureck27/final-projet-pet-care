@@ -83,16 +83,7 @@ export default function PetDetailPage() {
         Back to Pets
       </Button>
 
-      {profile ? (
-        <PetProfileDetail pet={pet} profile={profile} />
-      ) : (
-        <EmptyState
-          icon={ArrowLeft}
-          title="Profile not available"
-          description="This pet doesn't have a detailed profile yet."
-          action={<Button onClick={() => router.push("/pets")}>Back to Pets</Button>}
-        />
-      )}
+      <PetProfileDetail pet={pet} profile={profile} />
     </main>
   )
 }
