@@ -6,21 +6,31 @@ import Link from "next/link"
 import { useAuth } from "@/context/auth-context"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { petSchema, type PetFormData } from "@/lib/validation"
+import { z } from "zod"
+
+const simplifiedPetSchema = z.object({
+  name: z.string().min(1, "Pet name is required"),
+  type: z.string().min(1, "Pet type is required"),
+  age: z.number().min(0, "Age must be positive"),
+  description: z.string().optional(),
+  image: z.string().min(1, "Pet image is required"),
+})
+
+type SimplifiedPetFormData = z.infer<typeof simplifiedPetSchema>
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ImageUpload } from "@/components/ui/image-upload"
-import { VideoUpload } from "@/components/ui/video-upload"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, ArrowLeft, CheckCircle, PawPrint, Plus } from "lucide-react"
 import { petApi } from "@/lib/api"
-import type { Pet } from "@/lib/types"
+import type { Pet as ApiPet } from "@/lib/api"
 import { toast } from "sonner"
+
+type Pet = ApiPet
 
 export default function AddPetPage() {
   const router = useRouter()
@@ -43,7 +53,7 @@ export default function AddPetPage() {
     if (!user) return
     setIsLoading(true)
     try {
-      const data = await petApi.getPetsByUserId(user.id)
+      const data = await petApi.getUserPets()
       setPets(data)
     } catch (err) {
       console.error("Failed to fetch pets", err)
@@ -59,43 +69,20 @@ export default function AddPetPage() {
     setValue,
     watch,
     reset,
-  } = useForm<PetFormData>({
-    resolver: zodResolver(petSchema),
+  } = useForm<SimplifiedPetFormData>({
+    resolver: zodResolver(simplifiedPetSchema),
     defaultValues: {
       type: "dog",
       age: 0,
-      photo: null,
-      video: null,
+      image: "",
     },
   })
 
-  const onSubmit = async (data: PetFormData) => {
+  const onSubmit = async (data: SimplifiedPetFormData) => {
     if (!user) return
     setIsSubmitting(true)
     try {
-      // Create FormData for file upload
-      const formData = new FormData()
-      formData.append('name', data.name)
-      formData.append('type', data.type)
-      formData.append('breed', data.breed || '')
-      formData.append('age', data.age.toString())
-      formData.append('weight', data.weight?.toString() || '')
-      formData.append('color', data.color || '')
-      formData.append('medicalNotes', data.medicalNotes || '')
-      formData.append('description', data.description || '')
-      
-      // Add image if provided
-      if (data.photo instanceof File) {
-        formData.append('petImage', data.photo)
-      } else if (typeof data.photo === 'string' && data.photo !== "/placeholder.svg") {
-        // Do nothing, it's already uploaded. Wait, backend createPet might not care.
-      }
-
-      if (data.video instanceof File) {
-        formData.append('petVideo', data.video)
-      }
-
-      await petApi.createPet(formData)
+      await petApi.createPet(data)
 
       toast.success("Pet added successfully!")
       setSuccessMessage("Pet submitted for approval")
@@ -173,29 +160,15 @@ export default function AddPetPage() {
                   {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
                 </div>
 
-                {/* Full Name */}
-                <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-base font-semibold">
-                    Full Name (optional)
-                  </Label>
-                  <Input
-                    id="fullName"
-                    placeholder="e.g., Maximilian the Great"
-                    {...register("fullName")}
-                    className="text-base"
-                  />
-                  <p className="text-xs text-muted-foreground">A more formal name for your pet</p>
-                </div>
-
                 {/* Type & Age */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="species" className="text-base font-semibold">
+                    <Label htmlFor="type" className="text-base font-semibold">
                       Pet Type <span className="text-destructive">*</span>
                     </Label>
                     <Select
                       value={watch("type")}
-                      onValueChange={(value) => setValue("type", value as "dog" | "cat" | "bird" | "rabbit" | "other")}
+                      onValueChange={(value) => setValue("type", value)}
                     >
                       <SelectTrigger className="text-base">
                         <SelectValue placeholder="Select pet type" />
@@ -203,6 +176,9 @@ export default function AddPetPage() {
                       <SelectContent>
                         <SelectItem value="dog">🐕 Dog</SelectItem>
                         <SelectItem value="cat">🐈 Cat</SelectItem>
+                        <SelectItem value="bird">🦜 Bird</SelectItem>
+                        <SelectItem value="rabbit">🐰 Rabbit</SelectItem>
+                        <SelectItem value="other">🦔 Other</SelectItem>
                       </SelectContent>
                     </Select>
                     {errors.type && <p className="text-sm text-destructive">{errors.type.message}</p>}
@@ -225,47 +201,6 @@ export default function AddPetPage() {
                   </div>
                 </div>
 
-                {/* Breed */}
-                <div className="space-y-2">
-                  <Label htmlFor="breed" className="text-base font-semibold">
-                    Breed <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="breed"
-                    placeholder="e.g., Golden Retriever, Siamese"
-                    {...register("breed")}
-                    className={`text-base ${errors.breed ? "border-destructive" : ""}`}
-                  />
-                  {errors.breed && <p className="text-sm text-destructive">{errors.breed.message}</p>}
-                </div>
-
-                {/* Weight & Color */}
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="weight" className="text-base font-semibold">
-                      Weight (optional)
-                    </Label>
-                    <Input
-                      id="weight"
-                      placeholder="e.g., 30 kg"
-                      {...register("weight")}
-                      className="text-base"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="color" className="text-base font-semibold">
-                      Color (optional)
-                    </Label>
-                    <Input
-                      id="color"
-                      placeholder="e.g., Golden, Black"
-                      {...register("color")}
-                      className="text-base"
-                    />
-                  </div>
-                </div>
-
                 {/* Description */}
                 <div className="space-y-2">
                   <Label htmlFor="description" className="text-base font-semibold">
@@ -280,40 +215,24 @@ export default function AddPetPage() {
                   />
                 </div>
 
-                {/* Medical Notes */}
+                {/* Image */}
                 <div className="space-y-2">
-                  <Label htmlFor="medicalNotes" className="text-base font-semibold">
-                    Medical Notes (optional)
+                  <Label htmlFor="image" className="text-base font-semibold">
+                    Pet Image URL <span className="text-destructive">*</span>
                   </Label>
-                  <Textarea
-                    id="medicalNotes"
-                    placeholder="Any allergies, medications, or special health needs..."
-                    {...register("medicalNotes")}
-                    rows={3}
-                    className="text-base"
+                  <Input
+                    id="image"
+                    placeholder="https://example.com/pet-image.jpg"
+                    {...register("image")}
+                    className={`text-base ${errors.image ? "border-destructive" : ""}`}
                   />
-                  <p className="text-xs text-muted-foreground">This helps trainers provide better care</p>
+                  <p className="text-xs text-muted-foreground">Enter a URL to your pet's image</p>
+                  {errors.image && <p className="text-sm text-destructive">{errors.image.message}</p>}
                 </div>
-
-                {/* Photo Upload */}
-                <ImageUpload
-                  value={typeof watch("photo") === 'string' ? watch("photo") as string : undefined}
-                  onChange={(file, previewUrl) => setValue("photo", file || previewUrl)}
-                  label="Pet Photo (optional)"
-                  placeholder="Upload a photo of your pet"
-                />
-
-                {/* Video Upload */}
-                <VideoUpload
-                  value={typeof watch("video") === 'string' ? watch("video") as string : undefined}
-                  onChange={(file, previewUrl) => setValue("video", file || previewUrl)}
-                  label="Pet Video (AI Health Scan)"
-                  placeholder="Upload a short video. Our AI will analyze it to provide health feedback!"
-                />
 
                 {/* Submit Button */}
                 <div className="flex gap-3 pt-4">
-                  <Button type="button" variant="outline" onClick={() => router.push("/pets")} className="flex-1">
+                  <Button type="button" variant="outline" onClick={() => router.push("/dashboard")} className="flex-1">
                     Cancel
                   </Button>
                   <Button type="submit" disabled={isSubmitting} className="flex-1">
@@ -355,14 +274,14 @@ export default function AddPetPage() {
                       className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50"
                     >
                       <img
-                        src={pet.photo || "/placeholder.svg"}
+                        src={pet.image || "/placeholder.svg"}
                         alt={pet.name}
                         className="h-10 w-10 rounded-full object-cover"
                       />
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm truncate">{pet.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {pet.type} • {pet.breed}
+                          {pet.type} • {pet.age} years old
                         </p>
                       </div>
                     </div>

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { api } from "@/lib/api"
-import type { Pet, Booking } from "@/lib/types"
+import { api, petApi } from "@/lib/api"
+import type { Pet } from "@/lib/types"
 import { 
   mockPetStatuses, mockTasks, mockDailyActivities, 
   mockMoodEntries, mockNotifications 
@@ -32,7 +32,6 @@ export default function DashboardPage() {
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("overview")
   const [pets, setPets] = useState<Pet[]>([])
-  const [bookings, setBookings] = useState<Booking[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isRetrying, setIsRetrying] = useState(false)
@@ -58,20 +57,8 @@ export default function DashboardPage() {
     if (isRetry) setIsRetrying(true)
     
     try {
-      const [petsData, bookingsData] = await Promise.all([
-        api.get<Pet[]>(`/pets?ownerId=${user.id}`, {
-          timeout: 20000, // 20s timeout for dashboard data
-          retries: isRetry ? 3 : 2, // More retries on manual retry
-          retryDelay: 1500 // 1.5s delay between retries
-        }),
-        api.get<Booking[]>(`/bookings?ownerId=${user.id}`, {
-          timeout: 20000,
-          retries: isRetry ? 3 : 2,
-          retryDelay: 1500
-        })
-      ])
+      const petsData = await petApi.getUserPets()
       setPets(petsData || [])
-      setBookings(bookingsData || [])
       setError(null)
     } catch (err: any) {
       console.error("Failed to fetch dashboard data", err)
@@ -162,8 +149,6 @@ export default function DashboardPage() {
   }
 
   const userPets = pets
-  const userBookings = bookings
-  const petStatuses = mockPetStatuses.filter((status) => userPets.some((pet) => pet.id === status.petId))
   
   // Set default pet if none selected
   const currentPet = selectedPetId 
@@ -182,11 +167,11 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Welcome back, {user.fullName.split(" ")[0]}!</h1>
+          <h1 className="text-3xl font-bold">Welcome back, {user.name.split(" ")[0]}!</h1>
           <p className="text-muted-foreground">{"Here's what's happening with your pets today."}</p>
         </div>
         <Button asChild>
-          <Link href="/pets">
+          <Link href="/add-pet">
             <Plus className="mr-2 h-4 w-4" />
             Add Pet
           </Link>
@@ -197,8 +182,8 @@ export default function DashboardPage() {
       <div className="mb-8 grid gap-4 md:grid-cols-4">
         <StatsCard title="Total Pets" value={userPets.length} icon={PawPrint} />
         <StatsCard
-          title="Upcoming Sessions"
-          value={userBookings.filter((b) => b.status === "confirmed").length}
+          title="Pending Pets"
+          value={userPets.filter(p => p.status === 'pending').length}
           icon={Calendar}
         />
         <StatsCard 
@@ -207,7 +192,7 @@ export default function DashboardPage() {
           icon={Bell} 
           description={`${unreadNotifications} unread`} 
         />
-        <StatsCard title="Activity" value="+12%" icon={TrendingUp} description="vs last month" trend="up" />
+        <StatsCard title="Active Pets" value={userPets.filter(p => p.status === 'accepted').length} icon={TrendingUp} />
       </div>
 
       {/* Tabbed Interface for different views */}
@@ -260,13 +245,13 @@ export default function DashboardPage() {
               </Card>
 
               {/* Status Timeline */}
-              <StatusTimeline statuses={petStatuses} pets={userPets} />
+              <StatusTimeline statuses={[]} pets={userPets} />
             </div>
 
             {/* Sidebar */}
             <div className="space-y-8">
               {/* Calendar */}
-              <CalendarView bookings={userBookings} />
+              <CalendarView bookings={[]} />
 
               {/* Messages Widget */}
               <MessagesWidget userId={user.id} />

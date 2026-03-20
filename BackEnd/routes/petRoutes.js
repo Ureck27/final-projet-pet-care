@@ -1,26 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const {
-  getPets,
-  getPetById,
   createPet,
-  updatePet,
-  deletePet,
-  getPetsByUserId
+  getAllPets,
+  getUserPets,
+  updatePetStatus
 } = require('../controllers/petController');
 const { protect } = require('../middleware/authMiddleware');
-const { uploadPetFiles, handleUploadError } = require('../middleware/uploadMiddleware');
+const { authorizeRole } = require('../middleware/authMiddleware');
 
-router.route('/')
-  .get(protect, getPets)
-  .post(protect, uploadPetFiles, handleUploadError, createPet);
+// POST /api/pets - Create pet (user only)
+router.post('/', protect, authorizeRole('user'), createPet);
 
-router.route('/user/:userId')
-  .get(protect, getPetsByUserId);
+// GET /api/pets - Get all pets (admin only)
+router.get('/', protect, authorizeRole('admin'), getAllPets);
 
-router.route('/:id')
-  .get(protect, getPetById)
-  .put(protect, uploadPetFiles, handleUploadError, updatePet)
-  .delete(protect, deletePet);
+// GET /api/pets/user - Get logged-in user pets
+router.get('/user', protect, getUserPets);
+
+// PATCH /api/pets/:id - Update pet status (admin only)
+router.patch('/:id', protect, authorizeRole('admin'), updatePetStatus);
 
 module.exports = router;

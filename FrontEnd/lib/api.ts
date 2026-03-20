@@ -140,6 +140,9 @@ export const api = {
   put: <T>(endpoint: string, body: any, options?: RequestOptions) => 
     apiFetch<T>(endpoint, { ...options, method: 'PUT', body }),
   
+  patch: <T>(endpoint: string, body: any, options?: RequestOptions) => 
+    apiFetch<T>(endpoint, { ...options, method: 'PATCH', body }),
+  
   delete: <T>(endpoint: string, options?: RequestOptions) => 
     apiFetch<T>(endpoint, { ...options, method: 'DELETE' }),
 };
@@ -150,11 +153,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  fullName: string;
-  phone: string;
-  role: "user" | "trainer" | "worker" | "admin";
-  status: "pending" | "active" | "suspended" | "rejected";
-  avatar?: string;
+  role: "user" | "admin";
   createdAt: Date;
   updatedAt: string;
 }
@@ -162,19 +161,13 @@ export interface User {
 export interface Pet {
   _id: string;
   id: string;
-  ownerId: string;
+  userId: string;
   name: string;
-  fullName?: string;
-  type: "dog" | "cat" | "bird" | "rabbit" | "other";
-  breed: string;
+  type: string;
   age: number;
-  weight?: number;
-  color?: string;
-  medicalNotes?: string;
   description?: string;
-  imageUrl?: string;
-  photo?: string;
-  status: "pending" | "approved" | "rejected";
+  image: string;
+  status: "pending" | "accepted" | "rejected";
   createdAt: Date;
   updatedAt: string;
 }
@@ -276,25 +269,17 @@ export const authApi = {
 
 // Pet API
 export const petApi = {
-  getPets: (userId?: string) => {
-    const query = userId ? `?userId=${userId}` : '';
-    return api.get<Pet[]>(`/pets${query}`);
-  },
-  
-  getPetById: (id: string) =>
-    api.get<{ pet: Pet; profile: any }>(`/pets/${id}`),
-  
-  createPet: (petData: FormData | Omit<Pet, 'id' | 'createdAt' | 'updatedAt'>) =>
+  createPet: (petData: { name: string; type: string; age: number; description?: string; image: string }) =>
     api.post<Pet>('/pets', petData),
   
-  updatePet: (id: string, petData: FormData | Partial<Pet>) =>
-    api.put<Pet>(`/pets/${id}`, petData),
+  getAllPets: () =>
+    api.get<Pet[]>('/pets'),
   
-  deletePet: (id: string) =>
-    api.delete<{ message: string }>(`/pets/${id}`),
+  getUserPets: () =>
+    api.get<Pet[]>('/pets/user'),
   
-  getPetsByUserId: (userId: string) =>
-    api.get<Pet[]>(`/pets/user/${userId}`),
+  updatePetStatus: (id: string, status: 'accepted' | 'rejected') =>
+    api.patch<Pet>(`/pets/${id}`, { status }),
 };
 
 // Trainer Request API

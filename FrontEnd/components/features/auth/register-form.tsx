@@ -56,8 +56,8 @@ export function RegisterForm() {
     const result = await registerUser({
       email: data.email,
       password: data.password,
-      fullName: data.fullName,
-      phone: data.phone,
+      fullName: data.name,
+      phone: '', // Not required in our simplified schema
       role: 'user'
     })
 
@@ -95,14 +95,14 @@ export function RegisterForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name</Label>
+            <Label htmlFor="name">Name</Label>
             <Input
-              id="fullName"
+              id="name"
               placeholder="John Smith"
-              {...register("fullName")}
-              className={errors.fullName ? "border-destructive" : ""}
+              {...register("name")}
+              className={errors.name ? "border-destructive" : ""}
             />
-            {errors.fullName && <p className="text-xs text-destructive">{errors.fullName.message}</p>}
+            {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -115,18 +115,6 @@ export function RegisterForm() {
               className={errors.email ? "border-destructive" : ""}
             />
             {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input
-              id="phone"
-              type="tel"
-              placeholder="1234567890"
-              {...register("phone")}
-              className={errors.phone ? "border-destructive" : ""}
-            />
-            {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

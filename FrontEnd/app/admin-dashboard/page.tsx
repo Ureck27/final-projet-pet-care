@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { adminApi, type User, Pet, TrainerRequest, DashboardStats } from "@/lib/api"
+import { petApi, trainerApi, type User, Pet, Trainer } from "@/lib/api"
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,19 +17,15 @@ import {
   Clock, 
   CheckCircle, 
   XCircle, 
-  Eye,
-  Trash2,
   Shield,
-  Ban
+  Plus
 } from "lucide-react"
 
 export default function AdminDashboardPage() {
   const router = useRouter()
   const { user, isLoading } = useAuth()
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [users, setUsers] = useState<User[]>([])
   const [pets, setPets] = useState<Pet[]>([])
-  const [trainerRequests, setTrainerRequests] = useState<TrainerRequest[]>([])
+  const [trainers, setTrainers] = useState<Trainer[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -46,17 +42,13 @@ export default function AdminDashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
-      const [statsData, usersData, petsData, requestsData] = await Promise.all([
-        adminApi.getDashboardStats(),
-        adminApi.getUsers(),
-        adminApi.getPets(),
-        adminApi.getTrainerRequests()
+      const [petsData, trainersData] = await Promise.all([
+        petApi.getAllPets(),
+        trainerApi.getTrainers()
       ])
 
-      setStats(statsData)
-      setUsers(usersData)
       setPets(petsData)
-      setTrainerRequests(requestsData)
+      setTrainers(trainersData)
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
     } finally {
@@ -64,47 +56,9 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const handleApproveRequest = async (requestId: string) => {
-    try {
-      await adminApi.acceptTrainerRequest(requestId)
-      fetchDashboardData()
-    } catch (error) {
-      console.error('Failed to approve request:', error)
-    }
-  }
-
-  const handleRejectRequest = async (requestId: string) => {
-    try {
-      await adminApi.rejectTrainerRequest(requestId)
-      fetchDashboardData()
-    } catch (error) {
-      console.error('Failed to reject request:', error)
-    }
-  }
-
-  const handleDeleteUser = async (userId: string) => {
-    if (confirm('Are you sure you want to delete this user? This will also delete all their pets.')) {
-      try {
-        await adminApi.deleteUser(userId)
-        fetchDashboardData()
-      } catch (error) {
-        console.error('Failed to delete user:', error)
-      }
-    }
-  }
-
-  const handleUpdateUserStatus = async (userId: string, newStatus: string) => {
-    try {
-      await adminApi.updateUserStatus(userId, newStatus)
-      fetchDashboardData()
-    } catch (error) {
-      console.error(`Failed to update user status to ${newStatus}:`, error)
-    }
-  }
-
   const handleApprovePet = async (petId: string) => {
     try {
-      await adminApi.approvePet(petId)
+      await petApi.updatePetStatus(petId, 'accepted')
       fetchDashboardData()
     } catch (error) {
       console.error('Failed to approve pet:', error)
@@ -113,11 +67,15 @@ export default function AdminDashboardPage() {
 
   const handleRejectPet = async (petId: string) => {
     try {
-      await adminApi.rejectPet(petId)
+      await petApi.updatePetStatus(petId, 'rejected')
       fetchDashboardData()
     } catch (error) {
       console.error('Failed to reject pet:', error)
     }
+  }
+
+  const handleAddTrainer = async () => {
+    router.push('/admin/add-trainer')
   }
 
   if (isLoading || loading) {
@@ -152,155 +110,63 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalUsers}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Pets</CardTitle>
-              <PawPrint className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalPets}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Trainers</CardTitle>
-              <UserCheck className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalTrainers}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Requests</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.pendingTrainerRequests}</div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Pets</CardTitle>
+            <PawPrint className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{pets.length}</div>
+            <p className="text-xs text-muted-foreground">
+              {pets.filter(p => p.status === 'pending').length} pending
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Trainers</CardTitle>
+            <UserCheck className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{trainers.length}</div>
+            <p className="text-xs text-muted-foreground">Registered trainers</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending Pets</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{pets.filter(p => p.status === 'pending').length}</div>
+            <p className="text-xs text-muted-foreground">Awaiting approval</p>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Data Tables */}
-      <Tabs defaultValue="users" className="space-y-4">
+      <Tabs defaultValue="pets" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="pets">Pets</TabsTrigger>
-          <TabsTrigger value="trainer-requests">Trainer Requests</TabsTrigger>
+          <TabsTrigger value="trainers">Trainers</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="users">
-          <Card>
-            <CardHeader>
-              <CardTitle>All Users</CardTitle>
-              <CardDescription>Manage registered users and their roles</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Joined</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((u) => (
-                    <TableRow key={u.id}>
-                      <TableCell className="font-medium">{u.fullName}</TableCell>
-                      <TableCell>{u.email}</TableCell>
-                      <TableCell>
-                        <Badge variant={u.role === 'admin' ? 'default' : u.role === 'trainer' ? 'secondary' : 'outline'}>
-                          {u.role}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={u.status === 'active' ? 'default' : u.status === 'suspended' ? 'destructive' : 'secondary'}>
-                          {u.status || 'active'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{new Date(u.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          {(u.status === 'pending' || u.status === 'suspended') && (
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleUpdateUserStatus(u.id, 'active')}
-                              title="Approve User"
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          )}
-                          {u.status === 'active' && u.role !== 'admin' && (
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleUpdateUserStatus(u.id, 'suspended')}
-                              title="Suspend User"
-                            >
-                              <Ban className="h-4 w-4" />
-                            </Button>
-                          )}
-                          {u.status === 'pending' && (
-                             <Button 
-                              variant="destructive" 
-                              size="sm"
-                              onClick={() => handleUpdateUserStatus(u.id, 'rejected')}
-                              title="Reject User"
-                            >
-                              <XCircle className="h-4 w-4" />
-                            </Button>
-                          )}
-                          <Button 
-                            variant="destructive" 
-                            size="sm"
-                            onClick={() => handleDeleteUser(u.id)}
-                            title="Delete User"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="pets">
           <Card>
             <CardHeader>
-              <CardTitle>Pending Pets</CardTitle>
-              <CardDescription>View all pending pet applications</CardDescription>
+              <CardTitle>All Pets</CardTitle>
+              <CardDescription>View and manage pet applications</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Image</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Type</TableHead>
-                    <TableHead>Breed</TableHead>
                     <TableHead>Age</TableHead>
                     <TableHead>Owner</TableHead>
                     <TableHead>Status</TableHead>
@@ -311,14 +177,20 @@ export default function AdminDashboardPage() {
                 <TableBody>
                   {pets.map((pet) => (
                     <TableRow key={pet.id}>
+                      <TableCell>
+                        <img 
+                          src={pet.image || "/placeholder.svg"} 
+                          alt={pet.name}
+                          className="h-10 w-10 rounded object-cover"
+                        />
+                      </TableCell>
                       <TableCell className="font-medium">{pet.name}</TableCell>
                       <TableCell>{pet.type}</TableCell>
-                      <TableCell>{pet.breed || 'N/A'}</TableCell>
-                      <TableCell>{pet.age || 'N/A'}</TableCell>
-                      <TableCell>{pet.ownerId || (pet as any).userId?._id || 'Unknown'}</TableCell>
+                      <TableCell>{pet.age} years</TableCell>
+                      <TableCell>{(pet as any).userId?.name || 'Unknown'}</TableCell>
                       <TableCell>
-                         <Badge variant={pet.status === 'approved' ? 'default' : pet.status === 'rejected' ? 'destructive' : 'secondary'}>
-                          {pet.status || 'approved'}
+                         <Badge variant={pet.status === 'accepted' ? 'default' : pet.status === 'rejected' ? 'destructive' : 'secondary'}>
+                          {pet.status}
                         </Badge>
                       </TableCell>
                       <TableCell>{new Date(pet.createdAt).toLocaleDateString()}</TableCell>
@@ -329,15 +201,15 @@ export default function AdminDashboardPage() {
                               <Button 
                                 variant="outline" 
                                 size="sm"
-                                onClick={() => handleApprovePet(pet.id || (pet as any)._id)}
-                                title="Approve Pet"
+                                onClick={() => handleApprovePet(pet.id)}
+                                title="Accept Pet"
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </Button>
                               <Button 
                                 variant="destructive" 
                                 size="sm"
-                                onClick={() => handleRejectPet(pet.id || (pet as any)._id)}
+                                onClick={() => handleRejectPet(pet.id)}
                                 title="Reject Pet"
                               >
                                 <XCircle className="h-4 w-4" />
@@ -354,11 +226,17 @@ export default function AdminDashboardPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="trainer-requests">
+        <TabsContent value="trainers">
           <Card>
-            <CardHeader>
-              <CardTitle>Trainer Requests</CardTitle>
-              <CardDescription>Approve or reject trainer applications</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>All Trainers</CardTitle>
+                <CardDescription>Manage registered trainers</CardDescription>
+              </div>
+              <Button onClick={handleAddTrainer}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Trainer
+              </Button>
             </CardHeader>
             <CardContent>
               <Table>
@@ -366,50 +244,29 @@ export default function AdminDashboardPage() {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Experience</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Applied</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead>Services</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Added</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {trainerRequests.map((request) => (
-                    <TableRow key={request.id}>
-                      <TableCell className="font-medium">{request.name}</TableCell>
-                      <TableCell>{request.email}</TableCell>
-                      <TableCell>{request.experience}</TableCell>
+                  {trainers.map((trainer) => (
+                    <TableRow key={trainer.id}>
+                      <TableCell className="font-medium">{trainer.name}</TableCell>
+                      <TableCell>{trainer.email}</TableCell>
                       <TableCell>
-                        <Badge 
-                          variant={
-                            request.status === 'accepted' ? 'default' : 
-                            request.status === 'rejected' ? 'destructive' : 
-                            'secondary'
-                          }
-                        >
-                          {request.status}
-                        </Badge>
+                        <div className="flex flex-wrap gap-1">
+                          {trainer.services.map((service, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {typeof service === 'string' ? service : service.serviceName}
+                            </Badge>
+                          ))}
+                        </div>
                       </TableCell>
-                      <TableCell>{new Date(request.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        {request.status === 'pending' && (
-                          <div className="flex gap-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleApproveRequest(request.id)}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="destructive" 
-                              size="sm"
-                              onClick={() => handleRejectRequest(request.id)}
-                            >
-                              <XCircle className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
+                        {trainer.price ? `$${trainer.price}` : 'Flexible'}
                       </TableCell>
+                      <TableCell>{new Date(trainer.createdAt).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

@@ -52,7 +52,6 @@ const registerUser = async (req, res) => {
     console.log('Creating user with data:', { name, email, password: '***' });
     const user = await User.create({
       name,
-      fullName: name,
       email,
       password, // Pre-save hook will hash this
       role: 'user' // Force role to 'user' for registration
@@ -60,25 +59,10 @@ const registerUser = async (req, res) => {
     console.log('User created successfully:', user);
 
     if (user) {
-      // Send admin notification (commented out for now)
-      // await sendAdminNotification(
-      //   'New User Registration',
-      //   `
-      //   <p><strong>New user has registered:</strong></p>
-      //   <ul>
-      //     <li><strong>Name:</strong> ${user.name}</li>
-      //     <li><strong>Email:</strong> ${user.email}</li>
-      //     <li><strong>Role:</strong> ${user.role}</li>
-      //     <li><strong>Registration Date:</strong> ${new Date().toLocaleDateString()}</li>
-      //   </ul>
-      //   `
-      // );
-
       res.status(201).json({
         _id: user._id,
         id: user._id.toString(),
         name: user.name,
-        fullName: user.fullName || user.name,
         email: user.email,
         role: user.role,
         token: generateToken(user._id),
@@ -101,24 +85,12 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (user && (await user.matchPassword(password))) {
-      if (user.status === 'pending') {
-         return res.status(403).json({ message: 'Account is pending admin approval' });
-      }
-      if (user.status === 'suspended') {
-         return res.status(403).json({ message: 'Account is suspended. Please contact support.' });
-      }
-      if (user.status === 'rejected') {
-         return res.status(403).json({ message: 'Account application was rejected.' });
-      }
-
       res.json({
         _id: user._id,
         id: user._id.toString(),
         name: user.name,
-        fullName: user.fullName || user.name,
         email: user.email,
         role: user.role,
-        status: user.status,
         token: generateToken(user._id),
       });
     } else {
@@ -206,18 +178,12 @@ const adminLogin = async (req, res) => {
       return res.status(401).json({ message: 'Invalid admin credentials' });
     }
 
-    // Check admin account status
-    if (user.status === 'suspended') {
-      return res.status(403).json({ message: 'Admin account is suspended. Please contact system administrator.' });
-    }
-
     res.json({
       _id: user._id,
       id: user._id.toString(),
       name: user.name,
       email: user.email,
       role: user.role,
-      status: user.status,
       token: generateToken(user._id),
       redirect: '/admin-dashboard'
     });
