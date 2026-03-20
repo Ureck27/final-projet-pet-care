@@ -1,94 +1,102 @@
 const Pet = require('../models/Pet');
 
-// @desc    Create new pet
-// @route   POST /api/pets
+// Create a new pet
 const createPet = async (req, res) => {
   try {
     const { name, type, age, description, image } = req.body;
-    
-    // Validation
-    if (!name || !type || !age || !image) {
+
+    if (!name || !type || age === undefined || !image) {
       return res.status(400).json({ message: 'Please provide name, type, age, and image' });
     }
 
-    // Set userId from authenticated user
-    const petData = {
+    const pet = new Pet({
       name,
       type,
       age,
       description,
       image,
-      userId: req.user._id
-    };
+      userId: req.user._id,
+      status: 'pending'
+    });
 
-    const pet = await Pet.create(petData);
-    
-    res.status(201).json(pet);
+    const savedPet = await pet.save();
+    res.status(201).json(savedPet);
   } catch (error) {
     console.error('Error creating pet:', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Server error while creating pet' });
   }
 };
 
-// @desc    Get all pets (admin only)
-// @route   GET /api/pets
+// Get all pets (admin only)
 const getAllPets = async (req, res) => {
   try {
-    const pets = await Pet.find({})
-      .populate('userId', 'name email')
-      .sort({ createdAt: -1 });
-    
+    const pets = await Pet.find().populate('userId', 'name email');
     res.json(pets);
   } catch (error) {
-    console.error('Error fetching pets:', error);
-    res.status(500).json({ message: error.message });
+    console.error('Error fetching all pets:', error);
+    res.status(500).json({ message: 'Server error while fetching pets' });
   }
 };
 
-// @desc    Get logged-in user pets
-// @route   GET /api/pets/user
+// Get pets by userId (admin only)
+const getPetsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    
+    if (!userId) {
+      return res.status(400).json({ message: 'userId is required' });
+    }
+
+    const pets = await Pet.find({ userId }).populate('userId', 'name email');
+    res.json(pets);
+  } catch (error) {
+    console.error('Error fetching pets by userId:', error);
+    res.status(500).json({ message: 'Server error while fetching pets' });
+  }
+};
+
+// Get current user's pets
 const getUserPets = async (req, res) => {
   try {
-    const pets = await Pet.find({ userId: req.user._id })
-      .sort({ createdAt: -1 });
-    
+    const pets = await Pet.find({ userId: req.user._id });
     res.json(pets);
   } catch (error) {
     console.error('Error fetching user pets:', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Server error while fetching pets' });
   }
 };
 
-// @desc    Update pet status (admin only)
-// @route   PATCH /api/pets/:id
+// Update pet status (admin only)
 const updatePetStatus = async (req, res) => {
   try {
+    const { id } = req.params;
     const { status } = req.body;
-    
-    // Validation
-    if (!status || !['accepted', 'rejected'].includes(status)) {
-      return res.status(400).json({ message: 'Status must be "accepted" or "rejected"' });
+
+    if (!['accepted', 'rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status. Must be accepted or rejected' });
     }
 
-    const pet = await Pet.findById(req.params.id);
-    
+    const pet = await Pet.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true, runValidators: true }
+    );
+
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });
     }
 
-    pet.status = status;
-    await pet.save();
-    
     res.json(pet);
   } catch (error) {
     console.error('Error updating pet status:', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Server error while updating pet status' });
   }
 };
 
 module.exports = {
   createPet,
   getAllPets,
+  getPetsByUserId,
   getUserPets,
   updatePetStatus
 };

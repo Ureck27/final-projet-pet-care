@@ -269,6 +269,13 @@ export const authApi = {
 
 // Pet API
 export const petApi = {
+  getPets: async (userId?: string) => {
+    if (userId) {
+      return api.get<Pet[]>(`/pets?userId=${userId}`);
+    }
+    return api.get<Pet[]>('/pets');
+  },
+  
   createPet: (petData: { name: string; type: string; age: number; description?: string; image: string }) =>
     api.post<Pet>('/pets', petData),
   
@@ -277,6 +284,12 @@ export const petApi = {
   
   getUserPets: () =>
     api.get<Pet[]>('/pets/user'),
+  
+  updatePet: (id: string, petData: Partial<Pet>) =>
+    api.put<Pet>(`/pets/${id}`, petData),
+  
+  deletePet: (id: string) =>
+    api.delete<{ message: string }>(`/pets/${id}`),
   
   updatePetStatus: (id: string, status: 'accepted' | 'rejected') =>
     api.patch<Pet>(`/pets/${id}`, { status }),

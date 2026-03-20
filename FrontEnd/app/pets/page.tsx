@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { petApi } from "@/lib/api"
-import type { Pet } from "@/lib/types"
+import type { Pet as ApiPet } from "@/lib/api"
 import { Loader } from "@/components/common/loader"
 import { EmptyState } from "@/components/common/empty-state"
 import { PetCard } from "@/components/features/pets/pet-card"
@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button"
 import { Plus, PawPrint } from "lucide-react"
 import Link from "next/link"
 import { PetForm } from "@/components/features/pets/pet-form"
+
+type Pet = ApiPet
 
 export default function PetsPage() {
   const router = useRouter()
@@ -33,10 +35,17 @@ export default function PetsPage() {
     if (!user) return
     setIsLoading(true)
     try {
+      console.log('petApi structure:', Object.keys(petApi))
       const data = await petApi.getPets(user.id)
       setPets(data)
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to fetch pets", err)
+      try {
+        const data = await petApi.getUserPets()
+        setPets(data)
+      } catch (fallbackErr) {
+        console.error("Fallback failed:", fallbackErr)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -63,7 +72,7 @@ export default function PetsPage() {
       if (editingPet) {
         await petApi.updatePet(editingPet._id || editingPet.id, data)
       } else {
-        await petApi.createPet({ ...data, ownerId: user!.id })
+        await petApi.createPet(data)
       }
       fetchPets()
     } catch (err) {
