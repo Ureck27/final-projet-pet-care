@@ -19,7 +19,7 @@ const getAllUsers = async (req, res) => {
 // @route   GET /api/admin/pets
 const getPendingPets = async (req, res) => {
   try {
-    const pets = await Pet.find({ status: 'pending' }).populate('owner', 'name email');
+    const pets = await Pet.find({ status: 'pending' }).populate('userId', 'name email');
     res.json(pets);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -41,7 +41,7 @@ const getTrainerRequests = async (req, res) => {
 // @route   GET /api/admin/trainers
 const getAllTrainers = async (req, res) => {
   try {
-    const trainers = await Trainer.find({}).populate('userId', 'name email');
+    const trainers = await Trainer.find({});
     res.json(trainers);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -129,7 +129,7 @@ const updateUserStatus = async (req, res) => {
 // @route   PATCH /api/admin/pets/:id/approve
 const approvePet = async (req, res) => {
   try {
-    const pet = await Pet.findByIdAndUpdate(req.params.id, { status: 'approved' }, { new: true });
+    const pet = await Pet.findByIdAndUpdate(req.params.id, { status: 'accepted' }, { new: true });
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });
     }
@@ -162,7 +162,7 @@ const deleteUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     // Delete associated pets and trainer objects
-    await Pet.deleteMany({ owner: req.params.id });
+    await Pet.deleteMany({ userId: req.params.id });
     await Trainer.deleteOne({ userId: req.params.id });
     await TrainerRequest.deleteMany({ userId: req.params.id });
     
