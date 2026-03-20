@@ -50,9 +50,6 @@ const connectDB = async () => {
       maxPoolSize: 10, // Maintain up to 10 socket connections
       minPoolSize: 5,  // Keep minimum 5 connections
       maxIdleTimeMS: 30000, // Close sockets after 30s of inactivity
-      // Buffering
-      bufferMaxEntries: 0, // Disable buffering for immediate writes
-      bufferCommands: false,
     });
 
     // Mark as connected
