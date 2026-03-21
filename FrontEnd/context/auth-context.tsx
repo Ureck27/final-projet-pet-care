@@ -98,12 +98,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false)
       return { success: true }
     } catch (err: any) {
-      const errorMessage = err.message || 'Admin Login failed';
+      let errorMessage = 'Admin Login failed';
+      
+      // Handle rate limiting errors specifically
+      if (err.isRateLimit) {
+        errorMessage = `Rate limit exceeded. Please try again in ${err.retryAfter}.`;
+      } else if (err.message && err.message.includes('BACKEND_DOWN')) {
+        errorMessage = 'Server is currently unavailable. Please try again later.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
       console.error('[Auth Error] Admin Login failed:', errorMessage);
       setIsLoading(false)
       return { 
         success: false, 
-        message: errorMessage || 'Admin Login failed. Please check your credentials and connection.' 
+        message: errorMessage
       }
     }
   }

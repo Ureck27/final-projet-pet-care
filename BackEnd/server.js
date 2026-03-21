@@ -31,15 +31,45 @@ app.use(helmet()); // Set security HTTP headers
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later'
+  message: {
+    error: 'Too many requests from this IP, please try again later',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
-// Stricter rate limiting for auth endpoints
-const authLimiter = rateLimit({
+// Stricter rate limiting for regular user login
+const userAuthLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 5 : 10, // 5 for production, 10 for development
-  message: 'Too many login attempts, please try again later',
-  skipSuccessfulRequests: true // Don't count successful requests
+  max: process.env.NODE_ENV === 'production' ? 10 : 20, // Increased limits
+  message: {
+    error: 'Too many login attempts. Please try again later.',
+    retryAfter: '15 minutes',
+    type: 'auth'
+  },
+  skipSuccessfulRequests: true,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// More lenient rate limiting for admin login
+const adminAuthLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: process.env.NODE_ENV === 'production' ? 20 : 50, // Much higher limits for admin
+  message: {
+    error: 'Too many admin login attempts. Please try again later.',
+    retryAfter: '15 minutes',
+    type: 'admin'
+  },
+  skipSuccessfulRequests: true,
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Optional: Add IP whitelisting for admin access
+  // skip: (req) => {
+  //   const adminIPs = process.env.ADMIN_IPS?.split(',') || [];
+  //   return adminIPs.includes(req.ip);
+  // }
 });
 
 app.use(limiter); // Apply general rate limiter to all routes
@@ -57,8 +87,8 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 // API Routes
-app.use('/api/auth/login', authLimiter); // Apply stricter limiter to login
-app.use('/api/auth/admin-login', authLimiter); // Apply stricter limiter to admin login
+app.use('/api/auth/login', userAuthLimiter); // Apply user limiter to regular login
+app.use('/api/auth/admin-login', adminAuthLimiter); // Apply admin limiter to admin login
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/pets', petRoutes);

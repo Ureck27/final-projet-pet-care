@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -18,6 +18,37 @@ export function AdminLoginForm() {
   const { adminLogin } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [lastSubmitTime, setLastSubmitTime] = useState(0)
+
+  // Debounce function to prevent rapid submissions
+  const debouncedSubmit = useCallback(async (data: LoginFormData) => {
+    const now = Date.now()
+    const timeSinceLastSubmit = now - lastSubmitTime
+    
+    // Prevent submissions within 2 seconds
+    if (timeSinceLastSubmit < 2000) {
+      setError('Please wait before trying again.')
+      return
+    }
+    
+    setLastSubmitTime(now)
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const result = await adminLogin(data.email, data.password)
+
+      if (result.success) {
+        router.push("/admin-dashboard")
+      } else {
+        setError(result.message || "Invalid email or password.")
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [adminLogin, router, lastSubmitTime])
 
   const {
     register,
@@ -27,19 +58,8 @@ export function AdminLoginForm() {
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true)
-    setError(null)
-
-    const result = await adminLogin(data.email, data.password)
-
-    if (result.success) {
-      router.push("/admin-dashboard")
-    } else {
-      setError(result.message || "Invalid email or password.")
-    }
-
-    setIsLoading(false)
+  const onSubmit = (data: LoginFormData) => {
+    debouncedSubmit(data)
   }
 
   return (

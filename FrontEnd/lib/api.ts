@@ -68,7 +68,7 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+        const errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
         
         console.error(`[API Error] ${response.status} ${config.method} ${endpoint}:`, {
           status: response.status,
@@ -78,12 +78,21 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
           attempt: attempt + 1
         });
         
-        // Don't retry on client errors (4xx) except for 429 (rate limit) and 408 (timeout)
+        // Don't retry on client errors (4xx) except for 408 (timeout)
+        // Specifically don't retry 429 (rate limit) to avoid making it worse
         const shouldRetry = enableRetry && 
-          (response.status >= 500 || response.status === 429 || response.status === 408) && 
+          (response.status >= 500 || response.status === 408) && 
           attempt < maxRetries;
         
         if (!shouldRetry) {
+          // For rate limit errors, include retry information
+          if (response.status === 429) {
+            const enhancedError = new Error(errorMessage);
+            (enhancedError as any).isRateLimit = true;
+            (enhancedError as any).retryAfter = errorData.retryAfter || '15 minutes';
+            (enhancedError as any).type = errorData.type || 'rate_limit';
+            throw enhancedError;
+          }
           throw new Error(errorMessage);
         }
       } else {
@@ -94,6 +103,11 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
     } catch (error: any) {
       clearTimeout(timeoutId);
       const isLastAttempt = attempt === maxRetries;
+      
+      // Don't retry rate limit errors
+      if (error.isRateLimit) {
+        throw error;
+      }
       
       if (error.name === 'AbortError') {
         console.error(`[API Timeout] Request aborted after ${timeoutMs}ms (Attempt ${attempt + 1})`);
@@ -258,7 +272,10 @@ export const authApi = {
     api.post<AuthResponse>('/auth/login', credentials),
   
   adminLogin: (credentials: { email: string; password: string }) =>
-    api.post<AuthResponse>('/auth/admin-login', credentials),
+    api.post<AuthResponse>('/auth/admin-login', credentials, { 
+      retries: 1, // Reduce retries for admin login
+      enableRetry: false // Disable retries for admin login to avoid rate limit issues
+    }),
   
   forgotPassword: (email: string) =>
     api.post<{ message: string }>('/auth/forgot-password', { email }),

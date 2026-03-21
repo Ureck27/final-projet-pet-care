@@ -164,18 +164,27 @@ const adminLogin = async (req, res) => {
 
     // Validate input
     if (!email || !password) {
-      return res.status(400).json({ message: 'Please provide email and password' });
+      return res.status(400).json({ 
+        error: 'Please provide email and password',
+        type: 'validation'
+      });
     }
 
     if (!isValidEmail(email)) {
-      return res.status(400).json({ message: 'Please provide a valid email address' });
+      return res.status(400).json({ 
+        error: 'Please provide a valid email address',
+        type: 'validation'
+      });
     }
 
     // Find user and verify it's an admin
     const user = await User.findOne({ email, role: 'admin' }).select('+password');
 
     if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ message: 'Invalid admin credentials' });
+      return res.status(401).json({ 
+        error: 'Invalid admin credentials',
+        type: 'auth'
+      });
     }
 
     res.json({
@@ -189,7 +198,20 @@ const adminLogin = async (req, res) => {
     });
   } catch (error) {
     console.error('Admin login error:', error);
-    res.status(500).json({ message: error.message });
+    
+    // Handle rate limiting errors specifically
+    if (error.status === 429) {
+      return res.status(429).json({
+        error: 'Too many admin login attempts. Please try again later.',
+        type: 'rate_limit',
+        retryAfter: '15 minutes'
+      });
+    }
+    
+    res.status(500).json({ 
+      error: 'Internal server error during admin login',
+      type: 'server'
+    });
   }
 };
 
