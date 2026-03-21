@@ -193,11 +193,11 @@ export default function HomePage() {
                 </Badge>
               </FadeIn>
               <FadeIn direction="up" delay={0.1}>
-                <div ref={heroRef} className="mb-6 space-y-2 leading-tight text-shadow-sm float-element">
+                <div ref={heroRef} className="mb-6 space-y-2 leading-tight text-shadow-sm float-element text-blue-600 dark:text-white">
                   <SplitText
                     text="One App. One Routine."
                     tag="h1"
-                    className="block text-balance text-5xl font-extrabold tracking-tight hero-text-white md:text-6xl lg:text-7xl"
+                    className="block text-balance text-5xl font-extrabold tracking-tight text-blue-600 dark:text-white md:text-6xl lg:text-7xl"
                     delay={40}
                     duration={1.1}
                     ease="power3.out"
@@ -211,7 +211,7 @@ export default function HomePage() {
                   <SplitText
                     text="Total Peace of Mind."
                     tag="h1"
-                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold gradient-text-light dark:gradient-text-dark md:text-transparent bg-clip-text dark:text-white"
+                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold text-blue-600 dark:text-white md:text-transparent md:bg-clip-text md:bg-gradient-to-r md:from-purple-600 md:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:text-white"
                     delay={50}
                     duration={1.2}
                     ease="power3.out"

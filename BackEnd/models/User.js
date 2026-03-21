@@ -51,13 +51,7 @@ userSchema.pre('save', async function () {
   }
 });
 
-// Ensure password is not selected by default in queries
-userSchema.pre(/^find/, function () {
-  if (this.options._recursed) {
-    return;
-  }
-  this.select('-password');
-});
+// Password is not selected by default in queries - handle explicitly in controllers
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

@@ -19,7 +19,7 @@ const getUsers = async (req, res) => {
 // @route   GET /api/users/:id
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select('-password');
     if (user) {
       res.json(user);
     } else {
@@ -56,7 +56,20 @@ const createUser = async (req, res) => {
       avatar
     });
 
-    res.status(201).json(user);
+    // Return user without password
+    const userResponse = {
+      _id: user._id,
+      name: user.name,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+      phone: user.phone,
+      avatar: user.avatar,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
+
+    res.status(201).json(userResponse);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -78,7 +91,21 @@ const updateUser = async (req, res) => {
 
 
       const updatedUser = await user.save();
-      res.json(updatedUser);
+    
+    // Return user without password
+    const userResponse = {
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      fullName: updatedUser.fullName,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      phone: updatedUser.phone,
+      avatar: updatedUser.avatar,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt
+    };
+    
+    res.json(userResponse);
     } else {
       res.status(404).json({ message: 'User not found' });
     }
