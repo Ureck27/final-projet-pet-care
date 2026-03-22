@@ -46,7 +46,7 @@ const connectDB = async () => {
     console.log(`ℹ Connecting to MongoDB (IPv4 forced)...`);
     console.log(`ℹ URI (password hidden): ${sanitisedUri}`);
 
-    // ── Step 4: Enhanced connection options for troubleshooting ───────────────────
+    // ── Step 4: Modern connection options for stability ───────────────────
     const conn = await mongoose.connect(uri, {
       // Connection options for stability and debugging
       serverSelectionTimeoutMS: 15000, // Increased to 15s for slower networks
@@ -58,9 +58,6 @@ const connectDB = async () => {
       maxPoolSize: 10,
       minPoolSize: 5,
       maxIdleTimeMS: 30000,
-      // Additional debugging options
-      bufferMaxEntries: 0, // Disable mongoose buffering
-      bufferCommands: false, // Disable mongoose buffering
       // Family settings for IPv4 preference
       family: 4, // Force IPv4
     });
