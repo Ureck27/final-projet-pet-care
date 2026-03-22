@@ -47,6 +47,14 @@ export default function AdminDashboardPage() {
         trainerApi.getTrainers()
       ])
 
+      // Debug: Log pets data to verify IDs
+      console.log('Pets data with IDs:', petsData.map(pet => ({
+        name: pet.name,
+        _id: pet._id,
+        id: pet.id,
+        hasValidId: !!(pet._id || pet.id)
+      })))
+
       setPets(petsData)
       setTrainers(trainersData)
     } catch (error) {
@@ -175,8 +183,8 @@ export default function AdminDashboardPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pets.map((pet) => (
-                    <TableRow key={pet.id}>
+                  {pets.map((pet, index) => (
+                    <TableRow key={pet._id || pet.id || index}>
                       <TableCell>
                         <img 
                           src={pet.image || "/placeholder.svg"} 
@@ -201,7 +209,7 @@ export default function AdminDashboardPage() {
                               <Button 
                                 variant="outline" 
                                 size="sm"
-                                onClick={() => handleApprovePet(pet.id)}
+                                onClick={() => handleApprovePet(pet._id || pet.id)}
                                 title="Accept Pet"
                               >
                                 <CheckCircle className="h-4 w-4" />
@@ -209,7 +217,7 @@ export default function AdminDashboardPage() {
                               <Button 
                                 variant="destructive" 
                                 size="sm"
-                                onClick={() => handleRejectPet(pet.id)}
+                                onClick={() => handleRejectPet(pet._id || pet.id)}
                                 title="Reject Pet"
                               >
                                 <XCircle className="h-4 w-4" />
@@ -250,14 +258,14 @@ export default function AdminDashboardPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {trainers.map((trainer) => (
-                    <TableRow key={trainer.id}>
+                  {trainers.map((trainer, index) => (
+                    <TableRow key={trainer._id || trainer.id || index}>
                       <TableCell className="font-medium">{trainer.name}</TableCell>
                       <TableCell>{trainer.email}</TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {trainer.services.map((service, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
+                          {trainer.services.map((service, serviceIndex) => (
+                            <Badge key={serviceIndex} variant="outline" className="text-xs">
                               {typeof service === 'string' ? service : service.serviceName}
                             </Badge>
                           ))}
