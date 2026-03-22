@@ -17,8 +17,22 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['user', 'admin', 'trainer'],
     default: 'user'
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'accepted', 'rejected'],
+    default: 'pending'
+  },
+  pets: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Pet'
+  }],
+  trainer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Trainer',
+    default: null
   }
 }, {
   timestamps: true

@@ -173,6 +173,92 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// @desc    Get all pending requests (users, pets, trainers)
+// @route   GET /api/admin/requests
+const getPendingRequests = async (req, res) => {
+  try {
+    const pendingUsers = await User.find({ status: 'pending' }).select('-password');
+    const pendingPets = await Pet.find({ status: 'pending' }).populate('userId', 'name email');
+    const pendingTrainers = await Trainer.find({ status: 'pending' });
+    
+    // Format them uniformly
+    const requests = [
+      ...pendingUsers.map(u => ({ ...u.toObject(), requestType: 'user' })),
+      ...pendingPets.map(p => ({ ...p.toObject(), requestType: 'pet' })),
+      ...pendingTrainers.map(t => ({ ...t.toObject(), requestType: 'trainer' }))
+    ];
+    
+    // Sort by createdAt descending
+    requests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Generic accept request
+// @route   PATCH /api/admin/accept/:type/:id
+const acceptRequest = async (req, res) => {
+  try {
+    const { type, id } = req.params;
+    let updatedDoc;
+
+    switch (type) {
+      case 'user':
+        updatedDoc = await User.findByIdAndUpdate(id, { status: 'accepted' }, { new: true }).select('-password');
+        break;
+      case 'pet':
+        updatedDoc = await Pet.findByIdAndUpdate(id, { status: 'accepted' }, { new: true });
+        break;
+      case 'trainer':
+        updatedDoc = await Trainer.findByIdAndUpdate(id, { status: 'accepted' }, { new: true });
+        break;
+      default:
+        return res.status(400).json({ message: 'Invalid request type' });
+    }
+
+    if (!updatedDoc) {
+      return res.status(404).json({ message: `${type} not found` });
+    }
+
+    res.json({ message: `${type} accepted successfully`, data: updatedDoc });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Generic reject request
+// @route   PATCH /api/admin/reject/:type/:id
+const rejectRequest = async (req, res) => {
+  try {
+    const { type, id } = req.params;
+    let updatedDoc;
+
+    switch (type) {
+      case 'user':
+        updatedDoc = await User.findByIdAndUpdate(id, { status: 'rejected' }, { new: true }).select('-password');
+        break;
+      case 'pet':
+        updatedDoc = await Pet.findByIdAndUpdate(id, { status: 'rejected' }, { new: true });
+        break;
+      case 'trainer':
+        updatedDoc = await Trainer.findByIdAndUpdate(id, { status: 'rejected' }, { new: true });
+        break;
+      default:
+        return res.status(400).json({ message: 'Invalid request type' });
+    }
+
+    if (!updatedDoc) {
+      return res.status(404).json({ message: `${type} not found` });
+    }
+
+    res.json({ message: `${type} rejected successfully`, data: updatedDoc });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getPendingPets,
@@ -183,6 +269,9 @@ module.exports = {
   updateUserStatus,
   approvePet,
   rejectPet,
-  deleteUser
+  deleteUser,
+  getPendingRequests,
+  acceptRequest,
+  rejectRequest
 };
 

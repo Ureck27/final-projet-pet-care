@@ -10,7 +10,10 @@ const {
   updateUserStatus,
   approvePet,
   rejectPet,
-  deleteUser
+  deleteUser,
+  getPendingRequests,
+  acceptRequest,
+  rejectRequest
 } = require('../controllers/adminController');
 const {
   approveTrainerRequest,
@@ -33,5 +36,9 @@ router.patch('/pets/:id/approve', approvePet);
 router.patch('/pets/:id/reject', rejectPet);
 router.put('/trainer-requests/:id/accept', approveTrainerRequest);
 router.put('/trainer-requests/:id/reject', rejectTrainerRequest);
+
+router.get('/requests', getPendingRequests);
+router.patch('/accept/:type/:id', acceptRequest);
+router.patch('/reject/:type/:id', rejectRequest);
 
 module.exports = router;

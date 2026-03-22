@@ -15,7 +15,20 @@ const trainerSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: false
-  }
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'accepted', 'rejected'],
+    default: 'pending'
+  },
+  users: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  pets: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Pet'
+  }]
 }, {
   timestamps: true
 });

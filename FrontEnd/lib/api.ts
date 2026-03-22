@@ -378,6 +378,15 @@ export const adminApi = {
   
   deleteUser: (id: string) =>
     api.delete<{ message: string }>(`/admin/users/${id}`),
+    
+  getPendingRequests: () =>
+    api.get<any[]>('/admin/requests'),
+    
+  acceptRequest: (type: string, id: string) =>
+    api.patch<any>(`/admin/accept/${type}/${id}`, {}),
+    
+  rejectRequest: (type: string, id: string) =>
+    api.patch<any>(`/admin/reject/${type}/${id}`, {}),
 };
 
 // Trainer API
@@ -475,4 +484,11 @@ export const caregiverApi = {
       approvedCaregivers: number;
       rejectedApplications: number;
     }>('/caregiver/stats'),
+};
+
+// Chat API
+export const chatApi = {
+  getConversations: () => api.get<any[]>('/chat/conversations'),
+  getMessages: (conversationId: string) => api.get<any[]>(`/chat/${conversationId}`),
+  initiateConversation: (userId: string, trainerId: string) => api.post<any>('/chat/conversation', { userId, trainerId }),
 };

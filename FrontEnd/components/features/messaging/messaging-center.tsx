@@ -1,106 +1,118 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { formatDistanceToNow } from "date-fns"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { io, Socket } from "socket.io-client"
+import { useAuth } from "@/context/auth-context"
+import { chatApi } from "@/lib/api"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  Search,
-  Send,
-  Phone,
-  Video,
-  MoreVertical,
-  Check,
-  CheckCheck,
-  Plus,
-} from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { mockConversations, mockMessages, mockUsers } from "@/lib/mock-data"
-import type { Conversation, Message, User } from "@/lib/types"
+import { Search, Send, Phone, Video, MoreVertical, Check, CheckCheck, Plus } from "lucide-react"
 
 export default function MessagingCenter() {
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(
-    mockConversations[0]?.id || null
-  )
+  const { user } = useAuth()
+  const [conversations, setConversations] = useState<any[]>([])
+  const [messages, setMessages] = useState<any[]>([])
+  const [selectedConversation, setSelectedConversation] = useState<any>(null)
   const [messageText, setMessageText] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
-  const [conversations, setConversations] = useState<Conversation[]>(mockConversations)
-  const [messages, setMessages] = useState<Message[]>(mockMessages)
+  const socketRef = useRef<Socket | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const currentUserId = "1" // Assuming logged in user
-  const conversation = conversations.find((c) => c.id === selectedConversation)
-  const conversationMessages = messages.filter(
-    (m) => m.conversationId === selectedConversation
-  )
+  useEffect(() => {
+    if (!user) return
+    fetchConversations()
 
-  const getOtherUserId = (conv: Conversation): string => {
-    return conv.participantIds.find((id) => id !== currentUserId) || ""
+    // Init Socket
+    socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
+      withCredentials: true,
+    })
+
+    socketRef.current.on('receive_message', (newMessage) => {
+      setMessages((prev) => [...prev, newMessage])
+      setConversations((prev) => 
+        prev.map(c => c._id === newMessage.conversationId 
+          ? { ...c, lastMessage: newMessage, updatedAt: new Date() } 
+          : c
+        ).sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+      )
+    })
+
+    return () => {
+      if (socketRef.current) socketRef.current.disconnect()
+    }
+  }, [user])
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
+
+  const fetchConversations = async () => {
+    try {
+      const data = await chatApi.getConversations()
+      setConversations(data || [])
+      if (data && data.length > 0 && !selectedConversation) {
+        handleSelectConversation(data[0])
+      }
+    } catch (error) {
+      console.error('Failed to load conversations:', error)
+    }
   }
 
-  const getUser = (userId: string): User | undefined => {
-    return mockUsers.find((u) => u.id === userId)
+  const handleSelectConversation = async (conv: any) => {
+    setSelectedConversation(conv)
+    if (socketRef.current) {
+      socketRef.current.emit('join_conversation', conv._id)
+    }
+    try {
+      const msgs = await chatApi.getMessages(conv._id)
+      setMessages(msgs || [])
+    } catch (error) {
+      console.error('Failed to fetch messages:', error)
+    }
   }
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!messageText.trim() || !selectedConversation) return
+    if (!messageText.trim() || !selectedConversation || !user) return
 
-    const otherUserId = getOtherUserId(conversation!)
-    const newMessage: Message = {
-      id: `msg-${messages.length + 1}`,
-      conversationId: selectedConversation,
-      senderId: currentUserId,
-      receiverId: otherUserId,
-      content: messageText,
-      read: false,
-      createdAt: new Date(),
+    const messageData = {
+      conversationId: selectedConversation._id,
+      senderId: user._id || user.id,
+      senderModel: user.role === 'admin' ? 'Admin' : user.role === 'trainer' ? 'Trainer' : 'User',
+      text: messageText,
     }
 
-    setMessages([...messages, newMessage])
+    if (socketRef.current) {
+      socketRef.current.emit('send_message', messageData)
+    }
     setMessageText("")
+  }
 
-    // Update conversation
-    setConversations(
-      conversations.map((c) =>
-        c.id === selectedConversation
-          ? {
-              ...c,
-              lastMessage: messageText,
-              lastMessageDate: new Date(),
-              lastMessageSenderId: currentUserId,
-              updatedAt: new Date(),
-            }
-          : c
-      )
-    )
+  const getOtherUser = (conv: any) => {
+    if (!user) return null
+    return user.role === 'trainer' ? conv.userId : conv.trainerId
   }
 
   const filteredConversations = conversations.filter((conv) => {
     if (!searchQuery) return true
-    const otherUser = getUser(getOtherUserId(conv))
-    return (
-      otherUser?.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      otherUser?.email.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const otherUser = getOtherUser(conv)
+    return otherUser?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
+  // Determine if it's my message
+  const isMessageOwn = (messageSenderId: string) => {
+    if (!user) return false;
+    return messageSenderId === String(user._id) || messageSenderId === String(user.id);
+  }
+
   return (
-    <div className="flex h-screen gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <div className="flex h-[calc(100vh-80px)] gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       {/* Conversations List */}
-      <Card className="w-full sm:w-96 flex flex-col border-0 shadow-lg">
+      <Card className="w-full sm:w-96 flex flex-col border-0 shadow-lg h-full">
         <CardHeader className="border-b">
           <div className="flex items-center justify-between">
             <CardTitle>Messages</CardTitle>
@@ -126,12 +138,12 @@ export default function MessagingCenter() {
               </p>
             ) : (
               filteredConversations.map((conv) => {
-                const otherUser = getUser(getOtherUserId(conv))
-                const isSelected = conv.id === selectedConversation
+                const otherUser = getOtherUser(conv)
+                const isSelected = selectedConversation && conv._id === selectedConversation._id
                 return (
                   <button
-                    key={conv.id}
-                    onClick={() => setSelectedConversation(conv.id)}
+                    key={conv._id}
+                    onClick={() => handleSelectConversation(conv)}
                     className={`w-full text-left p-3 rounded-lg transition-all ${
                       isSelected
                         ? "bg-primary/10 border-2 border-primary/30"
@@ -141,23 +153,20 @@ export default function MessagingCenter() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm truncate">
-                          {otherUser?.fullName}
+                          {otherUser?.name || 'Unknown User'}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {conv.lastMessage}
+                          {conv.lastMessage?.text || "No messages yet"}
                         </p>
                       </div>
-                      {conv.unreadCount > 0 && (
-                        <Badge variant="destructive" className="ml-2">
-                          {conv.unreadCount}
-                        </Badge>
-                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {formatDistanceToNow(new Date(conv.lastMessageDate || conv.updatedAt), {
-                        addSuffix: true,
-                      })}
-                    </p>
+                    {conv.updatedAt && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {formatDistanceToNow(new Date(conv.updatedAt), {
+                          addSuffix: true,
+                        })}
+                      </p>
+                    )}
                   </button>
                 )
               })
@@ -167,19 +176,14 @@ export default function MessagingCenter() {
       </Card>
 
       {/* Chat Window */}
-      {selectedConversation && conversation ? (
-        <Card className="flex-1 flex flex-col border-0 shadow-lg">
-          {/* Header */}
-          <CardHeader className="border-b">
+      {selectedConversation ? (
+        <Card className="flex-1 flex flex-col border-0 shadow-lg h-full">
+          <CardHeader className="border-b py-4">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>
-                  {getUser(getOtherUserId(conversation))?.fullName}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {getUser(getOtherUserId(conversation))?.role === "trainer"
-                    ? "Professional Trainer"
-                    : "Pet Owner"}
+                <CardTitle>{getOtherUser(selectedConversation)?.name || "Chat"}</CardTitle>
+                <p className="text-sm text-muted-foreground capitalize">
+                  {user?.role === 'trainer' ? 'Client' : 'Trainer'}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -189,116 +193,71 @@ export default function MessagingCenter() {
                 <Button size="icon" variant="outline">
                   <Video className="w-4 h-4" />
                 </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button size="icon" variant="ghost">
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Mute Notifications</DropdownMenuItem>
-                    <DropdownMenuItem>Clear Chat History</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </div>
             </div>
           </CardHeader>
 
-          {/* Messages */}
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
-              {conversationMessages.map((message) => {
-                const isOwn = message.senderId === currentUserId
-                const sender = getUser(message.senderId)
+              {messages.map((message) => {
+                const isOwn = isMessageOwn(message.senderId)
                 return (
                   <div
-                    key={message.id}
+                    key={message._id}
                     className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      className={`max-w-[75%] px-4 py-2 rounded-lg ${
                         isOwn
                           ? "bg-primary text-primary-foreground rounded-br-none"
                           : "bg-slate-200 dark:bg-slate-700 text-foreground rounded-bl-none"
                       }`}
                     >
-                      <p className="text-sm">{message.content}</p>
+                      <p className="text-sm whitespace-pre-wrap flex-wrap break-words">{message.text}</p>
                       <div
                         className={`flex items-center gap-1 mt-1 text-xs ${
                           isOwn ? "text-primary-foreground/80" : "text-muted-foreground"
                         }`}
                       >
-                        <span>
-                          {formatDistanceToNow(new Date(message.createdAt), {
-                            addSuffix: false,
-                          })}
-                        </span>
+                        {message.createdAt && (
+                          <span>
+                            {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        )}
                         {isOwn && (
-                          <>
-                            {message.read ? (
-                              <CheckCheck className="w-3 h-3" />
-                            ) : (
-                              <Check className="w-3 h-3" />
-                            )}
-                          </>
+                          <CheckCheck className="w-3 h-3 ml-1 opacity-70" />
                         )}
                       </div>
                     </div>
                   </div>
                 )
               })}
+              <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
 
-          {/* Input */}
           <div className="border-t p-4">
-            <form onSubmit={handleSendMessage} className="flex gap-2">
+            <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
+              <Button type="button" variant="ghost" size="icon" className="shrink-0" title="Attach file">
+                <Plus className="w-5 h-5 text-muted-foreground" />
+              </Button>
               <Input
                 placeholder="Type a message..."
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 className="flex-1"
               />
-              <Button
-                type="submit"
-                size="icon"
-                className="bg-primary hover:bg-primary/90"
-              >
+              <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90">
                 <Send className="w-4 h-4" />
               </Button>
             </form>
-
-            {/* Quick Replies */}
-            <div className="mt-3 flex flex-wrap gap-2">
-              {[
-                "That works for me!",
-                "Thanks for the update!",
-                "Can we schedule a time?",
-                "Great to hear from you!",
-              ].map((reply) => (
-                <Button
-                  key={reply}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                  onClick={() => {
-                    setMessageText(reply)
-                  }}
-                >
-                  {reply}
-                </Button>
-              ))}
-            </div>
           </div>
         </Card>
       ) : (
         <Card className="flex-1 flex items-center justify-center border-0 shadow-lg">
           <div className="text-center">
             <h3 className="text-lg font-semibold mb-2">Select a conversation</h3>
-            <p className="text-muted-foreground">
-              Choose a conversation to start messaging
-            </p>
+            <p className="text-muted-foreground">Choose a conversation to start messaging</p>
           </div>
         </Card>
       )}

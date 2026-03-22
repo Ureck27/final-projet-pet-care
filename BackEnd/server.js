@@ -100,6 +100,7 @@ app.use('/api/routine', routineRoutes);
 app.use('/api/caregiver', caregiverRoutes);
 app.use('/api/trainer-requests', require('./routes/trainerRequestRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/chat', require('./routes/chatRoutes'));
 
 // Basic route
 app.get('/', (req, res) => {
@@ -157,6 +158,52 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Create HTTP server instead of using app.listen directly
+const http = require('http');
+const server = http.createServer(app);
+
+// Socket.io setup
+const { Server } = require('socket.io');
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  }
+});
+
+io.on('connection', (socket) => {
+  console.log('User connected to chat:', socket.id);
+
+  socket.on('join_conversation', (conversationId) => {
+    socket.join(conversationId);
+    console.log(`User joined conversation: ${conversationId}`);
+  });
+
+  socket.on('send_message', async (data) => {
+    try {
+      // data expects: { conversationId, senderId, senderModel, text, image, voice, video }
+      const Message = require('./models/Message');
+      const Conversation = require('./models/Conversation');
+      
+      const newMessage = await Message.create(data);
+      
+      await Conversation.findByIdAndUpdate(data.conversationId, {
+        lastMessage: newMessage._id
+      });
+
+      // Broadcast to everyone in the room (including sender)
+      io.to(data.conversationId).emit('receive_message', newMessage);
+    } catch (error) {
+      console.error('Socket send_message error:', error);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected from chat:', socket.id);
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

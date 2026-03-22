@@ -26,6 +26,8 @@ export default function AdminDashboardPage() {
   const { user, isLoading } = useAuth()
   const [pets, setPets] = useState<Pet[]>([])
   const [trainers, setTrainers] = useState<Trainer[]>([])
+  const [users, setUsers] = useState<User[]>([])
+  const [requests, setRequests] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -42,21 +44,17 @@ export default function AdminDashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
-      const [petsData, trainersData] = await Promise.all([
+      const [petsData, trainersData, usersData, requestsData] = await Promise.all([
         petApi.getAllPets(),
-        trainerApi.getTrainers()
+        trainerApi.getTrainers(),
+        adminApi.getUsers(),
+        adminApi.getPendingRequests()
       ])
-
-      // Debug: Log pets data to verify IDs
-      console.log('Pets data with IDs:', petsData.map(pet => ({
-        name: pet.name,
-        _id: pet._id,
-        id: pet.id,
-        hasValidId: !!(pet._id || pet.id)
-      })))
 
       setPets(petsData)
       setTrainers(trainersData)
+      setUsers(usersData)
+      setRequests(requestsData)
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
     } finally {
@@ -64,21 +62,31 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const handleApprovePet = async (petId: string) => {
+  const handleAcceptRequest = async (type: string, id: string) => {
     try {
-      await petApi.updatePetStatus(petId, 'accepted')
+      await adminApi.acceptRequest(type, id)
       fetchDashboardData()
     } catch (error) {
-      console.error('Failed to approve pet:', error)
+      console.error('Failed to accept request:', error)
     }
   }
 
-  const handleRejectPet = async (petId: string) => {
+  const handleRejectRequest = async (type: string, id: string) => {
     try {
-      await petApi.updatePetStatus(petId, 'rejected')
+      await adminApi.rejectRequest(type, id)
       fetchDashboardData()
     } catch (error) {
-      console.error('Failed to reject pet:', error)
+      console.error('Failed to reject request:', error)
+    }
+  }
+
+  const handleDeleteUser = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this user?')) return;
+    try {
+      await adminApi.deleteUser(id)
+      fetchDashboardData()
+    } catch (error) {
+      console.error('Failed to delete user:', error)
     }
   }
 
@@ -156,17 +164,135 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Data Tables */}
-      <Tabs defaultValue="pets" className="space-y-4">
+      <Tabs defaultValue="requests" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="requests">Requests</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="pets">Pets</TabsTrigger>
           <TabsTrigger value="trainers">Trainers</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="requests">
+          <Card>
+            <CardHeader>
+              <CardTitle>Pending Requests</CardTitle>
+              <CardDescription>Review and approve pending users, pets, and trainers</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Name/Title</TableHead>
+                    <TableHead>Details</TableHead>
+                    <TableHead>Added</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {requests.map((req, index) => (
+                    <TableRow key={req._id || req.id || index}>
+                      <TableCell className="capitalize font-medium">{req.requestType}</TableCell>
+                      <TableCell>{req.name}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {req.requestType === 'user' && <p>{req.email}</p>}
+                        {req.requestType === 'pet' && <p>{req.type} - {(req.userId as any)?.name}</p>}
+                        {req.requestType === 'trainer' && <p>{req.email}</p>}
+                      </TableCell>
+                      <TableCell>{new Date(req.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleAcceptRequest(req.requestType, req._id || req.id)}
+                            title="Accept"
+                          >
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            onClick={() => handleRejectRequest(req.requestType, req._id || req.id)}
+                            title="Reject"
+                          >
+                            <XCircle className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {requests.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                        No pending requests.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="users">
+          <Card>
+            <CardHeader>
+              <CardTitle>All Users</CardTitle>
+              <CardDescription>Manage registered users</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.map((u, index) => (
+                    <TableRow key={u._id || u.id || index}>
+                      <TableCell className="font-medium">{u.name}</TableCell>
+                      <TableCell>{u.email}</TableCell>
+                      <TableCell className="capitalize">{u.role}</TableCell>
+                      <TableCell>
+                         <Badge variant={u.status === 'accepted' ? 'default' : u.status === 'rejected' ? 'destructive' : 'secondary'}>
+                          {u.status || 'accepted'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          {u.status === 'pending' && (
+                            <>
+                              <Button variant="outline" size="sm" onClick={() => handleAcceptRequest('user', u._id || u.id)}>
+                                Accept
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={() => handleRejectRequest('user', u._id || u.id)}>
+                                Reject
+                              </Button>
+                            </>
+                          )}
+                          <Button variant="destructive" size="sm" onClick={() => handleDeleteUser(u._id || u.id)}>
+                            Delete
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="pets">
           <Card>
             <CardHeader>
               <CardTitle>All Pets</CardTitle>
-              <CardDescription>View and manage pet applications</CardDescription>
+              <CardDescription>View all registered pets</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -175,56 +301,23 @@ export default function AdminDashboardPage() {
                     <TableHead>Image</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Type</TableHead>
-                    <TableHead>Age</TableHead>
                     <TableHead>Owner</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Added</TableHead>
-                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {pets.map((pet, index) => (
                     <TableRow key={pet._id || pet.id || index}>
                       <TableCell>
-                        <img 
-                          src={pet.image || "/placeholder.svg"} 
-                          alt={pet.name}
-                          className="h-10 w-10 rounded object-cover"
-                        />
+                        <img src={pet.image || "/placeholder.svg"} alt={pet.name} className="h-10 w-10 rounded object-cover" />
                       </TableCell>
                       <TableCell className="font-medium">{pet.name}</TableCell>
                       <TableCell>{pet.type}</TableCell>
-                      <TableCell>{pet.age} years</TableCell>
                       <TableCell>{(pet as any).userId?.name || 'Unknown'}</TableCell>
                       <TableCell>
                          <Badge variant={pet.status === 'accepted' ? 'default' : pet.status === 'rejected' ? 'destructive' : 'secondary'}>
                           {pet.status}
                         </Badge>
-                      </TableCell>
-                      <TableCell>{new Date(pet.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          {pet.status === 'pending' && (
-                            <>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => handleApprovePet(pet._id || pet.id)}
-                                title="Accept Pet"
-                              >
-                                <CheckCircle className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                variant="destructive" 
-                                size="sm"
-                                onClick={() => handleRejectPet(pet._id || pet.id)}
-                                title="Reject Pet"
-                              >
-                                <XCircle className="h-4 w-4" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -252,9 +345,8 @@ export default function AdminDashboardPage() {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Services</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Added</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -262,6 +354,11 @@ export default function AdminDashboardPage() {
                     <TableRow key={trainer._id || trainer.id || index}>
                       <TableCell className="font-medium">{trainer.name}</TableCell>
                       <TableCell>{trainer.email}</TableCell>
+                      <TableCell>
+                        <Badge variant={trainer.status === 'accepted' ? 'default' : trainer.status === 'rejected' ? 'destructive' : 'secondary'}>
+                          {trainer.status}
+                        </Badge>
+                      </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
                           {trainer.services.map((service, serviceIndex) => (
@@ -271,10 +368,6 @@ export default function AdminDashboardPage() {
                           ))}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        {trainer.price ? `$${trainer.price}` : 'Flexible'}
-                      </TableCell>
-                      <TableCell>{new Date(trainer.createdAt).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
