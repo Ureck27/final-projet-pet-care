@@ -275,7 +275,12 @@ export default function AdminDashboardPage() {
                               </Button>
                             </>
                           )}
-                          <Button variant="destructive" size="sm" onClick={() => handleDeleteUser(u._id || u.id)}>
+                          <Button 
+                            variant="destructive" 
+                            size="sm" 
+                            onClick={() => handleDeleteUser(u._id || u.id)}
+                            disabled={user?._id === (u._id || u.id) || user?.id === (u._id || u.id)}
+                          >
                             Delete
                           </Button>
                         </div>

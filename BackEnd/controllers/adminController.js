@@ -161,6 +161,12 @@ const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    // Prevent admin from deleting themselves
+    if (req.user && req.user._id.toString() === req.params.id) {
+      return res.status(400).json({ message: 'You cannot delete your own admin account' });
+    }
+
     // Delete associated pets and trainer objects
     await Pet.deleteMany({ userId: req.params.id });
     await Trainer.deleteOne({ userId: req.params.id });
