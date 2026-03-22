@@ -61,6 +61,9 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
     config.signal = controller.signal;
 
     console.log(`[API] ${config.method || 'GET'} ${fullUrl} (Attempt ${attempt + 1}/${maxRetries + 1}, Timeout: ${timeoutMs}ms)`);
+    if (config.body) {
+      console.log(`[API Request Payload]:`, config.body);
+    }
 
     try {
       const response = await fetch(fullUrl, config);
@@ -93,6 +96,11 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
             (enhancedError as any).type = errorData.type || 'rate_limit';
             throw enhancedError;
           }
+          const noRetryError = new Error(errorMessage);
+          (noRetryError as any).isNoRetry = true;
+          throw noRetryError;
+        } else {
+          // This allows the catch block to retry normal server errors
           throw new Error(errorMessage);
         }
       } else {
@@ -104,8 +112,8 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
       clearTimeout(timeoutId);
       const isLastAttempt = attempt === maxRetries;
       
-      // Don't retry rate limit errors
-      if (error.isRateLimit) {
+      // Don't retry specific errors (like 4xx client errors)
+      if (error.isRateLimit || error.isNoRetry) {
         throw error;
       }
       

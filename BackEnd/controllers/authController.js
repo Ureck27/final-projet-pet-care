@@ -82,21 +82,33 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log('Login attempt for email:', email);
+
     const user = await User.findOne({ email }).select('+password');
 
-    if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id: user._id,
-        id: user._id.toString(),
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
-      });
-    } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+    if (!user) {
+      console.log('Login failed: User not found in DB');
+      return res.status(401).json({ message: 'User not found' });
     }
+
+    console.log('User found in DB:', user._id);
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      console.log('Login failed: Invalid password');
+      return res.status(401).json({ message: 'Invalid password' });
+    }
+
+    res.json({
+      _id: user._id,
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: generateToken(user._id),
+    });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -177,12 +189,26 @@ const adminLogin = async (req, res) => {
       });
     }
 
+    console.log('Admin login attempt for email:', email);
+
     // Find user and verify it's an admin
     const user = await User.findOne({ email, role: 'admin' }).select('+password');
 
-    if (!user || !(await user.matchPassword(password))) {
+    if (!user) {
+      console.log('Admin login failed: Admin user not found in DB');
       return res.status(401).json({ 
-        error: 'Invalid admin credentials',
+        error: 'Admin user not found',
+        type: 'auth'
+      });
+    }
+
+    console.log('Admin user found in DB:', user._id);
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      console.log('Admin login failed: Invalid admin password');
+      return res.status(401).json({ 
+        error: 'Invalid admin password',
         type: 'auth'
       });
     }
