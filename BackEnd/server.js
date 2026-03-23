@@ -23,6 +23,7 @@ const trainerRoutes = require('./routes/trainerRoutes');
 const dailyActivityRoutes = require('./routes/dailyActivityRoutes');
 const routineRoutes = require('./routes/routineRoutes');
 const caregiverRoutes = require('./routes/caregiverRoutes');
+const petUpdateRoutes = require('./routes/petUpdateRoutes');
 
 // Security middleware
 app.use(helmet()); // Set security HTTP headers
@@ -98,6 +99,7 @@ app.use('/api/trainers', trainerRoutes);
 app.use('/api/daily-activities', dailyActivityRoutes);
 app.use('/api/routine', routineRoutes);
 app.use('/api/caregiver', caregiverRoutes);
+app.use('/api/pet-updates', petUpdateRoutes);
 app.use('/api/trainer-requests', require('./routes/trainerRequestRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));

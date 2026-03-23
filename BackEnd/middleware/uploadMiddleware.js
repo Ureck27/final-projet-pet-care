@@ -15,6 +15,7 @@ ensureDirectoryExists(path.join(__dirname, '../uploads/pets'));
 ensureDirectoryExists(path.join(__dirname, '../uploads/trainers'));
 ensureDirectoryExists(path.join(__dirname, '../uploads/certificates'));
 ensureDirectoryExists(path.join(__dirname, '../uploads/videos'));
+ensureDirectoryExists(path.join(__dirname, '../uploads/pet-updates'));
 
 // Storage configuration
 const storage = multer.diskStorage({
@@ -88,6 +89,8 @@ const uploadPetFiles = upload.fields([
   { name: 'petVideo', maxCount: 1 }
 ]);
 
+const uploadPetMedia = upload.single('media');
+
 // Error handling middleware for multer
 const handleUploadError = (error, req, res, next) => {
   if (error instanceof multer.MulterError) {
@@ -123,6 +126,8 @@ const getFileUrl = (filename, type = 'general') => {
     path = '/uploads/trainers/';
   } else if (type === 'certificate') {
     path = '/uploads/certificates/';
+  } else if (type === 'pet-updates') {
+    path = '/uploads/pet-updates/';
   }
   
   return `${baseUrl}${path}${filename}`;
@@ -148,6 +153,7 @@ module.exports = {
   uploadMultiple,
   uploadTrainerFiles,
   uploadPetFiles,
+  uploadPetMedia,
   handleUploadError,
   getFileUrl,
   deleteFile,

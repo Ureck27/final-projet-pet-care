@@ -4,6 +4,7 @@ const {
   createTrainerRequest, 
   getTrainerRequests, 
   getTrainerRequestById,
+  getUserTrainerRequest,
   approveTrainerRequest, 
   rejectTrainerRequest,
   deleteTrainerRequest
@@ -13,6 +14,7 @@ const { uploadTrainerFiles, handleUploadError } = require('../middleware/uploadM
 
 // Apply upload middleware to the create route
 router.post('/', protect, uploadTrainerFiles, handleUploadError, createTrainerRequest);
+router.get('/my-request', protect, getUserTrainerRequest); // User can check their own request
 router.get('/', protect, authorizeRole('admin'), getTrainerRequests);
 router.get('/:id', protect, authorizeRole('admin'), getTrainerRequestById);
 router.put('/:id/approve', protect, authorizeRole('admin'), approveTrainerRequest);

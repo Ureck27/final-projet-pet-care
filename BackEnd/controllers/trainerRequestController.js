@@ -10,6 +10,27 @@ const createTrainerRequest = async (req, res) => {
   try {
     const { experience, message, phone, certifications } = req.body;
     
+    // Validate required fields
+    if (!experience || !message || !phone) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Missing required fields: experience, message, and phone are required' 
+      });
+    }
+
+    // Check if user already has a pending or approved request
+    const existingRequest = await TrainerRequest.findOne({ 
+      userId: req.user._id,
+      status: { $in: ['pending', 'accepted'] }
+    });
+
+    if (existingRequest) {
+      return res.status(400).json({ 
+        success: false,
+        message: `You already have a ${existingRequest.status} trainer request` 
+      });
+    }
+    
     // Process uploaded files
     let profileImageUrl = null;
     let certificateImageUrls = [];
@@ -58,10 +79,51 @@ const createTrainerRequest = async (req, res) => {
     //   `
     // );
 
-    res.status(201).json(trainerRequest);
+    console.log('Trainer request created successfully:', {
+      id: trainerRequest._id,
+      userId: trainerRequest.userId,
+      status: trainerRequest.status
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Trainer application submitted successfully',
+      data: trainerRequest
+    });
   } catch (error) {
     console.error('Error creating trainer request:', error);
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ 
+      success: false,
+      message: error.message || 'Failed to submit trainer application' 
+    });
+  }
+};
+
+// @desc    Get current user's trainer request
+// @route   GET /api/trainer-requests/my-request
+const getUserTrainerRequest = async (req, res) => {
+  try {
+    const request = await TrainerRequest.findOne({ userId: req.user._id })
+      .sort({ createdAt: -1 });
+    
+    if (!request) {
+      return res.json({ 
+        success: true,
+        data: null,
+        message: 'No trainer request found' 
+      });
+    }
+    
+    res.json({ 
+      success: true,
+      data: request 
+    });
+  } catch (error) {
+    console.error('Error fetching user trainer request:', error);
+    res.status(500).json({ 
+      success: false,
+      message: error.message 
+    });
   }
 };
 
@@ -111,8 +173,11 @@ const approveTrainerRequest = async (req, res) => {
     request.status = 'accepted';
     await request.save();
 
-    // Update user role to trainer
-    await User.findByIdAndUpdate(request.userId, { role: 'trainer' });
+    // Update user role and status to trainer
+    await User.findByIdAndUpdate(request.userId, { 
+      role: 'trainer',
+      status: 'accepted'
+    });
 
     // Create trainer profile if it doesn't exist
     const existingTrainer = await Trainer.findOne({ userId: request.userId });
@@ -179,6 +244,11 @@ const rejectTrainerRequest = async (req, res) => {
     request.rejectionReason = rejectionReason || 'Application does not meet requirements';
     await request.save();
 
+    // Update user status to reflect rejection
+    await User.findByIdAndUpdate(request.userId, { 
+      status: 'rejected'
+    });
+
     // Send admin notification (commented out due to email config)
     // await sendAdminNotification(
     //   'Trainer Request Rejected',
@@ -240,6 +310,7 @@ module.exports = {
   createTrainerRequest, 
   getTrainerRequests, 
   getTrainerRequestById,
+  getUserTrainerRequest,
   approveTrainerRequest, 
   rejectTrainerRequest,
   deleteTrainerRequest

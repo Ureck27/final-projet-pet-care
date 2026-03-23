@@ -331,6 +331,9 @@ export const trainerRequestApi = {
   getRequestById: (id: string) =>
     api.get<TrainerRequest>(`/trainer-requests/${id}`),
   
+  getUserRequest: () =>
+    api.get<TrainerRequest>('/trainer-requests/my-request'),
+  
   approveRequest: (id: string) =>
     api.put<{ message: string; request: TrainerRequest }>(`/trainer-requests/${id}/approve`, {}),
   
@@ -339,6 +342,21 @@ export const trainerRequestApi = {
   
   deleteRequest: (id: string) =>
     api.delete<{ message: string }>(`/trainer-requests/${id}`),
+};
+
+// Pet Update API
+export const petUpdateApi = {
+  createUpdate: (formData: FormData) =>
+    api.post<any>('/pet-updates', formData),
+  
+  getPetUpdates: (petId: string) =>
+    api.get<any[]>(`/pet-updates/${petId}`),
+  
+  getTrainerUpdates: (trainerId: string) =>
+    api.get<any[]>(`/pet-updates/trainer/${trainerId}`),
+  
+  deleteUpdate: (id: string) =>
+    api.delete<{ message: string }>(`/pet-updates/${id}`),
 };
 
 // Admin API
