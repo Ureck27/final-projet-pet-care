@@ -18,6 +18,30 @@ export default function UsersPage() {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token')
+        
+        if (!token) {
+          throw new Error('No authentication token found')
+        }
+
+        // First check if user is admin
+        const userResponse = await fetch('http://localhost:5000/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (!userResponse.ok) {
+          throw new Error('Failed to authenticate user')
+        }
+
+        const userData = await userResponse.json()
+        
+        if (userData.data?.role !== 'admin') {
+          throw new Error('Access denied. Admin role required.')
+        }
+
+        // If admin, fetch users
         const response = await fetch('http://localhost:5000/api/users', {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -26,6 +50,12 @@ export default function UsersPage() {
         })
 
         if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Authentication failed. Please login again.')
+          }
+          if (response.status === 403) {
+            throw new Error('Access denied. Admin role required.')
+          }
           throw new Error('Failed to fetch users')
         }
 

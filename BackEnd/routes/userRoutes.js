@@ -13,6 +13,9 @@ router.route('/')
   .get(protect, authorizeRole('admin'), getUsers)
   .post(protect, authorizeRole('admin'), createUser);
 
+router.route('/profile')
+  .get(protect, getUserById);
+
 router.route('/:id')
   .get(protect, getUserById)
   .put(protect, updateUser)

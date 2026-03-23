@@ -241,4 +241,29 @@ const adminLogin = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, adminLogin, forgotPassword, resetPassword };
+// @desc    Get current user
+// @route   GET /api/auth/me
+const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      _id: user._id,
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    });
+  } catch (error) {
+    console.error('Get user error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, adminLogin, forgotPassword, resetPassword, getMe };
