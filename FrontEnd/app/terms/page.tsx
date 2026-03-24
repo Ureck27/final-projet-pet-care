@@ -22,7 +22,7 @@ export default function TermsPage() {
       <section className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-4xl space-y-6">
           {/* Section 1 */}
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -39,7 +39,7 @@ export default function TermsPage() {
           </Card>
 
           {/* Section 2 */}
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -62,7 +62,7 @@ export default function TermsPage() {
           </Card>
 
           {/* Section 3 */}
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -92,7 +92,7 @@ export default function TermsPage() {
           </Card>
 
           {/* Section 4 */}
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -115,7 +115,7 @@ export default function TermsPage() {
           </Card>
 
           {/* Section 5 */}
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -148,7 +148,7 @@ export default function TermsPage() {
           </Card>
 
           {/* Section 6 */}
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -171,7 +171,7 @@ export default function TermsPage() {
           </Card>
 
           {/* Sections 7-13 */}
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -186,7 +186,7 @@ export default function TermsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -208,7 +208,7 @@ export default function TermsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -222,7 +222,7 @@ export default function TermsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -236,7 +236,7 @@ export default function TermsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -250,7 +250,7 @@ export default function TermsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -264,7 +264,7 @@ export default function TermsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-border shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-2 border-border shadow-none hover:shadow-none transition-shadow">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/10 dark:to-secondary/10 border-b border-primary/20 dark:border-border">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">

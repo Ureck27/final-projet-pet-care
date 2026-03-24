@@ -99,7 +99,7 @@ export default function PricingPage() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col ${plan.popular ? "border-primary shadow-lg" : ""}`}
+              className={`relative flex flex-col ${plan.popular ? "border-primary border-2 bg-white" : "border border-gray-200 bg-white"}`}
             >
               {plan.popular && (
                 <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary px-4">Most Popular</Badge>
@@ -148,12 +148,12 @@ export default function PricingPage() {
             {serviceRates.map((rate, index) => (
               <Card 
                 key={index} 
-                className="group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02] cursor-pointer"
+                className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-gray-200 bg-white"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${rate.color} opacity-0 transition-opacity duration-300 group-hover:opacity-5`} />
+                <div className={`absolute inset-0 bg-gradient-to-br ${rate.color} opacity-0`} />
                 <CardHeader className="relative">
                   <div className="flex items-center justify-between">
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${rate.color} text-white shadow-lg transition-transform duration-300 group-hover:scale-110`}>
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${rate.color} text-white`}>
                       <rate.icon className="h-6 w-6" />
                     </div>
                     <Badge variant="secondary" className="text-xs">
@@ -174,7 +174,7 @@ export default function PricingPage() {
                         {rate.price}
                       </p>
                     </div>
-                    <div className={`h-8 w-8 rounded-full bg-gradient-to-br ${rate.color} opacity-0 transition-all duration-300 group-hover:opacity-20 group-hover:scale-150`} />
+                    <div className={`h-8 w-8 rounded-full bg-gradient-to-br ${rate.color} opacity-0`} />
                   </div>
                   <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                     <DollarSign className="h-3 w-3" />

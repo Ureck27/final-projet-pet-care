@@ -119,7 +119,7 @@ export default function ServicesPage() {
           {services.map((service) => (
             <Card
               key={service.title}
-              className="relative flex flex-col shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+              className="relative flex flex-col shadow-none transition-all duration-300 hover:-translate-y-1 border border-gray-200 bg-white"
             >
               {service.popular && <Badge className="absolute -top-2 right-4 bg-primary">Popular</Badge>}
               <CardHeader>

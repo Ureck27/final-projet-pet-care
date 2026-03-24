@@ -187,17 +187,17 @@ export default function HomePage() {
             {/* Text Content */}
             <div className="flex flex-col items-start text-left max-w-2xl">
               <FadeIn direction="up">
-                <Badge className="mb-6 bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-300 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-400/30 px-4 py-2 text-sm shadow-soft-lg transition-smooth glow-primary">
+                <Badge className="mb-6 bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-gray-800 dark:text-purple-300 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-400/30 px-4 py-2 text-sm shadow-soft-lg transition-smooth glow-primary">
                   <Shield className="mr-2 h-4 w-4" />
                   Professional AI-Powered Pet Care
                 </Badge>
               </FadeIn>
               <FadeIn direction="up" delay={0.1}>
-                <div ref={heroRef} className="mb-6 space-y-2 leading-tight text-shadow-sm float-element text-blue-600 dark:text-white">
+                <div ref={heroRef} className="mb-6 space-y-2 leading-tight text-shadow-sm float-element text-gray-900 dark:text-white">
                   <SplitText
                     text="One App. One Routine."
                     tag="h1"
-                    className="block text-balance text-5xl font-extrabold tracking-tight text-blue-600 dark:text-white md:text-6xl lg:text-7xl"
+                    className="block text-balance text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white md:text-6xl lg:text-7xl"
                     delay={40}
                     duration={1.1}
                     ease="power3.out"
@@ -211,7 +211,7 @@ export default function HomePage() {
                   <SplitText
                     text="Total Peace of Mind."
                     tag="h1"
-                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold text-blue-600 dark:text-white md:text-transparent md:bg-clip-text md:bg-gradient-to-r md:from-purple-600 md:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:text-white"
+                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white md:text-transparent md:bg-clip-text md:bg-gradient-to-r md:from-purple-600 md:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:text-white"
                     delay={50}
                     duration={1.2}
                     ease="power3.out"
@@ -225,7 +225,7 @@ export default function HomePage() {
                 </div>
               </FadeIn>
               <FadeIn direction="up" delay={0.2}>
-                <p className="mb-8 text-pretty text-lg text-purple-200 md:text-xl leading-relaxed">
+                <p className="mb-8 text-pretty text-lg text-gray-800 md:text-xl leading-relaxed">
                   All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
                   <strong className="text-emerald-500 block mt-2 font-medium">Professional care meets transparency.</strong>
                 </p>
@@ -242,7 +242,7 @@ export default function HomePage() {
                     </Button>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" className="h-14 px-8 text-base glass-effect text-purple-300 hover:text-white border-purple-400/30 hover:border-purple-400/50 w-full sm:w-auto transition-smooth shadow-soft-lg" asChild>
+                    <Button size="lg" className="h-14 px-8 text-base glass-effect text-gray-700 dark:text-purple-300 hover:text-gray-900 dark:hover:text-white border-purple-400/30 hover:border-purple-400/50 w-full sm:w-auto transition-smooth shadow-soft-lg" asChild>
                       <Link href="#how-it-works">See How It Works</Link>
                     </Button>
                   </motion.div>
@@ -252,7 +252,7 @@ export default function HomePage() {
               <StaggerChildren staggerDelay={0.4} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {trustFeatures.map((feature) => (
                   <StaggerItem key={feature}>
-                    <div className="flex items-center gap-3 text-sm text-purple-200 font-medium group">
+                    <div className="flex items-center gap-3 text-sm text-gray-700 dark:text-purple-200 font-medium group">
                       <motion.div 
                         whileHover={{ scale: 1.2, rotate: 10 }}
                         className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-green-400/20 to-emerald-400/20 border border-green-400/30 transition-smooth glow-accent"
@@ -283,11 +283,11 @@ export default function HomePage() {
         <PetCareIcons />
         <div className="container mx-auto">
           <FadeIn direction="up" className="mb-16 text-center">
-            <Badge variant="outline" className="mb-4 border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-300 font-semibold shadow-soft-lg hover:shadow-xl transition-smooth glow-primary">
+            <Badge variant="outline" className="mb-4 border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-gray-700 dark:text-purple-300 font-semibold shadow-soft-lg hover:shadow-xl transition-smooth glow-primary">
               Three Problems. One Solution.
             </Badge>
             <h2 className="mb-4 text-4xl font-bold gradient-text bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">The Paws & Relax Difference</h2>
-            <p className="mx-auto max-w-2xl text-lg text-purple-200">
+            <p className="mx-auto max-w-2xl text-lg text-gray-700 dark:text-purple-200">
               Paws & Relax solves the three biggest pain points pet owners face
             </p>
           </FadeIn>
@@ -304,9 +304,9 @@ export default function HomePage() {
                       >
                         {item.icon && <item.icon className="h-8 w-8 icon-visible" />}
                       </motion.div>
-                      <p className="mb-6 text-base font-medium text-purple-100 leading-relaxed">{item.problem}</p>
+                      <p className="mb-6 text-base font-medium text-gray-800 dark:text-purple-100 leading-relaxed">{item.problem}</p>
                       <div className="pt-6 border-t border-purple-400/20 bg-gradient-to-r from-purple-500/10 to-blue-500/10 p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-purple-500/20 group-hover:to-blue-500/20 transition-smooth">
-                        <p className="text-base text-purple-200 font-medium flex items-start gap-2">
+                        <p className="text-base text-gray-700 dark:text-purple-200 font-medium flex items-start gap-2">
                           <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 icon-visible" />
                           {item.solution}
                         </p>
@@ -327,8 +327,8 @@ export default function HomePage() {
             <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary shadow-sm hover:shadow transition-smooth">
               Core Services
             </Badge>
-            <h2 className="mb-4 text-4xl font-bold text-foreground">Everything You Need</h2>
-            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+            <h2 className="mb-4 text-4xl font-bold text-gray-900 dark:text-foreground">Everything You Need</h2>
+            <p className="mx-auto max-w-2xl text-lg text-gray-700 dark:text-muted-foreground">
               Professional pet care with modern technology
             </p>
           </FadeIn>
