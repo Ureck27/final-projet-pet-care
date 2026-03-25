@@ -228,15 +228,15 @@
     background-size: 20px 20px;
   }
 
-  /* Split Char - Light mode purple, dark mode white */
+  /* Split Char - Light mode black, dark mode white */
   .split-char {
-    color: #a855f7; /* purple-600 in light mode */
+    color: #000000; /* black in light mode */
     transition: color 0.3s ease;
   }
 
   @media (prefers-color-scheme: dark) {
     .split-char {
-      color: #2e2727; /* white in dark mode */
+      color: #ffffff; /* white in dark mode */
     }
   }
 }

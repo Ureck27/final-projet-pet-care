@@ -462,11 +462,11 @@
 /* Light mode specific fixes */
 .light {
   /* Ensure proper contrast for light mode */
-  .text-purple-100 { color: #6B21A8 !important; }
-  .text-purple-200 { color: #581C87 !important; }
-  .text-purple-300 { color: #4C1D95 !important; }
-  .text-green-400 { color: #10B981 !important; }
-  .text-green-600 { color: #059669 !important; }
+  .text-purple-100 { color: #000000 !important; }
+  .text-purple-200 { color: #000000 !important; }
+  .text-purple-300 { color: #000000 !important; }
+  .text-green-400 { color: #000000 !important; }
+  .text-green-600 { color: #000000 !important; }
   .text-red-600 { color: #DC2626 !important; }
   .text-amber-500 { color: #D97706 !important; }
   .text-violet-500 { color: #7C3AED !important; }
@@ -481,8 +481,9 @@
   .text-foreground { color: #1A1A1A !important; }
   
   /* Hero text visibility in light mode */
-  .hero-text-purple { color: #6367FF !important; }
-  .hero-text-white { color: #FFFFFF !important; }
+  .hero-text-purple { color: #000000 !important; }
+  .hero-text-white { color: #000000 !important; }
+  .split-char { color: #000000 !important; }
   
   /* Gradient text visibility for both modes */
   .gradient-text-light { 
