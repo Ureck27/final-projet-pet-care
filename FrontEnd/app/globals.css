@@ -3,80 +3,83 @@
 
 /* UI/UX Color Theme - Professional & Modern */
 :root {
-  /* Background: Soft light tone */
-  --background: #F8F9FE;
-  /* Text: Dark neutral for high readability */
-  --foreground: #1A1A1A;
+  /* Background: Soft light tone (neutral) */
+  --background: #F8F9FA;
+  /* Text: Dark primary text (#0A1626) */
+  --foreground: #0A1626;
   --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
+  --card-foreground: #0A1626;
   --popover: #FFFFFF;
-  --popover-foreground: #1A1A1A;
-  /* Primary: Requested #6367FF */
-  --primary: #6367FF;
+  --popover-foreground: #0A1626;
+  /* Primary: #11468C */
+  --primary: #11468C;
   --primary-foreground: #FFFFFF;
-  /* Secondary: Requested #8494FF */
-  --secondary: #8494FF;
+  /* Secondary: #127CA6 */
+  --secondary: #127CA6;
   --secondary-foreground: #FFFFFF;
-  /* Muted: Light gray-blue */
+  /* Muted: Soft background and muted version of primary text */
   --muted: #F1F5F9;
-  --muted-foreground: #64748B;
-  /* Accent: Requested #C9BEFF */
-  --accent: #C9BEFF;
-  --accent-foreground: #1A1A1A;
-  /* Accent Soft: Requested #FFDBFD */
-  --accent-soft: #FFDBFD;
-  --accent-soft-foreground: #1A1A1A;
-  /* Destructive: Bold red */
+  --muted-foreground: #4B5563;
+  /* Accent: #1FA2BF */
+  --accent: #1FA2BF;
+  --accent-foreground: #FFFFFF;
+  /* Accent Soft */
+  --accent-soft: #E0F2FE;
+  --accent-soft-foreground: #0A1626;
+  /* Destructive */
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #E2E8F0;
-  --input: #E2E8F0;
-  --ring: #6367FF;
+  /* Subtle border with #14548C low opacity */
+  --border: #14548C20;
+  --input: #14548C20;
+  --ring: #11468C;
   --radius: 0.75rem;
 
   /* Chart colors */
-  --chart-1: #6367FF;
-  --chart-2: #8494FF;
-  --chart-3: #C9BEFF;
-  --chart-4: #FFDBFD;
+  --chart-1: #11468C;
+  --chart-2: #127CA6;
+  --chart-3: #1FA2BF;
+  --chart-4: #14548C;
   --chart-5: #64748B;
 }
 
 .dark {
-  /* Background: Deep neutral/purple */
-  --background: #0B0C1A;
-  /* Text: Light gray for dark readability */
-  --foreground: #F8F9FA;
-  --card: #15162A;
-  --card-foreground: #F8F9FA;
-  --popover: #15162A;
-  --popover-foreground: #F8F9FA;
-  /* Primary: Same #6367FF */
-  --primary: #6367FF;
+  /* Background: #0A1626 */
+  --background: #0A1626;
+  /* Text: Light (#FFFFFF) */
+  --foreground: #FFFFFF;
+  /* Cards: Slightly lighter than background */
+  --card: #111F33;
+  --card-foreground: #FFFFFF;
+  --popover: #111F33;
+  --popover-foreground: #FFFFFF;
+  /* Primary: #1FA2BF */
+  --primary: #1FA2BF;
   --primary-foreground: #FFFFFF;
-  /* Secondary: Same #8494FF */
-  --secondary: #8494FF;
+  /* Secondary: #127CA6 */
+  --secondary: #127CA6;
   --secondary-foreground: #FFFFFF;
-  /* Muted: Deep purple-gray */
-  --muted: #1E1F3D;
-  --muted-foreground: #94A3B8;
-  /* Accent: Same #C9BEFF */
-  --accent: #C9BEFF;
-  --accent-foreground: #0B0C1A;
-  /* Accent Soft: Same #FFDBFD */
-  --accent-soft: #FFDBFD;
-  --accent-soft-foreground: #0B0C1A;
+  /* Muted: Deep background / Light gray/blue tone text */
+  --muted: #1E293B;
+  --muted-foreground: #CBD5E1;
+  /* Accent: #14548C */
+  --accent: #14548C;
+  --accent-foreground: #FFFFFF;
+  /* Accent Soft */
+  --accent-soft: #1E3A8A;
+  --accent-soft-foreground: #FFFFFF;
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #2D2E45;
-  --input: #2D2E45;
-  --ring: #6367FF;
+  /* Stronger borders for dark mode instead of heavy shadows */
+  --border: #14548C;
+  --input: #14548C;
+  --ring: #1FA2BF;
 
   /* Chart colors */
-  --chart-1: #6367FF;
-  --chart-2: #8494FF;
-  --chart-3: #C9BEFF;
-  --chart-4: #FFDBFD;
+  --chart-1: #1FA2BF;
+  --chart-2: #127CA6;
+  --chart-3: #14548C;
+  --chart-4: #60A5FA;
   --chart-5: #94A3B8;
 }
 
@@ -170,8 +173,8 @@
 
 @layer utilities {
   .transition-smooth {
-    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
-    will-change: transform, opacity;
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+    will-change: transform, opacity, filter;
   }
 
   /* Typography utilities */
@@ -226,17 +229,17 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(20, 84, 140, 0.05);
     backdrop-filter: blur(10px);
     animation: slideUp 0.6s ease-out forwards;
   }
 
   .shadow-soft {
-    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px -4px rgba(20, 84, 140, 0.08);
   }
   
   .dark .shadow-soft {
-    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.2);
+    box-shadow: none; /* No heavy shadows in dark mode, relying on borders */
   }
   
   .glass-effect {
@@ -333,12 +336,13 @@
   }
 
   .hover-scale {
-    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
-    will-change: transform, opacity;
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+    will-change: transform, opacity, filter;
   }
 
   .hover-scale:hover {
     transform: scale(1.05);
+    filter: brightness(1.05);
   }
 
   .hover-rotate {
