@@ -501,6 +501,15 @@
     background-clip: text !important;
     color: transparent !important;
   }
+
+  .paws-relax-diff h2,
+  .paws-relax-diff p,
+  .paws-relax-diff .text-gray-700,
+  .paws-relax-diff .text-gray-800 {
+    color: #111827 !important;
+    background: none !important;
+    -webkit-text-fill-color: #111827 !important;
+  }
 }
 
 /* Dark mode specific fixes */

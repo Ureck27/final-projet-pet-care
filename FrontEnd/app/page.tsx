@@ -278,7 +278,7 @@ export default function HomePage() {
       </HeroBackground>
 
       {/* Problem/Solution Section */}
-      <section className="px-4 py-20 relative">
+      <section className="px-4 py-20 relative paws-relax-diff">
         <AnimatedPawTrail />
         <PetCareIcons />
         <div className="container mx-auto">
@@ -286,8 +286,8 @@ export default function HomePage() {
             <Badge variant="outline" className="mb-4 border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-gray-700 dark:text-purple-300 font-semibold shadow-soft-lg hover:shadow-xl transition-smooth glow-primary">
               Three Problems. One Solution.
             </Badge>
-            <h2 className="mb-4 text-4xl font-bold gradient-text bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">The Paws & Relax Difference</h2>
-            <p className="mx-auto max-w-2xl text-lg text-gray-700 dark:text-purple-200">
+            <h2 className="mb-4 text-4xl font-bold text-slate-900 dark:text-foreground">The Paws & Relax Difference</h2>
+            <p className="mx-auto max-w-2xl text-lg text-slate-900 dark:text-purple-200">
               Paws & Relax solves the three biggest pain points pet owners face
             </p>
           </FadeIn>
@@ -304,9 +304,9 @@ export default function HomePage() {
                       >
                         {item.icon && <item.icon className="h-8 w-8 icon-visible" />}
                       </motion.div>
-                      <p className="mb-6 text-base font-medium text-gray-800 dark:text-purple-100 leading-relaxed">{item.problem}</p>
+                      <p className="mb-6 text-base font-medium text-slate-900 dark:text-purple-100 leading-relaxed">{item.problem}</p>
                       <div className="pt-6 border-t border-purple-400/20 bg-gradient-to-r from-purple-500/10 to-blue-500/10 p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-purple-500/20 group-hover:to-blue-500/20 transition-smooth">
-                        <p className="text-base text-gray-700 dark:text-purple-200 font-medium flex items-start gap-2">
+                        <p className="text-base text-slate-900 dark:text-purple-200 font-medium flex items-start gap-2">
                           <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 icon-visible" />
                           {item.solution}
                         </p>
