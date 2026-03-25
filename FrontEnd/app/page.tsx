@@ -225,9 +225,9 @@ export default function HomePage() {
                 </div>
               </FadeIn>
               <FadeIn direction="up" delay={0.2}>
-                <p className="mb-8 text-pretty text-lg text-gray-800 md:text-xl leading-relaxed">
+                <p className="mb-8 text-pretty text-lg text-gray-900 md:text-xl leading-relaxed">
                   All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
-                  <strong className="text-emerald-500 block mt-2 font-medium">Professional care meets transparency.</strong>
+                  <strong className="text-emerald-600 block mt-2 font-medium">Professional care meets transparency.</strong>
                 </p>
               </FadeIn>
               
@@ -252,7 +252,7 @@ export default function HomePage() {
               <StaggerChildren staggerDelay={0.4} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {trustFeatures.map((feature) => (
                   <StaggerItem key={feature}>
-                    <div className="flex items-center gap-3 text-sm text-gray-700 dark:text-purple-200 font-medium group">
+                    <div className="flex items-center gap-3 text-sm text-gray-900 dark:text-purple-200 font-medium group">
                       <motion.div 
                         whileHover={{ scale: 1.2, rotate: 10 }}
                         className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-green-400/20 to-emerald-400/20 border border-green-400/30 transition-smooth glow-accent"
@@ -283,7 +283,7 @@ export default function HomePage() {
         <PetCareIcons />
         <div className="container mx-auto">
           <FadeIn direction="up" className="mb-16 text-center">
-            <Badge variant="outline" className="mb-4 border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-gray-700 dark:text-purple-300 font-semibold shadow-soft-lg hover:shadow-xl transition-smooth glow-primary">
+            <Badge variant="outline" className="mb-4 border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-gray-900 dark:text-purple-300 font-semibold shadow-soft-lg hover:shadow-xl transition-smooth glow-primary">
               Three Problems. One Solution.
             </Badge>
             <h2 className="mb-4 text-4xl font-bold text-slate-900 dark:text-foreground">The Paws & Relax Difference</h2>
@@ -328,7 +328,7 @@ export default function HomePage() {
               Core Services
             </Badge>
             <h2 className="mb-4 text-4xl font-bold text-gray-900 dark:text-foreground">Everything You Need</h2>
-            <p className="mx-auto max-w-2xl text-lg text-gray-700 dark:text-muted-foreground">
+            <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-muted-foreground">
               Professional pet care with modern technology
             </p>
           </FadeIn>
@@ -364,7 +364,7 @@ export default function HomePage() {
               4-Step Process
             </Badge>
             <h2 className="mb-4 text-3xl font-bold text-primary">How It Works</h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">
+            <p className="mx-auto max-w-2xl text-gray-600">
               Get started in 4 simple steps
             </p>
           </FadeIn>
