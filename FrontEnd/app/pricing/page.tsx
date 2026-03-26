@@ -66,9 +66,9 @@ const plans = [
 
 const serviceRates = [
   { service: "Basic Training", duration: "60 min", price: "$50 - $75", icon: Dog, color: "from-blue-500 to-cyan-500", category: "Training" },
-  { service: "Behavioral Modification", duration: "60 min", price: "$75 - $100", icon: Dog, color: "from-purple-500 to-pink-500", category: "Training" },
+  { service: "Behavioral Modification", duration: "60 min", price: "$75 - $100", icon: Dog, color: "from-purple-500 to-blue-500", category: "Training" },
   { service: "Puppy Training", duration: "45 min", price: "$55 - $70", icon: Dog, color: "from-orange-500 to-yellow-500", category: "Training" },
-  { service: "Cat Training", duration: "45 min", price: "$45 - $65", icon: Cat, color: "from-pink-500 to-rose-500", category: "Training" },
+  { service: "Cat Training", duration: "45 min", price: "$45 - $65", icon: Cat, color: "from-blue-500 to-cyan-500", category: "Training" },
   { service: "Dog Walking", duration: "30 min", price: "$20 - $30", icon: Dog, color: "from-green-500 to-emerald-500", category: "Walking" },
   { service: "Dog Walking", duration: "60 min", price: "$35 - $50", icon: Dog, color: "from-green-600 to-teal-500", category: "Walking" },
   { service: "Pet Sitting", duration: "Per night", price: "$60 - $100", icon: Home, color: "from-indigo-500 to-purple-500", category: "Sitting" },

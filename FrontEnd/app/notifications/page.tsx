@@ -191,7 +191,7 @@ export default function NotificationsPage() {
       case "activity-update": return <Heart className="h-4 w-4 text-green-500" />
       case "health-alert": return <AlertTriangle className="h-4 w-4 text-orange-500" />
       case "booking-update": return <Calendar className="h-4 w-4 text-purple-500" />
-      case "emotion-alert": return <Heart className="h-4 w-4 text-pink-500" />
+      case "emotion-alert": return <Heart className="h-4 w-4 text-blue-500" />
       case "message": return <MessageSquare className="h-4 w-4 text-blue-500" />
       default: return <Bell className="h-4 w-4 text-gray-500" />
     }

@@ -227,7 +227,7 @@ export default function PetTimelinePage() {
     switch (type) {
       case "ai-analysis": return <Brain className="h-4 w-4 text-purple-500" />
       case "activity": return <Activity className="h-4 w-4 text-blue-500" />
-      case "mood": return <Heart className="h-4 w-4 text-pink-500" />
+      case "mood": return <Heart className="h-4 w-4 text-blue-500" />
       case "health": return <Stethoscope className="h-4 w-4 text-green-500" />
       case "medication": return <Pill className="h-4 w-4 text-orange-500" />
       case "care": return <Heart className="h-4 w-4 text-red-500" />

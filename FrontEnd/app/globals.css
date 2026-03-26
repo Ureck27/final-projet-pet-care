@@ -3,94 +3,66 @@
 
 /* UI/UX Color Theme - Professional & Modern */
 :root {
-  /* Background Light: #D8EBF2 */
-  --background: #D8EBF2;
-  /* Text Dark: #0D0D0D */
-  --foreground: #0D0D0D;
-  /* Cards/Sections: #FFFFFF */
+  --background: #F8FAFF;
+  --foreground: #0F172A;
   --card: #FFFFFF;
-  --card-foreground: #0D0D0D;
+  --card-foreground: #0F172A;
   --popover: #FFFFFF;
-  --popover-foreground: #0D0D0D;
-  /* Primary: #5A7E8C */
-  --primary: #5A7E8C;
+  --popover-foreground: #0F172A;
+  --primary: #6C5CE7;
   --primary-foreground: #FFFFFF;
-  /* Secondary: #8AB0BF */
-  --secondary: #8AB0BF;
-  --secondary-foreground: #0D0D0D;
-  /* Muted */
-  --muted: rgba(138, 176, 191, 0.2);
-  --muted-foreground: #5A7E8C;
-  /* Accent / Danger: #F26363 */
-  --accent: #F26363;
+  --secondary: #4A90E2;
+  --secondary-foreground: #FFFFFF;
+  --muted: rgba(108, 92, 231, 0.1);
+  --muted-foreground: #6C5CE7;
+  --accent: #A29BFE;
   --accent-foreground: #FFFFFF;
-  /* Dark Accent for headings */
-  --heading: #0D0D0D;
-  /* Accent Soft */
-  --accent-soft: rgba(242, 99, 99, 0.1);
-  --accent-soft-foreground: #F26363;
-  /* Destructive */
-  --destructive: #F26363;
+  --heading: #0F172A;
+  --accent-soft: rgba(162, 155, 254, 0.1);
+  --accent-soft-foreground: #A29BFE;
+  --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  /* Subtle border: #8AB0BF with low opacity */
-  --border: rgba(138, 176, 191, 0.3);
-  /* Inputs: Border: #8AB0BF */
-  --input: rgba(138, 176, 191, 0.4);
-  /* Focus: #5A7E8C */
-  --ring: #5A7E8C;
+  --border: rgba(108, 92, 231, 0.2);
+  --input: rgba(108, 92, 231, 0.3);
+  --ring: #6C5CE7;
   --radius: 0.75rem;
 
-  /* Chart colors (adapted to new scheme) */
-  --chart-1: #5A7E8C;
-  --chart-2: #8AB0BF;
-  --chart-3: #F26363;
-  --chart-4: #D8EBF2;
-  --chart-5: #0D0D0D;
+  --chart-1: #6C5CE7;
+  --chart-2: #4A90E2;
+  --chart-3: #A29BFE;
+  --chart-4: #F8FAFF;
+  --chart-5: #0F172A;
 }
 
 .dark {
-  /* Background: #0D0D0D */
-  --background: #0D0D0D;
-  /* Text: #D8EBF2 */
-  --foreground: #D8EBF2;
-  /* Cards: #1A1A1A */
-  --card: #1A1A1A;
-  --card-foreground: #D8EBF2;
-  --popover: #1A1A1A;
-  --popover-foreground: #D8EBF2;
-  /* Primary buttons in dark mode: #8AB0BF */
-  --primary: #8AB0BF;
-  --primary-foreground: #0D0D0D;
-  /* Secondary buttons in dark mode border */
-  --secondary: #5A7E8C;
+  --background: #0F172A;
+  --foreground: #F1F5F9;
+  --card: #1E293B;
+  --card-foreground: #F1F5F9;
+  --popover: #1E293B;
+  --popover-foreground: #F1F5F9;
+  --primary: #6C5CE7;
+  --primary-foreground: #FFFFFF;
+  --secondary: #4A90E2;
   --secondary-foreground: #FFFFFF;
-  /* Muted */
-  --muted: rgba(90, 126, 140, 0.2);
-  --muted-foreground: #8AB0BF;
-  /* Accent / Danger: #F26363 */
-  --accent: #F26363;
+  --muted: rgba(108, 92, 231, 0.2);
+  --muted-foreground: #A29BFE;
+  --accent: #A29BFE;
   --accent-foreground: #FFFFFF;
-  /* Dark Accent for headings */
-  --heading: #D8EBF2;
-  /* Accent Soft */
-  --accent-soft: rgba(242, 99, 99, 0.2);
-  --accent-soft-foreground: #F26363;
-  /* Destructive */
-  --destructive: #F26363;
+  --heading: #F1F5F9;
+  --accent-soft: rgba(162, 155, 254, 0.2);
+  --accent-soft-foreground: #A29BFE;
+  --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  /* Stronger borders for dark mode */
-  --border: rgba(138, 176, 191, 0.2);
-  /* Inputs: Border: #8AB0BF */
-  --input: rgba(138, 176, 191, 0.25);
-  /* Focus: #8AB0BF */
-  --ring: #8AB0BF;
+  --border: #334155;
+  --input: #334155;
+  --ring: #6C5CE7;
 
-  /* Chart colors */
-  --chart-1: #8AB0BF;
-  --chart-2: #5A7E8C;
-  --chart-3: #F26363;
-  --chart-4: #1A1A1A;
-  --chart-5: #D8EBF2;
+  --chart-1: #A29BFE;
+  --chart-2: #6C5CE7;
+  --chart-3: #4A90E2;
+  --chart-4: #1E293B;
+  --chart-5: #F1F5F9;
 }
 
 @theme inline {
@@ -497,7 +469,7 @@
   
   /* Gradient text visibility for both modes */
   .gradient-text-light { 
-    background: linear-gradient(135deg, #0554F2 0%, #03318C 50%, #0460D9 100%) !important;
+    background: linear-gradient(135deg, #6C5CE7 0%, #4A90E2 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     background-clip: text !important;
@@ -505,7 +477,7 @@
   }
   
   .gradient-text-dark { 
-    background: linear-gradient(135deg, #0554F2 0%, #0460D9 50%, #4BB2F2 100%) !important;
+    background: linear-gradient(135deg, #A29BFE 0%, #4A90E2 50%, #6C5CE7 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     background-clip: text !important;

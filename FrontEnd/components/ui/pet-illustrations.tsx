@@ -149,7 +149,7 @@ export function AnimatedPawTrail({ className }: { className?: string }) {
 
 export function PetCareIcons({ className }: { className?: string }) {
   const careIcons = [
-    { icon: Heart, color: "text-pink-400", delay: 0 },
+    { icon: Heart, color: "text-blue-400", delay: 0 },
     { icon: Shield, color: "text-blue-400", delay: 0.5 },
     { icon: Award, color: "text-yellow-400", delay: 1 },
     { icon: Zap, color: "text-green-400", delay: 1.5 },
