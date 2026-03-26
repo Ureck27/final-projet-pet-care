@@ -177,27 +177,27 @@ export default function HomePage() {
   const yStats = useTransform(scrollYProgress, [0, 1], [0, -100]);
 
   return (
-    <div className="flex flex-col bg-gradient-to-br from-orange-100 via-white to-orange-200 dark:from-stone-900 dark:via-blue-600 dark:to-stone-900 min-h-screen">
+    <div className="flex flex-col bg-background min-h-screen">
       <HeroBackground>
         <PawPrintBackground />
         <FloatingPets />
-        <section className="relative py-16 md:py-20 lg:py-24 overflow-hidden">
+        <section className="relative py-16 md:py-20 lg:py-24 overflow-hidden bg-background">
           <motion.div style={{ y: yHero }} className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start lg:items-center">
             {/* Text Content */}
             <div className="flex flex-col items-start text-left max-w-2xl">
               <FadeIn direction="up">
-                <Badge className="mb-6 bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-amber-800 dark:text-orange-300 hover:from-blue-500/30 hover:to-blue-600/30 border border-orange-200/30 px-4 py-2 text-sm shadow-soft-lg transition-smooth">
+                <Badge className="mb-6 bg-primary/20 text-primary hover:bg-primary/25 border border-primary/30 px-4 py-2 text-sm shadow-soft-lg transition-smooth">
                   <Shield className="mr-2 h-4 w-4" />
                   Professional AI-Powered Pet Care
                 </Badge>
               </FadeIn>
               <FadeIn direction="up" delay={0.1}>
-                <div ref={heroRef} className="mb-6 space-y-2 leading-tight text-shadow-sm float-element text-amber-800 dark:text-orange-300">
+                <div ref={heroRef} className="mb-6 space-y-2 leading-tight text-shadow-sm float-element text-white dark:text-orange-300">
                   <SplitText
                     text="One App. One Routine."
                     tag="h1"
-                    className="block text-balance text-5xl font-extrabold tracking-tight text-amber-800 dark:text-orange-300 md:text-6xl lg:text-7xl"
+                    className="block text-balance text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl"
                     delay={40}
                     duration={1.1}
                     ease="power3.out"
@@ -211,7 +211,7 @@ export default function HomePage() {
                   <SplitText
                     text="Total Peace of Mind."
                     tag="h1"
-                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold text-amber-800 dark:text-orange-300 md:text-transparent md:bg-clip-text md:bg-gradient-to-r md:from-blue-500 md:to-blue-600 dark:from-orange-300 dark:to-orange-200"
+                    className="block text-balance text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground md:text-transparent md:bg-clip-text md:bg-gradient-to-r md:from-primary md:to-secondary"
                     delay={50}
                     duration={1.2}
                     ease="power3.out"
@@ -225,16 +225,16 @@ export default function HomePage() {
                 </div>
               </FadeIn>
               <FadeIn direction="up" delay={0.2}>
-                <p className="mb-8 text-pretty text-lg text-gray-900 dark:text-orange-100 md:text-xl leading-relaxed">
+                <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl leading-relaxed">
                   All-in-one platform combining daily activity management, verified professional caregivers, and AI-verified updates. 
-                  <strong className="text-amber-800 dark:text-orange-300 block mt-2 font-medium">Professional care meets transparency.</strong>
+                  <strong className="text-foreground block mt-2 font-medium">Professional care meets transparency.</strong>
                 </p>
               </FadeIn>
               
               <FadeIn direction="up" delay={0.3} className="w-full">
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" className="h-14 px-8 text-base bg-blue-500 hover:bg-blue-600 text-white shadow-soft-lg w-full sm:w-auto transition-smooth border-0" asChild>
+                    <Button size="lg" className="h-14 px-8 text-base bg-primary hover:bg-primary/90 text-primary-foreground shadow-soft-lg w-full sm:w-auto transition-smooth border-0" asChild>
                       <Link href="/register">
                         Find Your Caregiver
                         <ArrowRight className="ml-2 h-5 w-5" />
@@ -242,7 +242,7 @@ export default function HomePage() {
                     </Button>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button size="lg" className="h-14 px-8 text-base bg-white dark:bg-stone-800 text-blue-500 dark:text-orange-300 border-2 border-blue-500 dark:border-orange-300 hover:bg-blue-50 dark:hover:bg-stone-700 w-full sm:w-auto transition-smooth shadow-soft-lg" asChild>
+                    <Button size="lg" className="h-14 px-8 text-base bg-background text-primary border-2 border-primary hover:bg-primary/5 w-full sm:w-auto transition-smooth shadow-soft-lg" asChild>
                       <Link href="#how-it-works">See How It Works</Link>
                     </Button>
                   </motion.div>
@@ -252,7 +252,7 @@ export default function HomePage() {
               <StaggerChildren staggerDelay={0.4} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {trustFeatures.map((feature) => (
                   <StaggerItem key={feature}>
-                    <div className="flex items-center gap-3 text-sm text-amber-700 dark:text-orange-200 font-medium group">
+                    <div className="flex items-center gap-3 text-sm text-foreground font-medium group">
                       <motion.div 
                         whileHover={{ scale: 1.2, rotate: 10 }}
                         className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-green-400/20 to-emerald-400/20 border border-green-400/30 transition-smooth glow-accent"
@@ -283,11 +283,11 @@ export default function HomePage() {
         <PetCareIcons />
         <div className="container mx-auto">
           <FadeIn direction="up" className="mb-16 text-center">
-            <Badge variant="outline" className="mb-4 border-orange-200/30 bg-gradient-to-r from-blue-500/10 to-blue-600/10 text-amber-700 dark:text-orange-200 font-semibold shadow-soft-lg hover:shadow-xl transition-smooth">
+            <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/5 text-primary font-semibold shadow-soft-lg hover:shadow-xl transition-smooth">
               Three Problems. One Solution.
             </Badge>
-            <h2 className="mb-4 text-4xl font-bold text-amber-800 dark:text-orange-300">The Paws & Relax Difference</h2>
-            <p className="mx-auto max-w-2xl text-lg text-gray-700 dark:text-orange-100">
+            <h2 className="mb-4 text-4xl font-bold text-foreground">The Paws & Relax Difference</h2>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               Paws & Relax solves the three biggest pain points pet owners face
             </p>
           </FadeIn>
@@ -296,18 +296,18 @@ export default function HomePage() {
             {problemSolution.map((item) => (
               <StaggerItem key={item.number}>
                 <TiltCard intensity={10}>
-                  <Card className="feature-card h-full bg-orange-50/50 dark:bg-stone-800/50 backdrop-blur-sm border border-orange-200/30 dark:border-orange-300/20 shadow-soft-lg hover:shadow-2xl hover:border-orange-300/50 transition-smooth overflow-hidden group">
+                  <Card className="feature-card h-full bg-card backdrop-blur-sm border border-border shadow-soft-lg hover:shadow-2xl hover:border-primary/50 transition-smooth overflow-hidden group">
                     <CardContent className="p-8 pb-10">
                       <motion.div 
                         whileHover={{ scale: 1.1, rotate: 5 }}
                         className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl gradient-animated transition-smooth group-hover:scale-110 float-element shadow-soft-lg"
                       >
-                        {item.icon && <item.icon className="h-8 w-8 icon-visible" />}
+                        {item.icon && <item.icon className="h-8 w-8 icon-visible text-white" />}
                       </motion.div>
-                      <p className="mb-6 text-base font-medium text-amber-800 dark:text-orange-200 leading-relaxed">{item.problem}</p>
-                      <div className="pt-6 border-t border-orange-200/20 dark:border-orange-300/20 bg-gradient-to-r from-orange-50/50 to-blue-50/30 dark:from-stone-700/30 dark:to-blue-600/20 p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-orange-100/50 group-hover:to-blue-100/30 dark:group-hover:from-stone-600/40 dark:group-hover:to-blue-500/30 transition-smooth">
-                        <p className="text-base text-gray-700 dark:text-orange-100 font-medium flex items-start gap-2">
-                          <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 icon-visible" />
+                      <p className="mb-6 text-base font-medium text-foreground leading-relaxed">{item.problem}</p>
+                      <div className="pt-6 border-t border-border bg-gradient-to-r from-primary/5 to-secondary/5 p-6 -mx-8 -mb-10 rounded-b-lg group-hover:from-primary/10 group-hover:to-secondary/10 transition-smooth">
+                        <p className="text-base text-muted-foreground font-medium flex items-start gap-2">
+                          <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 icon-visible text-primary" />
                           {item.solution}
                         </p>
                       </div>
@@ -696,7 +696,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[url('/subtle-paw-print-pattern.jpg')] bg-repeat" />
         </div>
         <div className="container relative z-10 mx-auto text-center">
-          <h2 className="mb-4 text-4xl font-bold text-purple-600 dark:text-white">
+          <h2 className="mb-4 text-4xl font-bold text-primary-foreground">
             One App. One Routine. Total Peace of Mind.
           </h2>
           <p className="mx-auto mb-8 max-w-2xl text-primary-foreground/90 text-lg">

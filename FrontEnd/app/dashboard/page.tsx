@@ -209,7 +209,7 @@ export default function DashboardPage() {
           <TabsTrigger value="notifications">
             Notifications
             {unreadNotifications > 0 && (
-              <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+              <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                 {unreadNotifications}
               </span>
             )}

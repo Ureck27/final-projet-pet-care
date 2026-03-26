@@ -223,7 +223,7 @@ export default function NotificationsPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
-              <Bell className="h-8 w-8 text-blue-600" />
+              <Bell className="h-8 w-8 text-primary" />
               Notifications
               {unreadCount > 0 && (
                 <Badge className="ml-2">{unreadCount} new</Badge>
@@ -268,7 +268,7 @@ export default function NotificationsPage() {
             </Card>
           ) : (
             notifications.map((notification) => (
-              <Card key={notification.id} className={!notification.read ? "border-blue-200 bg-blue-50/50" : ""}>
+              <Card key={notification.id} className={!notification.read ? "border-primary/30 bg-primary/5" : ""}>
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
                     <div className="p-2 rounded-full bg-muted">
@@ -287,7 +287,7 @@ export default function NotificationsPage() {
                             {notification.priority}
                           </Badge>
                           {!notification.read && (
-                            <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                            <div className="w-2 h-2 bg-primary rounded-full"></div>
                           )}
                         </div>
                       </div>
@@ -343,7 +343,7 @@ export default function NotificationsPage() {
             notifications
               .filter(n => !n.read)
               .map((notification) => (
-                <Card key={notification.id} className="border-blue-200 bg-blue-50/50">
+                <Card key={notification.id} className="border-primary/30 bg-primary/5">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-4">
                       <div className="p-2 rounded-full bg-muted">

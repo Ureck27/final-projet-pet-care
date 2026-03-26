@@ -235,7 +235,7 @@ export default function PetDashboardPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
-              <Heart className="h-8 w-8 text-blue-600" />
+              <Heart className="h-8 w-8 text-primary" />
               Pet Dashboard
             </h1>
             <p className="text-muted-foreground">
@@ -263,7 +263,7 @@ export default function PetDashboardPage() {
               key={pet.id}
               className={`flex-shrink-0 p-3 rounded-lg border cursor-pointer transition-colors ${
                 selectedPet?.id === pet.id
-                  ? "border-blue-500 bg-blue-50"
+                  ? "border-primary bg-primary/10"
                   : "border-border hover:bg-muted/50"
               }`}
               onClick={() => setSelectedPet(pet)}
@@ -327,7 +327,7 @@ export default function PetDashboardPage() {
                     <p className="text-sm text-muted-foreground">Activity Level</p>
                     <p className="text-2xl font-bold capitalize">{dashboard.activityLevel}</p>
                   </div>
-                  <Activity className="h-8 w-8 text-blue-500" />
+                  <Activity className="h-8 w-8 text-primary" />
                 </div>
                 <div className="flex items-center gap-1 mt-2">
                   <TrendingUp className="h-3 w-3 text-green-500" />
@@ -358,7 +358,7 @@ export default function PetDashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Brain className="h-5 w-5 text-purple-600" />
+                <Brain className="h-5 w-5 text-secondary" />
                 AI Health Insights
               </CardTitle>
             </CardHeader>
@@ -379,7 +379,7 @@ export default function PetDashboardPage() {
                     <ul className="space-y-1">
                       {dashboard.aiInsights.recommendations.map((rec, idx) => (
                         <li key={idx} className="text-sm flex items-start gap-2">
-                          <span className="text-blue-600 mt-0.5">•</span>
+                          <span className="text-primary mt-0.5">•</span>
                           {rec}
                         </li>
                       ))}
@@ -479,7 +479,7 @@ export default function PetDashboardPage() {
                   <div className="space-y-3">
                     {dashboard.nextAppointments.map((appointment) => (
                       <div key={appointment.id} className="flex items-center gap-3">
-                        <Calendar className="h-4 w-4 text-blue-500" />
+                        <Calendar className="h-4 w-4 text-primary" />
                         <div className="flex-1">
                           <p className="text-sm font-medium">{appointment.title}</p>
                           <p className="text-xs text-muted-foreground">

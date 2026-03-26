@@ -38,8 +38,8 @@ export default function ReviewsPage() {
                   onClick={() => setSelectedTrainer(t.id)}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     selectedTrainer === t.id
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
-                      : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary/30"
                   }`}
                 >
                   <p className="font-semibold text-sm">{user?.fullName}</p>

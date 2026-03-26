@@ -267,7 +267,7 @@ export default function PetTimelinePage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
-              <Clock className="h-8 w-8 text-blue-600" />
+              <Clock className="h-8 w-8 text-primary" />
               Pet Timeline
             </h1>
             <p className="text-muted-foreground">
@@ -290,7 +290,7 @@ export default function PetTimelinePage() {
                   key={pet.id}
                   className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                     selectedPet?.id === pet.id
-                      ? "border-blue-500 bg-blue-50"
+                      ? "border-primary bg-primary/10"
                       : "border-border hover:bg-muted/50"
                   }`}
                   onClick={() => setSelectedPet(pet)}
@@ -394,7 +394,7 @@ export default function PetTimelinePage() {
                         <CardContent>
                           <div className="grid gap-4 sm:grid-cols-3">
                             <div className="text-center">
-                              <div className="text-2xl font-bold text-blue-600">5</div>
+                              <div className="text-2xl font-bold text-primary">5</div>
                               <p className="text-sm text-muted-foreground">Activities</p>
                             </div>
                             <div className="text-center">
@@ -402,7 +402,7 @@ export default function PetTimelinePage() {
                               <p className="text-sm text-muted-foreground">Mood Status</p>
                             </div>
                             <div className="text-center">
-                              <div className="text-2xl font-bold text-purple-600">87%</div>
+                              <div className="text-2xl font-bold text-secondary">87%</div>
                               <p className="text-sm text-muted-foreground">Health Score</p>
                             </div>
                           </div>
@@ -520,7 +520,7 @@ export default function PetTimelinePage() {
                               <span>Walking</span>
                               <div className="flex items-center gap-2">
                                 <div className="w-32 bg-muted rounded-full h-2">
-                                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: "75%" }}></div>
+                                  <div className="bg-primary h-2 rounded-full" style={{ width: "75%" }}></div>
                                 </div>
                                 <span className="text-sm">75%</span>
                               </div>
@@ -538,7 +538,7 @@ export default function PetTimelinePage() {
                               <span>Resting</span>
                               <div className="flex items-center gap-2">
                                 <div className="w-32 bg-muted rounded-full h-2">
-                                  <div className="bg-purple-600 h-2 rounded-full" style={{ width: "85%" }}></div>
+                                  <div className="bg-secondary h-2 rounded-full" style={{ width: "85%" }}></div>
                                 </div>
                                 <span className="text-sm">85%</span>
                               </div>
@@ -555,8 +555,8 @@ export default function PetTimelinePage() {
                             <Card key={event.id}>
                               <CardContent className="p-4">
                                 <div className="flex items-center gap-3">
-                                  <div className="p-2 rounded-full bg-blue-50">
-                                    <Activity className="h-4 w-4 text-blue-600" />
+                                  <div className="p-2 rounded-full bg-primary/5">
+                                    <Activity className="h-4 w-4 text-primary" />
                                   </div>
                                   <div className="flex-1">
                                     <h3 className="font-medium">{event.title}</h3>
