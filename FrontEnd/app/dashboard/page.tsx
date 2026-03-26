@@ -334,12 +334,8 @@ export default function DashboardPage() {
         <TabsContent value="notifications">
           <NotificationsCenter 
             notifications={userNotifications}
-            onMarkAsRead={(id) => {
-              console.log("Marking notification as read:", id)
-            }}
-            onDismiss={(id) => {
-              console.log("Dismissing notification:", id)
-            }}
+            onMarkAsRead={(id) => {}}
+            onDismiss={(id) => {}}
           />
         </TabsContent>
 

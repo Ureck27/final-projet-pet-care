@@ -17,7 +17,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { AnimationWrapper, animationPresets, useStaggeredAnimation } from "@/components/ui/animation-wrapper"
-import { PawPrintBackground, FloatingPets, AnimatedPawTrail, PetCareIcons } from "@/components/ui/pet-illustrations"
+// Dynamically import heavy SVG components to optimize initial load and fast refresh
+const PawPrintBackground = dynamic(() => import('@/components/ui/pet-illustrations').then(mod => mod.PawPrintBackground), { ssr: false })
+const FloatingPets = dynamic(() => import('@/components/ui/pet-illustrations').then(mod => mod.FloatingPets), { ssr: false })
+const AnimatedPawTrail = dynamic(() => import('@/components/ui/pet-illustrations').then(mod => mod.AnimatedPawTrail), { ssr: false })
+const PetCareIcons = dynamic(() => import('@/components/ui/pet-illustrations').then(mod => mod.PetCareIcons), { ssr: false })
 
 // Simple HeroBackground component
 const HeroBackground = ({ children }: { children: React.ReactNode }) => (

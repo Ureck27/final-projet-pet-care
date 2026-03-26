@@ -41,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased transition-smooth text-shadow-sm`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
@@ -54,7 +54,7 @@ export default function RootLayout({
             <Toaster position="top-right" richColors />
           </AuthProvider>
         </ThemeProvider>
-        <Analytics />
+        <Analytics debug={false} />
       </body>
     </html>
   )

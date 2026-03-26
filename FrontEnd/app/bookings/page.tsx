@@ -343,7 +343,6 @@ export default function BookingsPage() {
           pet={bookingFlow.pet || pets[0]}
           trainer={bookingFlow.trainer || trainers[0]}
           onConfirm={(data) => {
-            console.log("Booking confirmed:", data)
             // Handle booking confirmation
           }}
         />

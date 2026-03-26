@@ -91,12 +91,10 @@ export default function ChatPage() {
     })
 
     socketInstance.on('connect', () => {
-      console.log('Connected to chat server')
       setIsConnected(true)
     })
 
     socketInstance.on('disconnect', () => {
-      console.log('Disconnected from chat server')
       setIsConnected(false)
     })
 
@@ -207,7 +205,6 @@ export default function ChatPage() {
     if (!file) return
 
     // Handle file upload logic here
-    console.log('File uploaded:', file)
   }
 
   const scrollToBottom = () => {

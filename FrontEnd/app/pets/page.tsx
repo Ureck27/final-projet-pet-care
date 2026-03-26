@@ -35,7 +35,6 @@ export default function PetsPage() {
     if (!user) return
     setIsLoading(true)
     try {
-      console.log('petApi structure:', Object.keys(petApi))
       const data = await petApi.getPets(user.id)
       setPets(data)
     } catch (err: any) {

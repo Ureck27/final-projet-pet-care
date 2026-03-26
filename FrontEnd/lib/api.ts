@@ -60,9 +60,7 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
     
     config.signal = controller.signal;
 
-    console.log(`[API] ${config.method || 'GET'} ${fullUrl} (Attempt ${attempt + 1}/${maxRetries + 1}, Timeout: ${timeoutMs}ms)`);
     if (config.body) {
-      console.log(`[API Request Payload]:`, config.body);
     }
 
     try {
@@ -105,7 +103,6 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
         }
       } else {
         const data = await response.json();
-        console.log(`[API Success] ${config.method || 'GET'} ${endpoint} (Attempt ${attempt + 1})`);
         return data;
       }
     } catch (error: any) {
@@ -144,7 +141,6 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
     if (attempt < maxRetries) {
       attempt++;
       const delay = retryDelay * Math.pow(2, attempt - 1); // Exponential backoff
-      console.log(`[API Retry] Waiting ${delay}ms before retry ${attempt + 1}...`);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }

@@ -41,10 +41,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true)
     try {
-      console.log('[Auth] Attempting login:', email);
       const data = await authApi.login({ email, password });
       
-      console.log('[Auth] Login successful, storing credentials');
       const loggedUser: User = {
         _id: data._id,
         id: data._id,
@@ -76,10 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const adminLogin = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true)
     try {
-      console.log('[Auth] Attempting admin login:', email);
       const data = await authApi.adminLogin({ email, password });
       
-      console.log('[Auth] Admin login successful, storing credentials');
       const loggedUser: User = {
         _id: data._id,
         id: data._id,
@@ -121,14 +117,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (data: RegisterData): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true)
     try {
-      console.log('[Auth] Registering user:', data.email);
       const resData = await authApi.register({ 
         name: data.fullName, 
         email: data.email, 
         password: data.password 
       });
       
-      console.log('[Auth] Registration successful, storing user data');
       const newUser: User = {
         _id: resData._id,
         id: resData._id,
@@ -165,9 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const forgotPassword = async (email: string): Promise<boolean> => {
     try {
-      console.log('[Auth] Requesting password reset for:', email);
       await authApi.forgotPassword(email)
-      console.log('[Auth] Password reset email sent successfully');
       return true
     } catch (err: any) {
       console.error('[Auth Error] Forgot password failed:', err.message)
