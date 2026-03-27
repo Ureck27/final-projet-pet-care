@@ -172,6 +172,7 @@ export interface User {
   email: string;
   name: string;
   role: "user" | "admin";
+  status?: "pending" | "accepted" | "rejected";
   createdAt: Date;
   updatedAt: string;
 }

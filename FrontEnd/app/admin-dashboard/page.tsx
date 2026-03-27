@@ -253,19 +253,21 @@ export default function AdminDashboardPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((u, index) => (
+                  {users.map((u, index) => {
+                    const status = u.status || 'accepted';
+                    return (
                     <TableRow key={u._id || u.id || index}>
                       <TableCell className="font-medium">{u.name}</TableCell>
                       <TableCell>{u.email}</TableCell>
                       <TableCell className="capitalize">{u.role}</TableCell>
                       <TableCell>
-                         <Badge variant={u.status === 'accepted' ? 'default' : u.status === 'rejected' ? 'destructive' : 'secondary'}>
-                          {u.status || 'accepted'}
+                         <Badge variant={status === 'accepted' ? 'default' : status === 'rejected' ? 'destructive' : 'secondary'}>
+                          {status}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          {u.status === 'pending' && (
+                          {status === 'pending' && (
                             <>
                               <Button variant="outline" size="sm" onClick={() => handleAcceptRequest('user', u._id || u.id)}>
                                 Accept
@@ -286,7 +288,7 @@ export default function AdminDashboardPage() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )})}
                 </TableBody>
               </Table>
             </CardContent>
