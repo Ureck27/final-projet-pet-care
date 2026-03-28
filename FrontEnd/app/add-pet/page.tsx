@@ -268,9 +268,9 @@ export default function AddPetPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {pets.map((pet) => (
+                  {pets.map((pet, index) => (
                     <div
-                      key={pet.id}
+                      key={pet._id || pet.id || `pet-${index}`}
                       className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50"
                     >
                       <img
