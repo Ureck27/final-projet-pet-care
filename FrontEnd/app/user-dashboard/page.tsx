@@ -1,5 +1,8 @@
 "use client"
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
@@ -202,7 +205,7 @@ export default function UserDashboardPage() {
               </TableHeader>
               <TableBody>
                 {pets.map((pet, index) => (
-                  <TableRow key={pet._id || pet.id || index}>
+                  <TableRow key={pet._id || pet.id || `pet-${index}`}>
                     <TableCell>
                       <img 
                         src={pet.image || "/placeholder.svg"} 

@@ -1,5 +1,8 @@
 "use client"
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
@@ -191,7 +194,7 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {requests.map((req, index) => (
-                    <TableRow key={req._id || req.id || index}>
+                    <TableRow key={req._id || req.id || `req-${index}`}>
                       <TableCell className="capitalize font-medium">{req.requestType}</TableCell>
                       <TableCell>{req.name}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
@@ -256,7 +259,7 @@ export default function AdminDashboardPage() {
                   {users.map((u, index) => {
                     const status = u.status || 'accepted';
                     return (
-                    <TableRow key={u._id || u.id || index}>
+                    <TableRow key={u._id || u.id || `user-${index}`}>
                       <TableCell className="font-medium">{u.name}</TableCell>
                       <TableCell>{u.email}</TableCell>
                       <TableCell className="capitalize">{u.role}</TableCell>
@@ -314,7 +317,7 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {pets.map((pet, index) => (
-                    <TableRow key={pet._id || pet.id || index}>
+                    <TableRow key={pet._id || pet.id || `pet-${index}`}>
                       <TableCell>
                         <img src={pet.image || "/placeholder.svg"} alt={pet.name} className="h-10 w-10 rounded object-cover" />
                       </TableCell>
@@ -358,7 +361,7 @@ export default function AdminDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {trainers.map((trainer, index) => (
-                    <TableRow key={trainer._id || trainer.id || index}>
+                    <TableRow key={trainer._id || trainer.id || `trainer-${index}`}>
                       <TableCell className="font-medium">{trainer.name}</TableCell>
                       <TableCell>{trainer.email}</TableCell>
                       <TableCell>

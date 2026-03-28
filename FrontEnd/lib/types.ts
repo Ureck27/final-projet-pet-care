@@ -8,7 +8,7 @@ export interface User {
   fullName: string
   phone: string
   role: UserRole
-  status?: "pending" | "active" | "suspended" | "rejected"
+  status?: "pending" | "accepted" | "suspended" | "rejected"
   avatar?: string
   createdAt: Date
 }
@@ -33,7 +33,7 @@ export interface Pet {
   healthStatus?: "healthy" | "warning" | "critical"
   healthDescription?: string
   recommendations?: string
-  status: "pending" | "approved" | "rejected"
+  status: "pending" | "accepted" | "rejected"
   isApproved?: boolean
   createdAt: Date
   updatedAt: string
@@ -426,7 +426,7 @@ export interface TrainerApplication {
   bio: string
   motivation: string
   // Status
-  status: "pending" | "approved" | "rejected"
+  status: "pending" | "accepted" | "rejected"
   submittedAt: Date
   reviewedAt?: Date
   reviewNotes?: string

@@ -78,6 +78,17 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
           errorData = { message: text || `HTTP Error ${response.status}`, raw: text };
         }
         
+        // Automatic token purge on 401 Unauthorized
+        if (response.status === 401 && typeof window !== 'undefined') {
+          console.warn('[API Auth] 401 Unauthorized - Purging credentials');
+          localStorage.removeItem('petcare_token');
+          localStorage.removeItem('petcare_user');
+          // Optional: redirect to login if we have window.location
+          if (endpoint !== '/auth/login' && endpoint !== '/auth/admin-login') {
+            window.location.href = '/login';
+          }
+        }
+        
         const errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
         
         console.error(`[API Error] ${response.status} ${config.method} ${endpoint}:`, {
@@ -180,7 +191,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: "user" | "admin";
+  role: "user" | "admin" | "trainer";
   status?: "pending" | "accepted" | "rejected";
   createdAt: Date;
   updatedAt: string;
@@ -190,12 +201,14 @@ export interface Pet {
   _id: string;
   id: string;
   userId: string;
+  ownerId?: string; // Consistent with lib/types.ts
   name: string;
   type: string;
+  breed?: string; // Consistent with lib/types.ts
   age: number;
   description?: string;
   image: string;
-  status: "pending" | "accepted" | "rejected";
+  status: "pending" | "accepted" | "rejected" | "approved";
   createdAt: Date;
   updatedAt: string;
 }
@@ -416,6 +429,7 @@ export const adminApi = {
 // Trainer API
 export const trainerApi = {
   getTrainers: () => api.get<Trainer[]>('/trainers'),
+  getTrainerProfile: () => api.get<Trainer>('/trainers/profile'),
   getTrainerById: (id: string) => api.get<Trainer>(`/trainers/${id}`),
   updateTrainer: (id: string, trainerData: Partial<Trainer>) => api.put<Trainer>(`/trainers/${id}`, trainerData),
   getTrainerServices: (id: string) => api.get<TrainerService[]>(`/trainers/${id}/services`),
