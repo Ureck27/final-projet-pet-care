@@ -38,6 +38,7 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
   const config: RequestInit = {
     ...options,
     headers,
+    credentials: 'include',
   };
 
   if (options.body !== undefined) {
@@ -68,7 +69,15 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        let text = '';
+        try {
+          text = await response.text();
+          errorData = text ? JSON.parse(text) : {};
+        } catch (e) {
+          errorData = { message: text || `HTTP Error ${response.status}`, raw: text };
+        }
+        
         const errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
         
         console.error(`[API Error] ${response.status} ${config.method} ${endpoint}:`, {

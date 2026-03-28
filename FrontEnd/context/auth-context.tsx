@@ -61,6 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false)
       return { success: true }
     } catch (err: any) {
+      localStorage.removeItem("petcare_token");
+      localStorage.removeItem("petcare_user");
+      
       const errorMessage = err.message || 'Login failed';
       console.error('[Auth Error] Login failed:', errorMessage);
       setIsLoading(false)
@@ -94,6 +97,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false)
       return { success: true }
     } catch (err: any) {
+      localStorage.removeItem("petcare_token");
+      localStorage.removeItem("petcare_user");
+      
       let errorMessage = 'Admin Login failed';
       
       // Handle rate limiting errors specifically

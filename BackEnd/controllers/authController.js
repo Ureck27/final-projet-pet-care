@@ -43,16 +43,17 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const userExists = await User.findOne({ email });
+    const normalizedEmail = email.toLowerCase();
+    const userExists = await User.findOne({ email: normalizedEmail });
 
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    console.log('Creating user with data:', { name, email, password: '***' });
+    console.log('Creating user with data:', { name, email: normalizedEmail, password: '***' });
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password, // Pre-save hook will hash this
       role: 'user' // Force role to 'user' for registration
     });
@@ -82,13 +83,18 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log('Login attempt for email:', email);
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please provide email and password', type: 'validation' });
+    }
 
-    const user = await User.findOne({ email }).select('+password');
+    const normalizedEmail = email.toLowerCase();
+    console.log('Login attempt for email:', normalizedEmail);
+
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
 
     if (!user) {
       console.log('Login failed: User not found in DB');
-      return res.status(401).json({ message: 'User not found' });
+      return res.status(401).json({ message: 'User not found. Please check your email.', type: 'auth' });
     }
 
     console.log('User found in DB:', user._id);
@@ -96,7 +102,7 @@ const loginUser = async (req, res) => {
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       console.log('Login failed: Invalid password');
-      return res.status(401).json({ message: 'Invalid password' });
+      return res.status(401).json({ message: 'Invalid password. Please try again.', type: 'auth' });
     }
 
     res.json({
@@ -177,27 +183,28 @@ const adminLogin = async (req, res) => {
     // Validate input
     if (!email || !password) {
       return res.status(400).json({ 
-        error: 'Please provide email and password',
+        message: 'Please provide email and password',
         type: 'validation'
       });
     }
 
     if (!isValidEmail(email)) {
       return res.status(400).json({ 
-        error: 'Please provide a valid email address',
+        message: 'Please provide a valid email address',
         type: 'validation'
       });
     }
 
-    console.log('Admin login attempt for email:', email);
+    const normalizedEmail = email.toLowerCase();
+    console.log('Admin login attempt for email:', normalizedEmail);
 
     // Find user and verify it's an admin
-    const user = await User.findOne({ email, role: 'admin' }).select('+password');
+    const user = await User.findOne({ email: normalizedEmail, role: 'admin' }).select('+password');
 
     if (!user) {
       console.log('Admin login failed: Admin user not found in DB');
       return res.status(401).json({ 
-        error: 'Admin user not found',
+        message: 'Admin user not found',
         type: 'auth'
       });
     }
@@ -208,7 +215,7 @@ const adminLogin = async (req, res) => {
     if (!isMatch) {
       console.log('Admin login failed: Invalid admin password');
       return res.status(401).json({ 
-        error: 'Invalid admin password',
+        message: 'Invalid admin password',
         type: 'auth'
       });
     }
