@@ -147,32 +147,7 @@ For the backend, running `npm start` executes `node server.js` which is the prod
 
 ---
 
-## 🌍 Deployment Instructions
 
-> **⚠️ Important Architectural Note:** 
-> Because this application heavily utilizes **Socket.io** (WebSockets) and **Multer local file storage**, the backend **cannot** be hosted on a serverless platform (like Vercel functions). It requires a continuous server.
-
-### Deploying the Frontend (Vercel)
-1. Push your code to GitHub.
-2. Sign in to [Vercel](https://vercel.com/) and click **Add New Project**.
-3. Select your repository.
-4. Set the **Root Directory** to `FrontEnd/`.
-5. Expand **Environment Variables** and add all variables from your frontend `.env.example`.
-6. Click **Deploy**. Vercel will automatically detect Next.js and build it.
-
-### Deploying the Backend (Render or Railway)
-1. Sign in to [Render](https://render.com/).
-2. Create a new **Web Service** and connect your repository.
-3. Set the **Root Directory** to `BackEnd/`.
-4. Build Command: `npm install`
-5. Start Command: `npm start`
-6. Expand **Advanced** and add all variables from the backend `.env.example`.
-7. **Important for Uploads:** To prevent losing uploaded images when Render restart, add a **Persistent Disk** mounted to `/opt/render/project/src/uploads` (Note: Paid feature). Alternatively, you must migrate Multer to use AWS S3/Cloudinary.
-8. Click **Create Web Service**.
-
-**(A `render.yaml` file is included in the `BackEnd` directory for seamless Render Infrastructure-as-code deployments).**
-
----
 
 ## 📂 Folder Structure
 
