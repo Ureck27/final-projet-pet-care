@@ -26,6 +26,15 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
   const enableRetry = options.enableRetry !== false; // Enable retry by default
   let attempt = 0;
   
+  // Debug logging
+  if (typeof window !== 'undefined') {
+    console.log(`[API] ${options.method || 'GET'} ${endpoint}`, {
+      hasToken: !!token,
+      tokenPreview: token ? `${token.substring(0, 20)}...` : 'none',
+      isClientSide: true
+    });
+  }
+  
   const headers = new Headers(options.headers || {});
   const isFormData = options.body instanceof FormData;
   if (!isFormData) {
@@ -33,6 +42,8 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
   }
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
+  } else {
+    console.warn('[API] No token found - request may fail authentication');
   }
 
   const config: RequestInit = {
@@ -76,6 +87,17 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
           errorData = text ? JSON.parse(text) : {};
         } catch (e) {
           errorData = { message: text || `HTTP Error ${response.status}`, raw: text };
+        }
+        
+        // Enhanced logging for 403 errors
+        if (response.status === 403) {
+          console.error(`[API] 403 Forbidden - Permission denied for ${endpoint}`, {
+            endpoint,
+            method: options.method || 'GET',
+            hasToken: !!token,
+            error: errorData,
+            headers: Object.fromEntries(headers.entries())
+          });
         }
         
         // Automatic token purge on 401 Unauthorized

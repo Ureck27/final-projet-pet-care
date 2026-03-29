@@ -35,15 +35,38 @@ export default function PetsPage() {
     if (!user) return
     setIsLoading(true)
     try {
-      const data = await petApi.getPets(user.id)
+      // Use the correct endpoint for getting current user's pets
+      console.log('[Pets] Fetching pets for user:', user.id, user.role)
+      const data = await petApi.getUserPets()
+      console.log('[Pets] Successfully fetched pets:', data.length)
       setPets(data)
     } catch (err: any) {
-      console.error("Failed to fetch pets", err)
-      try {
-        const data = await petApi.getUserPets()
-        setPets(data)
-      } catch (fallbackErr) {
-        console.error("Fallback failed:", fallbackErr)
+      console.error("[Pets] Failed to fetch pets:", err)
+      
+      // Check if it's an authentication error
+      if (err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        console.log('[Pets] Authentication error - redirecting to login')
+        // Token is invalid, redirect to login
+        router.push('/login')
+        return
+      }
+      
+      // Check if it's a forbidden error (permission issue)
+      if (err.message?.includes('403') || err.message?.includes('Forbidden')) {
+        console.log('[Pets] Permission error - user role:', user.role)
+        // Don't try admin fallback for 403, as it's a permission issue
+        return
+      }
+      
+      // For other errors, try the admin endpoint as fallback (only if user is admin)
+      if (user.role === 'admin') {
+        console.log('[Pets] Trying admin endpoint as fallback')
+        try {
+          const data = await petApi.getPets(user.id)
+          setPets(data)
+        } catch (fallbackErr) {
+          console.error("[Pets] Admin fallback failed:", fallbackErr)
+        }
       }
     } finally {
       setIsLoading(false)
