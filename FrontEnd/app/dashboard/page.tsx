@@ -9,7 +9,7 @@ import { api, petApi } from "@/lib/api"
 import type { Pet } from "@/lib/types"
 import { 
   mockPetStatuses, mockTasks, mockDailyActivities, 
-  mockMoodEntries, mockNotifications 
+  mockMoodEntries 
 } from "@/lib/mock-data"
 import { StatsCard } from "@/components/features/dashboard/stats-card"
 import { StatusTimeline } from "@/components/features/dashboard/status-timeline"
@@ -18,14 +18,13 @@ import { PetCard } from "@/components/features/pets/pet-card"
 import { TaskDashboard } from "@/components/features/dashboard/task-dashboard"
 import { ActivityTimeline } from "@/components/features/dashboard/activity-timeline"
 import { EmotionDashboard } from "@/components/features/dashboard/emotion-dashboard"
-import { NotificationsCenter } from "@/components/features/dashboard/notifications-center"
 import { MessagesWidget } from "@/components/features/messaging/messages-widget"
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { PawPrint, Calendar, Bell, TrendingUp, Plus, MessageCircle, RefreshCw, AlertTriangle } from "lucide-react"
+import { PawPrint, Calendar, TrendingUp, Plus, MessageCircle, RefreshCw, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 
 export default function DashboardPage() {
@@ -152,17 +151,17 @@ export default function DashboardPage() {
 
   const userPets = pets
   
+  // Debug duplicate IDs:
+  console.log("userPets IDs:", userPets.map(p => p.id || (p as any)._id))
+  
   // Set default pet if none selected
   const currentPet = selectedPetId 
-    ? userPets.find(p => p.id === selectedPetId)
+    ? userPets.find(p => p.id === selectedPetId || (p as any)._id?.toString() === selectedPetId)
     : userPets[0]
   
   const petTasks = currentPet ? mockTasks.filter((t) => t.petId === currentPet.id) : []
   const petActivities = currentPet ? mockDailyActivities.filter((a) => a.petId === currentPet.id) : []
   const petMood = currentPet ? mockMoodEntries.filter((m) => m.petId === currentPet.id) : []
-  const userNotifications = mockNotifications.filter((n) => n.userId === user.id)
-
-  const unreadNotifications = userNotifications.filter((n) => !n.read).length
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -181,25 +180,19 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="mb-8 grid gap-4 md:grid-cols-4">
+      <div className="mb-8 grid gap-4 md:grid-cols-3">
         <StatsCard title="Total Pets" value={userPets.length} icon={PawPrint} />
         <StatsCard
           title="Pending Pets"
           value={userPets.filter(p => p.status === 'pending').length}
           icon={Calendar}
         />
-        <StatsCard 
-          title="Notifications" 
-          value={unreadNotifications.toString()} 
-          icon={Bell} 
-          description={`${unreadNotifications} unread`} 
-        />
         <StatsCard title="Active Pets" value={userPets.filter(p => p.status === 'accepted').length} icon={TrendingUp} />
       </div>
 
       {/* Tabbed Interface for different views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
@@ -207,14 +200,6 @@ export default function DashboardPage() {
           <TabsTrigger value="messages">
             <MessageCircle className="w-4 h-4 mr-1" />
             Messages
-          </TabsTrigger>
-          <TabsTrigger value="notifications">
-            Notifications
-            {unreadNotifications > 0 && (
-              <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                {unreadNotifications}
-              </span>
-            )}
           </TabsTrigger>
         </TabsList>
 
@@ -233,15 +218,18 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {userPets.slice(0, 2).map((pet) => (
-                      <div
-                        key={pet.id}
-                        className="cursor-pointer"
-                        onClick={() => setSelectedPetId(pet.id)}
-                      >
-                        <PetCard pet={pet} />
-                      </div>
-                    ))}
+                    {userPets?.length > 0 && userPets.slice(0, 2).map((pet, index) => {
+                      const petId = pet.id || (pet as any)._id?.toString();
+                      return (
+                        <div
+                          key={petId || index}
+                          className="cursor-pointer"
+                          onClick={() => setSelectedPetId(petId)}
+                        >
+                          <PetCard pet={pet} />
+                        </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
@@ -330,15 +318,6 @@ export default function DashboardPage() {
         {/* Messages Tab */}
         <TabsContent value="messages">
           <MessagesWidget userId={user.id} />
-        </TabsContent>
-
-        {/* Notifications Tab */}
-        <TabsContent value="notifications">
-          <NotificationsCenter 
-            notifications={userNotifications}
-            onMarkAsRead={(id) => {}}
-            onDismiss={(id) => {}}
-          />
         </TabsContent>
 
       </Tabs>
