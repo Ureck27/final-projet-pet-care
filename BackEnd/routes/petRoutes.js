@@ -24,6 +24,12 @@ router.get('/', protect, authorizeRole('admin'), (req, res, next) => {
 // GET /api/pets/user - Get logged-in user pets
 router.get('/user', protect, getUserPets);
 
+// GET /api/pets/:id - Get pet by ID (protected)
+router.get('/:id', protect, (req, res, next) => {
+  const { getPetById } = require('../controllers/petController');
+  return getPetById(req, res, next);
+});
+
 // PATCH /api/pets/:id - Update pet status (admin only)
 router.patch('/:id', protect, authorizeRole('admin'), updatePetStatus);
 

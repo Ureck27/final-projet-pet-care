@@ -93,10 +93,28 @@ const updatePetStatus = async (req, res) => {
   }
 };
 
+// Get a single pet by ID
+const getPetById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pet = await Pet.findById(id).populate('userId', 'name email');
+
+    if (!pet) {
+      return res.status(404).json({ message: 'Pet not found' });
+    }
+
+    res.json(pet);
+  } catch (error) {
+    console.error('Error fetching pet by ID:', error);
+    res.status(500).json({ message: 'Server error while fetching pet details' });
+  }
+};
+
 module.exports = {
   createPet,
   getAllPets,
   getPetsByUserId,
   getUserPets,
+  getPetById,
   updatePetStatus
 };

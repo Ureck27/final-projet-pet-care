@@ -26,9 +26,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, ArrowLeft, CheckCircle, PawPrint, Plus } from "lucide-react"
-import { petApi } from "@/lib/api"
+import { petApi, routineApi } from "@/lib/api"
 import type { Pet as ApiPet } from "@/lib/api"
 import { toast } from "sonner"
+import { CameraCapture } from "@/components/common/camera-capture"
 
 type Pet = ApiPet
 
@@ -40,6 +41,7 @@ export default function AddPetPage() {
   const [successMessage, setSuccessMessage] = useState("")
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
 
   useEffect(() => {
     if (!isAuthLoading && !user) {
@@ -77,6 +79,22 @@ export default function AddPetPage() {
       image: "",
     },
   })
+
+  const handleCameraCapture = async (file: File) => {
+    setIsUploadingImage(true)
+    try {
+      const response = await routineApi.uploadPhoto(file)
+      if (response && response.photoUrl) {
+        setValue("image", response.photoUrl)
+        toast.success("Photo captured and uploaded!")
+      }
+    } catch (err: any) {
+      console.error("Failed to upload captured photo", err)
+      toast.error("Failed to upload photo. Please try again.")
+    } finally {
+      setIsUploadingImage(false)
+    }
+  }
 
   const onSubmit = async (data: SimplifiedPetFormData) => {
     if (!user) return
@@ -215,20 +233,27 @@ export default function AddPetPage() {
                   />
                 </div>
 
-                {/* Image */}
-                <div className="space-y-2">
                   <Label htmlFor="image" className="text-base font-semibold">
-                    Pet Image URL <span className="text-destructive">*</span>
+                    Pet Image <span className="text-destructive">*</span>
                   </Label>
-                  <Input
-                    id="image"
-                    placeholder="https://example.com/pet-image.jpg"
-                    {...register("image")}
-                    className={`text-base ${errors.image ? "border-destructive" : ""}`}
-                  />
-                  <p className="text-xs text-muted-foreground">Enter a URL to your pet's image</p>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1 group">
+                      <Input
+                        id="image"
+                        placeholder="https://example.com/pet-image.jpg or take a photo"
+                        {...register("image")}
+                        className={`text-base pr-10 ${errors.image ? "border-destructive" : ""}`}
+                      />
+                      {isUploadingImage && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                        </div>
+                      )}
+                    </div>
+                    <CameraCapture onCapture={handleCameraCapture} buttonText="Camera" className="shrink-0" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">Capture a photo or enter a URL to your pet's image</p>
                   {errors.image && <p className="text-sm text-destructive">{errors.image.message}</p>}
-                </div>
 
                 {/* Submit Button */}
                 <div className="flex gap-3 pt-4">

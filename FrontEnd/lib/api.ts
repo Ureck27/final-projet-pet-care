@@ -359,6 +359,15 @@ export const petApi = {
   
   updatePetStatus: (id: string, status: 'accepted' | 'rejected') =>
     api.patch<Pet>(`/pets/${id}`, { status }),
+  
+  getPetById: (id: string) =>
+    api.get<Pet>(`/pets/${id}`),
+    
+  getPetStatusUpdates: (petId: string) =>
+    api.get<any>(`/pet-updates/${petId}`),
+    
+  createPetUpdate: (formData: FormData) =>
+    petUpdateApi.createUpdate(formData),
 };
 
 // Trainer Request API

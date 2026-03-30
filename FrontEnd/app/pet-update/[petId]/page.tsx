@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { petApi, type Pet } from "@/lib/api"
 import { Loader } from "@/components/common/loader"
+import { CameraCapture } from "@/components/common/camera-capture"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -83,7 +84,7 @@ export default function PetUpdatePage() {
       ])
 
       setPet(petData)
-      setExistingUpdates(updatesData)
+      setExistingUpdates(updatesData.data || [])
     } catch (error) {
       console.error('Failed to fetch pet data:', error)
     } finally {
@@ -113,6 +114,18 @@ export default function PetUpdatePage() {
 
     setMediaFile(file)
     setUpdateType(type)
+    
+    // Create preview
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      setMediaPreview(e.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleCameraCapture = (file: File) => {
+    setMediaFile(file)
+    setUpdateType('photo')
     
     // Create preview
     const reader = new FileReader()
@@ -169,9 +182,9 @@ export default function PetUpdatePage() {
 
       // Add new update to existing updates
       const newUpdate: PetUpdate = {
-        id: response.data.id,
+        id: response.data._id || response.data.id,
         type: updateType,
-        content: mediaPreview || '',
+        content: mediaPreview || response.data.content || '',
         description,
         createdAt: new Date(),
         trainer: user?.name || '',
@@ -344,27 +357,48 @@ export default function PetUpdatePage() {
                         </Button>
                       </div>
                     ) : (
-                      <div 
-                        className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors"
-                        onClick={() => {
-                          if (updateType === 'photo') {
-                            fileInputRef.current?.click()
-                          } else {
-                            videoInputRef.current?.click()
-                          }
-                        }}
-                      >
-                        <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-lg font-medium mb-2">
-                          {updateType === 'photo' ? 'Upload Photo' : 'Upload Video'}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {updateType === 'photo' 
-                            ? 'Click to select an image file (JPG, PNG, etc.)'
-                            : 'Click to select a video file (MP4, MOV, etc.)'
-                          }
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-2">
+                      <div className="space-y-4">
+                        <div 
+                          className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors"
+                          onClick={() => {
+                            if (updateType === 'photo') {
+                              fileInputRef.current?.click()
+                            } else {
+                              videoInputRef.current?.click()
+                            }
+                          }}
+                        >
+                          <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                          <p className="text-lg font-medium mb-2">
+                            {updateType === 'photo' ? 'Upload Photo' : 'Upload Video'}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {updateType === 'photo' 
+                              ? 'Click to select an image file (JPG, PNG, etc.)'
+                              : 'Click to select a video file (MP4, MOV, etc.)'
+                            }
+                          </p>
+                        </div>
+
+                        {updateType === 'photo' && (
+                          <div className="flex items-center justify-center gap-4">
+                            <div className="h-px bg-muted-foreground/20 flex-1" />
+                            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">or</span>
+                            <div className="h-px bg-muted-foreground/20 flex-1" />
+                          </div>
+                        )}
+
+                        {updateType === 'photo' && (
+                          <div className="flex justify-center">
+                            <CameraCapture 
+                              onCapture={handleCameraCapture} 
+                              buttonText="Take Picture with Camera"
+                              className="w-full sm:w-auto bg-primary/10 hover:bg-primary/20 border-primary/20 text-primary h-12 px-8"
+                            />
+                          </div>
+                        )}
+
+                        <p className="text-xs text-muted-foreground text-center mt-2">
                           Maximum file size: 50MB
                         </p>
                       </div>
