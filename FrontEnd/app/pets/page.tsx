@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, PawPrint } from "lucide-react"
 import Link from "next/link"
 import { PetForm } from "@/components/features/pets/pet-form"
+import { toast } from "sonner"
 
 type Pet = ApiPet
 
@@ -91,14 +92,30 @@ export default function PetsPage() {
 
   const handleFormSubmit = async (data: any) => {
     try {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("type", data.type);
+      formData.append("age", data.age.toString());
+      if (data.breed) formData.append("breed", data.breed);
+      if (data.medicalNotes) formData.append("description", data.medicalNotes);
+      
+      if (data.photo instanceof File) {
+        formData.append("image", data.photo);
+      } else if (typeof data.photo === "string" && data.photo) {
+        formData.append("image", data.photo);
+      }
+
       if (editingPet) {
-        await petApi.updatePet(editingPet._id || editingPet.id, data)
+        await petApi.updatePet(editingPet._id || editingPet.id, formData)
+        toast.success("Pet updated successfully!")
       } else {
-        await petApi.createPet(data)
+        await petApi.createPet(formData)
+        toast.success("Pet added successfully!")
       }
       fetchPets()
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to save pet", err)
+      toast.error("Failed to save pet: " + (err.message || "Unknown error"))
     }
   }
 
@@ -139,9 +156,9 @@ export default function PetsPage() {
           {userPets.map((pet) => (
             <PetCard 
               key={pet._id || pet.id} 
-              pet={pet} 
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+              pet={pet as any} 
+              onEdit={handleEdit as any}
+              onDelete={handleDelete as any}
               className="hover:shadow-lg transition-shadow" 
             />
           ))}
@@ -151,7 +168,7 @@ export default function PetsPage() {
       <PetForm 
         open={isFormOpen} 
         onOpenChange={setIsFormOpen} 
-        pet={editingPet} 
+        pet={editingPet as any} 
         onSubmit={handleFormSubmit} 
       />
     </main>

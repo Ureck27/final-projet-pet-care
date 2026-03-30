@@ -80,7 +80,7 @@ export function EmotionDashboard({ moodEntries, petName }: EmotionDashboardProps
       <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>🧠 {petName}'s Daily Mood</span>
+            <span>{petName}'s Daily Mood</span>
             {trend !== "No data" && (
               <span className="text-3xl">{getEmotionEmoji(trend.emotion)}</span>
             )}
@@ -170,7 +170,7 @@ export function EmotionDashboard({ moodEntries, petName }: EmotionDashboardProps
       {/* Recent Mood Updates */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">📸 Recent Updates</CardTitle>
+          <CardTitle className="text-base">Recent Updates</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

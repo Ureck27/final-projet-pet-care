@@ -267,6 +267,19 @@ export interface CaregiverApplication {
   createdAt: string;
   updatedAt: string;
 }
+  
+export interface Notification {
+  _id?: string;
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: string;
+  priority: string;
+  read: boolean;
+  actionUrl?: string;
+  sentAt: string;
+}
 
 export interface TrainerService {
   _id?: string;
@@ -342,7 +355,7 @@ export const petApi = {
     return api.get<Pet[]>('/pets');
   },
   
-  createPet: (petData: { name: string; type: string; age: number; description?: string; image: string }) =>
+  createPet: (petData: FormData | { name: string; type: string; age: number; description?: string; image: string }) =>
     api.post<Pet>('/pets', petData),
   
   getAllPets: () =>
@@ -351,7 +364,7 @@ export const petApi = {
   getUserPets: () =>
     api.get<Pet[]>('/pets/user'),
   
-  updatePet: (id: string, petData: Partial<Pet>) =>
+  updatePet: (id: string, petData: FormData | Partial<Pet>) =>
     api.put<Pet>(`/pets/${id}`, petData),
   
   deletePet: (id: string) =>
@@ -560,4 +573,10 @@ export const chatApi = {
   getConversations: () => api.get<any[]>('/chat/conversations'),
   getMessages: (conversationId: string) => api.get<any[]>(`/chat/${conversationId}`),
   initiateConversation: (userId: string, trainerId: string) => api.post<any>('/chat/conversation', { userId, trainerId }),
+};
+
+// Notification API
+export const notificationApi = {
+  getNotifications: () => api.get<Notification[]>('/notifications'),
+  markAsRead: (id: string) => api.patch<Notification>(`/notifications/${id}/read`, {}),
 };

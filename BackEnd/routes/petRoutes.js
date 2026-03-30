@@ -9,9 +9,10 @@ const {
 } = require('../controllers/petController');
 const { protect } = require('../middleware/authMiddleware');
 const { authorizeRole } = require('../middleware/authMiddleware');
+const { uploadSingle } = require('../middleware/uploadMiddleware');
 
 // POST /api/pets - Create pet (user only)
-router.post('/', protect, authorizeRole('user'), createPet);
+router.post('/', protect, authorizeRole('user'), uploadSingle('image'), createPet);
 
 // GET /api/pets?userId= - Get pets by userId (admin only)
 router.get('/', protect, authorizeRole('admin'), (req, res, next) => {
@@ -32,5 +33,11 @@ router.get('/:id', protect, (req, res, next) => {
 
 // PATCH /api/pets/:id - Update pet status (admin only)
 router.patch('/:id', protect, authorizeRole('admin'), updatePetStatus);
+
+// PUT /api/pets/:id - Update pet details (owner only)
+router.put('/:id', protect, authorizeRole('user'), uploadSingle('image'), (req, res, next) => {
+  const { updatePet } = require('../controllers/petController');
+  return updatePet(req, res, next);
+});
 
 module.exports = router;

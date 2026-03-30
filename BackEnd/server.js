@@ -103,6 +103,7 @@ app.use('/api/pet-updates', petUpdateRoutes);
 app.use('/api/trainer-requests', require('./routes/trainerRequestRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 // Basic route
 app.get('/', (req, res) => {

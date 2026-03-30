@@ -13,7 +13,7 @@ const simplifiedPetSchema = z.object({
   type: z.string().min(1, "Pet type is required"),
   age: z.number().min(0, "Age must be positive"),
   description: z.string().optional(),
-  image: z.string().min(1, "Pet image is required"),
+  image: z.any().optional(),
 })
 
 type SimplifiedPetFormData = z.infer<typeof simplifiedPetSchema>
@@ -29,7 +29,7 @@ import { Loader2, ArrowLeft, CheckCircle, PawPrint, Plus } from "lucide-react"
 import { petApi, routineApi } from "@/lib/api"
 import type { Pet as ApiPet } from "@/lib/api"
 import { toast } from "sonner"
-import { CameraCapture } from "@/components/common/camera-capture"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 type Pet = ApiPet
 
@@ -41,7 +41,6 @@ export default function AddPetPage() {
   const [successMessage, setSuccessMessage] = useState("")
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [isUploadingImage, setIsUploadingImage] = useState(false)
 
   useEffect(() => {
     if (!isAuthLoading && !user) {
@@ -80,27 +79,23 @@ export default function AddPetPage() {
     },
   })
 
-  const handleCameraCapture = async (file: File) => {
-    setIsUploadingImage(true)
-    try {
-      const response = await routineApi.uploadPhoto(file)
-      if (response && response.photoUrl) {
-        setValue("image", response.photoUrl)
-        toast.success("Photo captured and uploaded!")
-      }
-    } catch (err: any) {
-      console.error("Failed to upload captured photo", err)
-      toast.error("Failed to upload photo. Please try again.")
-    } finally {
-      setIsUploadingImage(false)
-    }
-  }
-
   const onSubmit = async (data: SimplifiedPetFormData) => {
     if (!user) return
     setIsSubmitting(true)
     try {
-      await petApi.createPet(data)
+      const formData = new FormData()
+      formData.append("name", data.name)
+      formData.append("type", data.type)
+      formData.append("age", data.age.toString())
+      if (data.description) formData.append("description", data.description)
+      
+      if (data.image instanceof File) {
+        formData.append("image", data.image)
+      } else if (typeof data.image === "string" && data.image) {
+        formData.append("image", data.image)
+      }
+
+      await petApi.createPet(formData)
 
       toast.success("Pet added successfully!")
       setSuccessMessage("Pet submitted for approval")
@@ -233,27 +228,13 @@ export default function AddPetPage() {
                   />
                 </div>
 
-                  <Label htmlFor="image" className="text-base font-semibold">
-                    Pet Image <span className="text-destructive">*</span>
-                  </Label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1 group">
-                      <Input
-                        id="image"
-                        placeholder="https://example.com/pet-image.jpg or take a photo"
-                        {...register("image")}
-                        className={`text-base pr-10 ${errors.image ? "border-destructive" : ""}`}
-                      />
-                      {isUploadingImage && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                        </div>
-                      )}
-                    </div>
-                    <CameraCapture onCapture={handleCameraCapture} buttonText="Camera" className="shrink-0" />
-                  </div>
-                  <p className="text-xs text-muted-foreground">Capture a photo or enter a URL to your pet's image</p>
-                  {errors.image && <p className="text-sm text-destructive">{errors.image.message}</p>}
+                  <ImageUpload
+                    value={typeof watch("image") === 'string' ? watch("image") as string : undefined}
+                    onChange={(file, previewUrl) => setValue("image", file || previewUrl)}
+                    label="Pet Photo"
+                    placeholder="Capture a photo or upload an image of your pet"
+                  />
+                  {errors.image && <p className="text-sm text-destructive">{errors.image?.message as string}</p>}
 
                 {/* Submit Button */}
                 <div className="flex gap-3 pt-4">

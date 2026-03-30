@@ -80,6 +80,7 @@ export function ImageUpload({
         <input
           type="file"
           accept={accept}
+          capture="environment"
           onChange={handleChange}
           className="absolute inset-0 opacity-0 cursor-pointer"
         />

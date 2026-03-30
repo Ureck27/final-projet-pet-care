@@ -174,7 +174,7 @@ export default function BookingsPage() {
           {booking.meetAndGreetScheduled && (
             <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950">
               <p className="text-sm font-medium">
-                {booking.meetAndGreetCompleted ? "✓ Meet & Greet Completed" : "📅 Meet & Greet Scheduled"}
+                {booking.meetAndGreetCompleted ? "✓ Meet & Greet Completed" : "Meet & Greet Scheduled"}
               </p>
               <p className="text-xs text-muted-foreground">
                 {format(new Date(booking.meetAndGreetScheduled), "MMM d, yyyy")}

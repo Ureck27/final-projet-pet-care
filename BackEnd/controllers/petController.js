@@ -1,12 +1,16 @@
 const Pet = require('../models/Pet');
 
-// Create a new pet
 const createPet = async (req, res) => {
   try {
-    const { name, type, age, description, image } = req.body;
+    const { name, type, age, description } = req.body;
+    let image = req.body.image;
 
-    if (!name || !type || age === undefined || !image) {
-      return res.status(400).json({ message: 'Please provide name, type, age, and image' });
+    if (req.file) {
+      image = `/uploads/pets/${req.file.filename}`;
+    }
+
+    if (!name || !type || age === undefined) {
+      return res.status(400).json({ message: 'Please provide name, type, and age' });
     }
 
     const pet = new Pet({
@@ -14,7 +18,7 @@ const createPet = async (req, res) => {
       type,
       age,
       description,
-      image,
+      image: image || '/placeholder.svg',
       userId: req.user._id,
       status: 'pending'
     });
@@ -110,11 +114,40 @@ const getPetById = async (req, res) => {
   }
 };
 
+// Update pet details
+const updatePet = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, type, age, description } = req.body;
+
+    const pet = await Pet.findOne({ _id: id, userId: req.user._id });
+    if (!pet) return res.status(404).json({ message: 'Pet not found or unauthorized' });
+
+    if (name) pet.name = name;
+    if (type) pet.type = type;
+    if (age !== undefined) pet.age = age;
+    if (description !== undefined) pet.description = description;
+
+    if (req.file) {
+      pet.image = `/uploads/pets/${req.file.filename}`;
+    } else if (req.body.image) {
+      pet.image = req.body.image;
+    }
+
+    const updatedPet = await pet.save();
+    res.json(updatedPet);
+  } catch (error) {
+    console.error('Error updating pet:', error);
+    res.status(500).json({ message: 'Server error while updating pet' });
+  }
+};
+
 module.exports = {
   createPet,
   getAllPets,
   getPetsByUserId,
   getUserPets,
   getPetById,
-  updatePetStatus
+  updatePetStatus,
+  updatePet
 };

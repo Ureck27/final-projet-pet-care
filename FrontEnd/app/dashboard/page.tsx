@@ -9,10 +9,10 @@ import { api, petApi } from "@/lib/api"
 import type { Pet } from "@/lib/types"
 import { 
   mockPetStatuses, mockTasks, mockDailyActivities, 
-  mockMoodEntries 
 } from "@/lib/mock-data"
 import { StatsCard } from "@/components/features/dashboard/stats-card"
 import { StatusTimeline } from "@/components/features/dashboard/status-timeline"
+import { NotificationsCenter } from "@/components/features/dashboard/notifications-center"
 import { CalendarView } from "@/components/features/schedule/calendar-view"
 import { PetCard } from "@/components/features/pets/pet-card"
 import { TaskDashboard } from "@/components/features/dashboard/task-dashboard"
@@ -33,6 +33,7 @@ export default function DashboardPage() {
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("overview")
   const [pets, setPets] = useState<Pet[]>([])
+  const [notifications, setNotifications] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isRetrying, setIsRetrying] = useState(false)
@@ -58,8 +59,20 @@ export default function DashboardPage() {
     if (isRetry) setIsRetrying(true)
     
     try {
-      const petsData = await petApi.getUserPets()
+      const [petsData, notificationsData] = await Promise.all([
+        petApi.getUserPets(),
+        api.get<any[]>('/notifications').catch(() => []) // Catch error if router isn't fully ready
+      ])
+      
       setPets(petsData || [])
+      
+      // Map sentAt strings to Date objects for NotificationsCenter
+      const formattedNotifs = (notificationsData || []).map(n => ({
+        ...n,
+        sentAt: new Date(n.sentAt)
+      }))
+      setNotifications(formattedNotifs)
+      
       setError(null)
     } catch (err: any) {
       console.error("Failed to fetch dashboard data", err)
@@ -83,6 +96,15 @@ export default function DashboardPage() {
   }
 
 
+
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      await api.patch(`/notifications/${id}/read`, {})
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   if (isAuthLoading || (!isLoading && !error && !user)) {
     return (
@@ -201,6 +223,12 @@ export default function DashboardPage() {
             <MessageCircle className="w-4 h-4 mr-1" />
             Messages
           </TabsTrigger>
+          <TabsTrigger value="notifications" className="relative">
+            Notifications
+            {notifications.filter(n => !n.read).length > 0 && (
+              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -318,6 +346,14 @@ export default function DashboardPage() {
         {/* Messages Tab */}
         <TabsContent value="messages">
           <MessagesWidget userId={user.id} />
+        </TabsContent>
+
+        {/* Notifications Tab */}
+        <TabsContent value="notifications">
+          <NotificationsCenter 
+            notifications={notifications} 
+            onMarkAsRead={handleMarkAsRead} 
+          />
         </TabsContent>
 
       </Tabs>
