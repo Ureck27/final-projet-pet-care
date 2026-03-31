@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer');
 const User = require('../models/User');
 const RoutineLog = require('../models/RoutineLog');
 const Pet = require('../models/Pet');
+const Notification = require('../models/Notification');
+const { io } = require('../server');
 
 class NotificationService {
   constructor() {
@@ -13,6 +15,39 @@ class NotificationService {
         pass: process.env.EMAIL_PASS || 'your-app-password'
       }
     });
+  }
+
+  /**
+   * Create a notification in database and emit it real-time
+   */
+  async createNotification(userId, title, message, type, priority = 'low', actionUrl = '') {
+    try {
+      const notification = await Notification.create({
+        userId,
+        title,
+        message,
+        type,
+        priority,
+        actionUrl,
+        sentAt: new Date()
+      });
+
+      // Emit real-time notification if io is available
+      if (io) {
+        io.emit('new_notification', {
+          userId: userId.toString(),
+          notification: {
+            ...notification._doc,
+            id: notification._id.toString()
+          }
+        });
+      }
+
+      return notification;
+    } catch (error) {
+      console.error('Error creating database notification:', error);
+      return null;
+    }
   }
 
   /**
@@ -51,38 +86,44 @@ class NotificationService {
         petType: pet.type,
         status: routineLog.aiStatus,
         aiMessage: routineLog.aiMessage,
-        trainerName: routineLog.trainerId.name || 'Trainer',
+        trainerName: (routineLog.trainerId && routineLog.trainerId.name) || 'Trainer',
         timestamp: routineLog.createdAt,
         photoUrl: routineLog.photoUrl
       };
 
       // Send notifications to different recipients
-      const notifications = [];
+      const results = [];
 
-      // 1. Send to pet owner
-      const ownerNotification = await this.sendEmailToOwner(pet.ownerId, notificationData);
-      notifications.push({ recipient: 'owner', ...ownerNotification });
+      // 1. Send to pet owner & create record
+      const ownerEmailResult = await this.sendEmailToOwner(pet.ownerId, notificationData);
+      await this.createNotification(
+        pet.ownerId._id,
+        `🚨 Urgent Health Alert: ${pet.name}`,
+        `AI system detected: ${routineLog.aiMessage}`,
+        'health-alert',
+        'critical',
+        `/user-dashboard/pets/${pet._id}`
+      );
+      results.push({ recipient: 'owner', email: ownerEmailResult.success });
 
-      // 2. Send to admin users
+      // 2. Send to admin users & create record
       for (const admin of adminUsers) {
-        const adminNotification = await this.sendEmailToAdmin(admin, notificationData);
-        notifications.push({ recipient: 'admin', adminId: admin._id, ...adminNotification });
-      }
-
-      // 3. Send to trainer (if different from the assigned trainer)
-      const assignedTrainerId = routineLog.petId.trainerId;
-      if (assignedTrainerId && routineLog.trainerId._id.toString() !== assignedTrainerId.toString()) {
-        const assignedTrainer = await User.findById(assignedTrainerId);
-        if (assignedTrainer) {
-          const trainerNotification = await this.sendEmailToTrainer(assignedTrainer, notificationData);
-          notifications.push({ recipient: 'trainer', trainerId: assignedTrainer._id, ...trainerNotification });
-        }
+        const adminEmailResult = await this.sendEmailToAdmin(admin, notificationData);
+        await this.createNotification(
+          admin._id,
+          `🚨 Admin Alert: ${pet.name}`,
+          `Critical status reported for ${pet.name} by trainer.`,
+          'health-alert',
+          'critical',
+          `/admin-dashboard`
+        );
+        results.push({ recipient: 'admin', adminId: admin._id, email: adminEmailResult.success });
       }
 
       return {
         success: true,
         message: 'Urgent alerts sent successfully',
-        notifications: notifications
+        results: results
       };
 
     } catch (error) {
