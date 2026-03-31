@@ -8,7 +8,7 @@ import { useAuth } from "@/context/auth-context"
 import { api, petApi } from "@/lib/api"
 import type { Pet } from "@/lib/types"
 import { 
-  mockPetStatuses, mockTasks, mockDailyActivities, 
+  mockPetStatuses, mockTasks, mockDailyActivities, mockMoodEntries
 } from "@/lib/mock-data"
 import { StatsCard } from "@/components/features/dashboard/stats-card"
 import { StatusTimeline } from "@/components/features/dashboard/status-timeline"
@@ -181,9 +181,9 @@ export default function DashboardPage() {
     ? userPets.find(p => p.id === selectedPetId || (p as any)._id?.toString() === selectedPetId)
     : userPets[0]
   
-  const petTasks = currentPet ? mockTasks.filter((t) => t.petId === currentPet.id) : []
-  const petActivities = currentPet ? mockDailyActivities.filter((a) => a.petId === currentPet.id) : []
-  const petMood = currentPet ? mockMoodEntries.filter((m) => m.petId === currentPet.id) : []
+  const petTasks = currentPet ? (mockTasks?.filter((t) => t.petId === currentPet.id) || []) : []
+  const petActivities = currentPet ? (mockDailyActivities?.filter((a) => a.petId === currentPet.id) || []) : []
+  const petMood = currentPet ? (typeof mockMoodEntries !== "undefined" && Array.isArray(mockMoodEntries) ? mockMoodEntries.filter((m) => m.petId === currentPet.id) : []) : [];
 
   return (
     <div className="container mx-auto px-4 py-8">
