@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { petApi, type Pet, User } from "@/lib/api"
+import { petApi, getMediaUrl, type Pet, User } from "@/lib/api"
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -275,14 +275,14 @@ export default function PetProfilePage() {
                           <div className="mt-2">
                             {update.type === 'photo' && (
                               <img 
-                                src={update.content} 
+                                src={getMediaUrl(update.content)} 
                                 alt="Pet update" 
                                 className="rounded-lg max-w-full h-auto"
                               />
                             )}
                             {update.type === 'video' && (
                               <video 
-                                src={update.content} 
+                                src={getMediaUrl(update.content)} 
                                 controls 
                                 className="rounded-lg max-w-full h-auto"
                               />
@@ -316,7 +316,7 @@ export default function PetProfilePage() {
             <CardContent>
               <div className="aspect-square">
                 <img 
-                  src={pet.image || "/placeholder.svg"} 
+                  src={getMediaUrl(pet.image)} 
                   alt={pet.name}
                   className="w-full h-full object-cover rounded-lg"
                 />
@@ -336,7 +336,7 @@ export default function PetProfilePage() {
               <CardContent>
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar>
-                    <AvatarImage src={owner.avatar} alt={owner.name} />
+                    <AvatarImage src={getMediaUrl((owner as any).avatar)} alt={owner.name} />
                     <AvatarFallback>{owner.name[0]}</AvatarFallback>
                   </Avatar>
                   <div>

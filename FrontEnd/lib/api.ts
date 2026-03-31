@@ -11,6 +11,19 @@ const getApiBaseUrl = () => {
 const API_BASE_URL = getApiBaseUrl();
 
 /**
+ * Gets the full URL for media assets (images, videos)
+ */
+export function getMediaUrl(path: string | null | undefined): string {
+  if (!path) return '/placeholder.svg';
+  if (path.startsWith('http')) return path;
+  
+  // Use the API URL but strip the /api suffix to get the backend origin
+  const origin = API_BASE_URL.replace(/\/api$/, '');
+  return `${origin}${path.startsWith('/') ? '' : '/'}${path}`;
+}
+
+
+/**
  * Decodes a JWT token without validation
  */
 export function decodeToken(token: string | null): any {
@@ -88,7 +101,8 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
     }
   }
 
-  const fullUrl = `${API_BASE_URL}${endpoint}`;
+  const fullUrl = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+
   
   while (attempt <= maxRetries) {
     const controller = new AbortController();
@@ -263,6 +277,7 @@ export interface Pet {
   age: number;
   description?: string;
   image: string;
+  weight?: number;
   status: "pending" | "accepted" | "rejected" | "approved";
   createdAt: Date;
   updatedAt: string;
@@ -414,6 +429,11 @@ export const petApi = {
     
   getPetStatusUpdates: (petId: string) =>
     api.get<any>(`/pet-updates/${petId}`),
+    
+  getPetOwner: async (petId: string) => {
+    const pet = await api.get<Pet>(`/pets/${petId}`);
+    return (pet as any).userId as unknown as User;
+  },
     
   createPetUpdate: (formData: FormData) =>
     petUpdateApi.createUpdate(formData),

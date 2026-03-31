@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
+import { getMediaUrl } from "@/lib/api"
 import { mockPets } from "@/lib/mock-data"
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
@@ -161,7 +162,7 @@ export default function PetStatusPage({ params }: PetStatusPageProps) {
         </Button>
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16">
-            <AvatarImage src={pet.photo || "/placeholder.svg"} alt={pet.name} />
+            <AvatarImage src={getMediaUrl(pet.photo)} alt={pet.name} />
             <AvatarFallback>{pet.name[0]}</AvatarFallback>
           </Avatar>
           <div>
@@ -268,7 +269,7 @@ export default function PetStatusPage({ params }: PetStatusPageProps) {
                         {/* Photo */}
                         <div className="relative">
                           <img
-                            src={log.photoUrl}
+                            src={getMediaUrl(log.photoUrl)}
                             alt="Pet during routine"
                             className="w-full h-48 object-cover rounded-lg"
                             onError={(e) => {

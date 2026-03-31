@@ -26,7 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, ArrowLeft, CheckCircle, PawPrint, Plus } from "lucide-react"
-import { petApi, routineApi } from "@/lib/api"
+import { petApi, routineApi, getMediaUrl } from "@/lib/api"
 import type { Pet as ApiPet } from "@/lib/api"
 import { toast } from "sonner"
 import { ImageUpload } from "@/components/ui/image-upload"
@@ -280,7 +280,7 @@ export default function AddPetPage() {
                       className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50"
                     >
                       <img
-                        src={pet.image || "/placeholder.svg"}
+                        src={getMediaUrl(pet.image)}
                         alt={pet.name}
                         className="h-10 w-10 rounded-full object-cover"
                       />

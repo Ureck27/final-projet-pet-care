@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { petApi, type User, Pet } from "@/lib/api"
+import { petApi, getMediaUrl, type User, Pet } from "@/lib/api"
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -207,7 +207,7 @@ export default function UserDashboardPage() {
                   <TableRow key={pet._id || pet.id || `pet-${index}`}>
                     <TableCell>
                       <img 
-                        src={pet.image || "/placeholder.svg"} 
+                        src={getMediaUrl(pet.image)} 
                         alt={pet.name}
                         className="h-10 w-10 rounded object-cover"
                       />

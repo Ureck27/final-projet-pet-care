@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { adminApi, petApi, trainerApi, type User, Pet, Trainer } from "@/lib/api"
+import { adminApi, petApi, trainerApi, getMediaUrl, type User, Pet, Trainer } from "@/lib/api"
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -318,7 +318,7 @@ export default function AdminDashboardPage() {
                   {pets.map((pet, index) => (
                     <TableRow key={pet._id || pet.id || `pet-${index}`}>
                       <TableCell>
-                        <img src={pet.image || "/placeholder.svg"} alt={pet.name} className="h-10 w-10 rounded object-cover" />
+                        <img src={getMediaUrl(pet.image)} alt={pet.name} className="h-10 w-10 rounded object-cover" />
                       </TableCell>
                       <TableCell className="font-medium">{pet.name}</TableCell>
                       <TableCell>{pet.type}</TableCell>
