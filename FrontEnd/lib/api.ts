@@ -363,6 +363,9 @@ export const petApi = {
   
   getUserPets: () =>
     api.get<Pet[]>('/pets/user'),
+    
+  getTrainerAssignedPets: () =>
+    api.get<Pet[]>('/pets/trainer/assigned'),
   
   updatePet: (id: string, petData: FormData | Partial<Pet>) =>
     api.put<Pet>(`/pets/${id}`, petData),

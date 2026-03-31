@@ -70,6 +70,22 @@ const getUserPets = async (req, res) => {
   }
 };
 
+// Get pets assigned to trainer
+const getTrainerPets = async (req, res) => {
+  try {
+    const Trainer = require('../models/Trainer');
+    const trainer = await Trainer.findOne({ userId: req.user._id });
+    if (!trainer) {
+      return res.status(404).json({ message: 'Trainer profile not found' });
+    }
+    const pets = await Pet.find({ trainerId: trainer._id }).populate('userId', 'name email');
+    res.json(pets);
+  } catch (error) {
+    console.error('Error fetching trainer pets:', error);
+    res.status(500).json({ message: 'Server error while fetching trainer pets' });
+  }
+};
+
 // Update pet status (admin only)
 const updatePetStatus = async (req, res) => {
   try {
@@ -147,6 +163,7 @@ module.exports = {
   getAllPets,
   getPetsByUserId,
   getUserPets,
+  getTrainerPets,
   getPetById,
   updatePetStatus,
   updatePet

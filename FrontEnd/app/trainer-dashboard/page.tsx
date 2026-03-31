@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { trainerApi, type User, Trainer } from "@/lib/api"
+import { petApi, trainerApi, type User, Trainer, type Pet } from "@/lib/api"
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,13 +23,15 @@ import {
   Plus,
   PawPrint,
   DollarSign,
-  ClipboardCheck
+  ClipboardCheck,
+  Camera
 } from "lucide-react"
 
 export default function TrainerDashboardPage() {
   const router = useRouter()
   const { user, isLoading } = useAuth()
   const [trainerData, setTrainerData] = useState<Trainer | null>(null)
+  const [assignedPets, setAssignedPets] = useState<Pet[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -48,6 +50,12 @@ export default function TrainerDashboardPage() {
       setLoading(true)
       const data = await trainerApi.getTrainerProfile()
       setTrainerData(data)
+      try {
+        const petsData = await petApi.getTrainerAssignedPets()
+        setAssignedPets(petsData)
+      } catch (err) {
+        console.error('Failed to fetch assigned pets', err)
+      }
     } catch (error) {
       console.error('Failed to fetch trainer data:', error)
     } finally {
@@ -263,6 +271,51 @@ export default function TrainerDashboardPage() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Assigned Pets Section */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <PawPrint className="h-6 w-6 text-primary" />
+            Assigned Pets
+          </h2>
+        </div>
+        
+        {assignedPets.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {assignedPets.map(pet => (
+              <Card key={pet._id || pet.id} className="overflow-hidden">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-12 w-12 border-2 border-primary/10">
+                      <AvatarImage src={pet.image} alt={pet.name} className="object-cover" />
+                      <AvatarFallback className="bg-primary/5 text-primary">{pet.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <CardTitle className="text-lg truncate">{pet.name}</CardTitle>
+                      <CardDescription>{pet.type} • {pet.age} years</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="default" className="w-full mt-4 bg-primary/90 hover:bg-primary" onClick={() => router.push(`/pet-update/${pet._id || pet.id}`)}>
+                    <Camera className="mr-2 h-4 w-4" />
+                    Add Status Update
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className="bg-muted/30 border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <PawPrint className="h-12 w-12 text-muted-foreground opacity-20 mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No Pets Assigned</h3>
+              <p className="text-muted-foreground text-center">You haven't been assigned any pets yet.</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Quick Actions */}

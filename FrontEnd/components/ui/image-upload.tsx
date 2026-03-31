@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Upload, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { CameraCapture } from "@/components/common/camera-capture"
 
 interface ImageUploadProps {
   value?: string
@@ -90,6 +91,23 @@ export function ImageUpload({
           <p className="text-sm text-muted-foreground">PNG, JPG up to 5MB</p>
         </div>
       </div>
+
+      {!preview && (
+        <>
+          <div className="flex items-center justify-center gap-4 py-2 opacity-50">
+            <div className="h-px bg-border flex-1" />
+            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">or</span>
+            <div className="h-px bg-border flex-1" />
+          </div>
+          <div className="flex justify-center">
+            <CameraCapture 
+              onCapture={handleFileSelect} 
+              buttonText="Take Photo with Camera"
+              className="w-full bg-secondary/30 hover:bg-secondary/50 text-secondary-foreground border-secondary"
+            />
+          </div>
+        </>
+      )}
 
       {preview && (
         <div className="relative w-full overflow-hidden rounded-lg border border-border">
