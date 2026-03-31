@@ -5,9 +5,22 @@ const Booking = require('../models/Booking');
 const getBookings = async (req, res) => {
   try {
     const filter = {};
-    if (req.query.ownerId) {
+    
+    // If not admin, restrict to owner's or trainer's bookings
+    if (req.user.role === 'user') {
+      filter.ownerId = req.user._id;
+    } else if (req.user.role === 'trainer') {
+      const Trainer = require('../models/Trainer');
+      const trainer = await Trainer.findOne({ userId: req.user._id });
+      if (trainer) {
+        filter.trainerId = trainer._id;
+      } else {
+        return res.json([]); // No trainer profile, no bookings
+      }
+    } else if (req.user.role === 'admin' && req.query.ownerId) {
       filter.ownerId = req.query.ownerId;
     }
+
     const bookings = await Booking.find(filter)
       .populate('petId', 'name type breed')
       .populate('trainerId')
@@ -50,12 +63,12 @@ const getBookingById = async (req, res) => {
 // @route   POST /api/bookings
 const createBooking = async (req, res) => {
   try {
-    const { petId, trainerId, ownerId, service, date, time, notes, packageType } = req.body;
+    const { petId, trainerId, service, date, time, notes, packageType } = req.body;
     
     const booking = await Booking.create({
       petId,
       trainerId,
-      ownerId,
+      ownerId: req.user._id, // Enforce ownerId from authenticated user
       service,
       date,
       time,

@@ -10,6 +10,27 @@ const getApiBaseUrl = () => {
 
 const API_BASE_URL = getApiBaseUrl();
 
+/**
+ * Decodes a JWT token without validation
+ */
+export function decodeToken(token: string | null): any {
+  if (!token) return null;
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('[API] Failed to decode token:', error);
+    return null;
+  }
+}
+
 interface RequestOptions extends RequestInit {
   body?: any;
   timeout?: number;
@@ -26,11 +47,16 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
   const enableRetry = options.enableRetry !== false; // Enable retry by default
   let attempt = 0;
   
-  // Debug logging
+  // Debug logging & Role identification
   if (typeof window !== 'undefined') {
+    const decoded = decodeToken(token);
+    const userRole = decoded?.role || 'unknown';
+    const userId = decoded?.id || 'unknown';
+    
     console.log(`[API] ${options.method || 'GET'} ${endpoint}`, {
       hasToken: !!token,
-      tokenPreview: token ? `${token.substring(0, 20)}...` : 'none',
+      role: userRole,
+      userId: userId,
       isClientSide: true
     });
   }
@@ -91,13 +117,20 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
         
         // Enhanced logging for 403 errors
         if (response.status === 403) {
+          const decoded = decodeToken(token);
           console.error(`[API] 403 Forbidden - Permission denied for ${endpoint}`, {
             endpoint,
             method: options.method || 'GET',
-            hasToken: !!token,
+            userRole: decoded?.role,
+            userId: decoded?.id,
             error: errorData,
-            headers: Object.fromEntries(headers.entries())
           });
+          
+          // Throw a more descriptive error for 403
+          const forbiddenError = new Error(errorData.message || 'Access Forbidden: You do not have permission to access this resource.');
+          (forbiddenError as any).status = 403;
+          (forbiddenError as any).isNoRetry = true;
+          throw forbiddenError;
         }
         
         // Automatic token purge on 401 Unauthorized

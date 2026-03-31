@@ -52,20 +52,24 @@ export default function BookingsPage() {
     }
   }, [user, isAuthLoading, router])
 
+  const [error, setError] = useState<string | null>(null)
   const fetchBookingsData = async () => {
     if (!user) return
     setIsLoading(true)
+    setError(null)
     try {
+      const currentUserId = user._id || user.id
       const [bookingsData, petsData, trainersData] = await Promise.all([
-        api.get<Booking[]>(`/bookings?ownerId=${user._id || user.id}`),
-        api.get<PetType[]>(`/pets?ownerId=${user._id || user.id}`),
+        api.get<Booking[]>(`/bookings?ownerId=${currentUserId}`),
+        api.get<PetType[]>(`/pets?ownerId=${currentUserId}`),
         api.get<Trainer[]>('/trainers')
       ])
       setBookings(bookingsData)
       setPets(petsData)
       setTrainers(trainersData)
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to fetch bookings data", err)
+      setError(err.message || "Failed to load booking data. Please try again later.")
     } finally {
       setIsLoading(false)
     }
@@ -261,6 +265,13 @@ export default function BookingsPage() {
           </Button>
         </div>
       </div>
+
+      {error && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {userBookings.length === 0 ? (
         <EmptyState

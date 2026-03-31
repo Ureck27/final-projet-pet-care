@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, ArrowLeft, CheckCircle, Calendar } from "lucide-react"
+import { Loader2, ArrowLeft, CheckCircle, Calendar, AlertCircle } from "lucide-react"
 import { api } from "@/lib/api" // Added API import
 import type { Booking, Pet, Trainer, User } from "@/lib/types" // Added User type
 import Link from "next/link"
@@ -42,13 +42,16 @@ export default function NewBookingPage() {
     }
   }, [user, isAuthLoading, router])
 
+  const [error, setError] = useState<string | null>(null)
   const fetchInitialData = async () => {
     if (!user) return
     setIsLoading(true)
+    setError(null)
     try {
+      const currentUserId = user._id || user.id
       const [petsData, bookingsData, trainersData] = await Promise.all([
-        api.get<Pet[]>(`/pets?ownerId=${user._id || user.id}`),
-        api.get<Booking[]>(`/bookings?ownerId=${user._id || user.id}`),
+        api.get<Pet[]>(`/pets?ownerId=${currentUserId}`),
+        api.get<Booking[]>(`/bookings?ownerId=${currentUserId}`),
         api.get<Trainer[]>('/trainers')
       ])
       
@@ -57,10 +60,11 @@ export default function NewBookingPage() {
       setTrainers(trainersData)
       
       if (petsData.length > 0) {
-        setSelectedPetId(petsData[0]._id || petsData[0].id)
+        setSelectedPetId((petsData[0]._id || petsData[0].id) as string)
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to fetch initial booking data", err)
+      setError(err.message || "Failed to load booking data. Please try again later.")
     } finally {
       setIsLoading(false)
     }
@@ -154,6 +158,13 @@ export default function NewBookingPage() {
           <p className="mt-2 text-gray-600">Schedule a professional caregiver for your pet</p>
         </div>
       </div>
+
+      {error && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Form Section */}

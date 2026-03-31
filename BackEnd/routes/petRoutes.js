@@ -15,8 +15,8 @@ const { uploadSingle } = require('../middleware/uploadMiddleware');
 // POST /api/pets - Create pet (user only)
 router.post('/', protect, authorizeRole('user'), uploadSingle('image'), createPet);
 
-// GET /api/pets?userId= - Get pets by userId (admin only)
-router.get('/', protect, authorizeRole('admin'), (req, res, next) => {
+// GET /api/pets?userId= - Get pets by userId (admin and users)
+router.get('/', protect, authorizeRole('admin', 'user'), (req, res, next) => {
   if (req.query.userId) {
     return getPetsByUserId(req, res, next);
   }

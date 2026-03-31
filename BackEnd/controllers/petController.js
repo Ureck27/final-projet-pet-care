@@ -31,10 +31,14 @@ const createPet = async (req, res) => {
   }
 };
 
-// Get all pets (admin only)
+// Get all pets (admin only, or filtered for user)
 const getAllPets = async (req, res) => {
   try {
-    const pets = await Pet.find().populate('userId', 'name email');
+    const filter = {};
+    if (req.user.role !== 'admin') {
+      filter.userId = req.user._id;
+    }
+    const pets = await Pet.find(filter).populate('userId', 'name email');
     res.json(pets);
   } catch (error) {
     console.error('Error fetching all pets:', error);
@@ -42,13 +46,18 @@ const getAllPets = async (req, res) => {
   }
 };
 
-// Get pets by userId (admin only)
+// Get pets by userId (admin and users for their own)
 const getPetsByUserId = async (req, res) => {
   try {
-    const { userId } = req.query;
+    const userId = req.query.userId || req.query.ownerId;
     
     if (!userId) {
-      return res.status(400).json({ message: 'userId is required' });
+      return res.status(400).json({ message: 'userId or ownerId is required' });
+    }
+
+    // Security check: Standard users can only fetch their own pets
+    if (req.user.role !== 'admin' && userId !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to fetch pets for this userId' });
     }
 
     const pets = await Pet.find({ userId }).populate('userId', 'name email');
