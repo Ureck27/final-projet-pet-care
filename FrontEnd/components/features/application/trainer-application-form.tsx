@@ -26,6 +26,7 @@ import {
   Check,
   Upload,
   Info,
+  Loader2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -48,6 +49,7 @@ interface TrainerApplicationFormProps {
 export function TrainerApplicationForm({ onSubmit, savedData }: TrainerApplicationFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<TrainerApplicationFormData>({
     resolver: zodResolver(trainerApplicationSchema),
@@ -121,9 +123,19 @@ export function TrainerApplicationForm({ onSubmit, savedData }: TrainerApplicati
     }
   }
 
-  const handleFormSubmit = (data: TrainerApplicationFormData) => {
-    setIsSubmitted(true)
-    onSubmit?.(data)
+  const handleFormSubmit = async (data: TrainerApplicationFormData) => {
+    setIsLoading(true)
+    try {
+      if (onSubmit) {
+        await onSubmit(data)
+      }
+      setIsSubmitted(true)
+    } catch (error) {
+      console.error("Form submission error:", error)
+      // Feedback is handled by the parent's toast
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const watchedPetExperience = watch("petExperience")
@@ -821,14 +833,32 @@ export function TrainerApplicationForm({ onSubmit, savedData }: TrainerApplicati
           </Button>
 
           {currentStep < STEPS.length ? (
-            <Button type="button" onClick={handleNext} className="gap-2">
+            <Button 
+              type="button" 
+              onClick={handleNext} 
+              className="gap-2"
+              disabled={isLoading}
+            >
               Next
               <ChevronRight className="w-4 h-4" />
             </Button>
           ) : (
-            <Button type="submit" className="gap-2">
-              Submit Application
-              <Check className="w-4 h-4" />
+            <Button 
+              type="submit" 
+              className="gap-2" 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  Submit Application
+                  <Check className="w-4 h-4" />
+                </>
+              )}
             </Button>
           )}
         </div>

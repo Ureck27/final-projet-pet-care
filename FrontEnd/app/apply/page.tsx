@@ -1,9 +1,40 @@
+"use client"
+
 import { TrainerApplicationForm } from "@/components/features/application/trainer-application-form"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Shield, CheckCircle2 } from "lucide-react"
+import { trainerRequestApi, type TrainerApplicationFormData } from "@/lib/api"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 export default function ApplyPage() {
+  const router = useRouter()
+
+  const handleTrainerSubmit = async (data: TrainerApplicationFormData) => {
+    try {
+      // Map the complex form data to the simpler backend model requirements
+      const mappedData = {
+        experience: `${data.yearsExperience} years experience with ${data.petExperience.join(", ")}`,
+        message: `Motivation: ${data.motivation}\n\nBio: ${data.bio}\n\nHome Type: ${data.homeType}\nCapacity: ${data.maxPetsCapacity}`,
+        phone: data.phone,
+        certifications: data.education,
+        // Optional: Include other relevant fields if needed
+      }
+
+      await trainerRequestApi.createRequest(mappedData as any)
+      
+      // Success is handled by the form component showing the success card
+      // but we can add a global toast too
+      toast.success("Application submitted successfully!")
+    } catch (error: any) {
+      console.error("Submission error:", error)
+      toast.error(error.message || "Failed to submit application. Please try again.")
+      // We might want to tell the form to reset its isSubmitted state here, 
+      // but current implementation doesn't support that easily.
+    }
+  }
+
   return (
     <main className="min-h-screen">
       <section className="relative overflow-hidden border-b border-border py-16">
@@ -40,7 +71,7 @@ export default function ApplyPage() {
       </section>
 
       <div className="container mx-auto px-4 py-12">
-        <TrainerApplicationForm />
+        <TrainerApplicationForm onSubmit={handleTrainerSubmit} />
       </div>
     </main>
   )
