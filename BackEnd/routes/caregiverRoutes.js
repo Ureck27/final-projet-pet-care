@@ -8,11 +8,12 @@ const {
   deleteCaregiverApplication,
   getCaregiverStats
 } = require('../controllers/caregiverApplicationController');
+const { uploadTrainerFiles, handleUploadError } = require('../middleware/uploadMiddleware');
 
 const router = express.Router();
 
 // Public route - submit application
-router.post('/apply', protect, submitCaregiverApplication);
+router.post('/apply', protect, uploadTrainerFiles, handleUploadError, submitCaregiverApplication);
 
 // Admin only routes
 router.get('/pending', protect, authorizeRole('admin'), getCaregiverApplications);

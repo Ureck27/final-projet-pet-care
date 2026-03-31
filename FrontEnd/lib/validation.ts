@@ -87,13 +87,13 @@ export const trainerApplicationSchema = z.object({
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
   city: z.string().min(2, "City is required"),
   country: z.string().min(2, "Country is required"),
-  profilePhoto: z.string().optional(),
+  profilePhoto: z.any().optional(),
 
   // Section 2 - Experience & Qualifications
   yearsExperience: z.enum(["0-1", "1-3", "3-5", "5+"]),
   petExperience: z.array(z.enum(["dogs", "cats", "both", "special-needs"])).min(1, "Select at least one"),
   education: z.enum(["veterinary", "certification", "online-course", "no-formal"]),
-  certificationFile: z.string().optional(),
+  certificationFile: z.any().optional(),
 
   // Section 3 - Living & Care Conditions
   canHostPets: z.boolean(),
@@ -111,7 +111,7 @@ export const trainerApplicationSchema = z.object({
   emergencyAvailability: z.boolean(),
 
   // Section 5 - Trust & Safety
-  governmentIdFile: z.string().optional(),
+  governmentIdFile: z.any().optional(),
   backgroundCheckConsent: z.boolean().refine((val) => val === true, "Background check consent is required"),
   agreeToPlatformRules: z.boolean().refine((val) => val === true, "You must agree to platform rules"),
 

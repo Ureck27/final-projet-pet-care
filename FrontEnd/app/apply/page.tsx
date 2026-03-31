@@ -4,7 +4,8 @@ import { TrainerApplicationForm } from "@/components/features/application/traine
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Shield, CheckCircle2 } from "lucide-react"
-import { trainerRequestApi, type TrainerApplicationFormData } from "@/lib/api"
+import { caregiverApi, type CaregiverApplication } from "@/lib/api"
+import { type TrainerApplicationFormData } from "@/lib/validation"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
@@ -13,25 +14,36 @@ export default function ApplyPage() {
 
   const handleTrainerSubmit = async (data: TrainerApplicationFormData) => {
     try {
-      // Map the complex form data to the simpler backend model requirements
-      const mappedData = {
-        experience: `${data.yearsExperience} years experience with ${data.petExperience.join(", ")}`,
-        message: `Motivation: ${data.motivation}\n\nBio: ${data.bio}\n\nHome Type: ${data.homeType}\nCapacity: ${data.maxPetsCapacity}`,
-        phone: data.phone,
-        certifications: data.education,
-        // Optional: Include other relevant fields if needed
+      // Use FormData to support file uploads
+      const formData = new FormData()
+      
+      // Map and append the complex form data to the simpler backend model requirements
+      formData.append("experience", `${data.yearsExperience} years experience with ${data.petExperience.join(", ")}`)
+      formData.append("message", `Bio: ${data.bio}\n\nMotivation: ${data.motivation}\n\nHome Type: ${data.homeType}\nCapacity: ${data.maxPetsCapacity}`)
+      formData.append("phone", data.phone)
+      formData.append("location", `${data.city}, ${data.country}`)
+      formData.append("name", data.fullName)
+      formData.append("email", data.email)
+      formData.append("bio", data.bio)
+      
+      // Handle array data - backend expects string or handles concatenation
+      formData.append("petTypes", JSON.stringify(data.petExperience))
+
+      // Append binary files
+      if (data.profilePhoto instanceof File) {
+        formData.append("profileImage", data.profilePhoto)
+      }
+      
+      if (data.certificationFile instanceof File) {
+        formData.append("certificateImage", data.certificationFile)
       }
 
-      await trainerRequestApi.createRequest(mappedData as any)
+      await caregiverApi.submitApplication(formData as any)
       
-      // Success is handled by the form component showing the success card
-      // but we can add a global toast too
       toast.success("Application submitted successfully!")
     } catch (error: any) {
       console.error("Submission error:", error)
       toast.error(error.message || "Failed to submit application. Please try again.")
-      // We might want to tell the form to reset its isSubmitted state here, 
-      // but current implementation doesn't support that easily.
     }
   }
 

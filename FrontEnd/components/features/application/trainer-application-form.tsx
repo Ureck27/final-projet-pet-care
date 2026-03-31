@@ -296,8 +296,8 @@ export function TrainerApplicationForm({ onSubmit, savedData }: TrainerApplicati
                 <div className="space-y-2">
                   <Label>Profile Photo</Label>
                   <ImageUpload
-                    value={watch("profilePhoto")}
-                    onChange={(value) => setValue("profilePhoto", value)}
+                    value={typeof watch("profilePhoto") === 'string' ? watch("profilePhoto") : undefined}
+                    onChange={(file) => setValue("profilePhoto", file as any)}
                     placeholder="Upload your profile photo"
                   />
                 </div>
@@ -402,10 +402,11 @@ export function TrainerApplicationForm({ onSubmit, savedData }: TrainerApplicati
 
                 <div className="space-y-2">
                   <Label>Upload Certifications (Optional)</Label>
-                  <div className="border-2 border-dashed rounded-xl p-6 text-center hover:border-primary/50 transition-smooth cursor-pointer">
-                    <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Upload certificates (PDF or Images)</p>
-                  </div>
+                  <ImageUpload
+                    value={typeof watch("certificationFile") === 'string' ? watch("certificationFile") : undefined}
+                    onChange={(file) => setValue("certificationFile", file as any)}
+                    placeholder="Upload certificates (Images)"
+                  />
                 </div>
               </>
             )}
@@ -715,13 +716,11 @@ export function TrainerApplicationForm({ onSubmit, savedData }: TrainerApplicati
 
                 <div className="space-y-2">
                   <Label>Government ID Upload</Label>
-                  <div className="border-2 border-dashed rounded-xl p-6 text-center hover:border-primary/50 transition-smooth cursor-pointer">
-                    <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Upload a valid government-issued ID</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Passport, Driver&apos;s License, or National ID
-                    </p>
-                  </div>
+                  <ImageUpload
+                    value={typeof watch("governmentIdFile") === 'string' ? watch("governmentIdFile") : undefined}
+                    onChange={(file) => setValue("governmentIdFile", file as any)}
+                    placeholder="Upload a valid government-issued ID"
+                  />
                 </div>
 
                 <div className="space-y-4">

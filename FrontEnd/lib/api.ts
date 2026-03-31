@@ -600,7 +600,7 @@ export const routineApi = {
 
 
 export const caregiverApi = {
-  submitApplication: (applicationData: Partial<CaregiverApplication>) =>
+  submitApplication: (applicationData: FormData | Partial<CaregiverApplication>) =>
     api.post<CaregiverApplication>('/caregiver/apply', applicationData),
   
   getApplications: (status?: string) =>

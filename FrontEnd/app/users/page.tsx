@@ -1,13 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-
-interface User {
-  _id: string
-  email: string
-  role: string
-  createdAt: string
-}
+import { type User } from '@/lib/api'
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
@@ -15,60 +9,19 @@ export default function UsersPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUsersData = async () => {
       try {
-        const token = localStorage.getItem('token')
-        
-        if (!token) {
-          throw new Error('No authentication token found')
-        }
-
-        // First check if user is admin
-        const userResponse = await fetch('http://localhost:5000/api/auth/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-
-        if (!userResponse.ok) {
-          throw new Error('Failed to authenticate user')
-        }
-
-        const userData = await userResponse.json()
-        
-        if (userData.data?.role !== 'admin') {
-          throw new Error('Access denied. Admin role required.')
-        }
-
-        // If admin, fetch users
-        const response = await fetch('http://localhost:5000/api/users', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Authentication failed. Please login again.')
-          }
-          if (response.status === 403) {
-            throw new Error('Access denied. Admin role required.')
-          }
-          throw new Error('Failed to fetch users')
-        }
-
-        const data = await response.json()
-        setUsers(data.data || [])
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
+        const { adminApi } = await import('@/lib/api')
+        const usersData = await adminApi.getUsers()
+        setUsers(usersData || [])
+      } catch (err: any) {
+        setError(err.message || 'An error occurred while fetching users')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchUsers()
+    fetchUsersData()
   }, [])
 
   if (loading) {

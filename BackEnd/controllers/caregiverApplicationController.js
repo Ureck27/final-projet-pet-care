@@ -1,6 +1,7 @@
 const CaregiverApplication = require('../models/CaregiverApplication');
 const User = require('../models/User');
 const { sendAdminNotification } = require('../services/emailService');
+const { getFileUrl } = require('../middleware/uploadMiddleware');
 
 // @desc    Submit caregiver application
 // @route   POST /api/caregiver/apply
@@ -15,9 +16,20 @@ const submitCaregiverApplication = async (req, res) => {
       petTypes,
       certifications,
       bio,
-      profileImage,
-      idDocument
     } = req.body;
+
+    // Process uploaded files
+    let profileImageUrl = req.body.profileImage;
+    let certificateImageUrl = req.body.certifications;
+
+    if (req.files) {
+      if (req.files.profileImage && req.files.profileImage[0]) {
+        profileImageUrl = getFileUrl(req.files.profileImage[0].filename, 'trainer');
+      }
+      if (req.files.certificateImage && req.files.certificateImage[0]) {
+        certificateImageUrl = getFileUrl(req.files.certificateImage[0].filename, 'certificate');
+      }
+    }
 
     // Check if user already has a pending application
     const existingApplication = await CaregiverApplication.findOne({
@@ -37,11 +49,11 @@ const submitCaregiverApplication = async (req, res) => {
       phone,
       location,
       experience,
-      petTypes,
-      certifications,
+      petTypes: Array.isArray(petTypes) ? petTypes : [petTypes],
+      certifications: certificateImageUrl || certifications,
       bio,
-      profileImage,
-      idDocument,
+      profileImage: profileImageUrl,
+      idDocument: req.body.idDocument, // ID document can be handled similarly if needed
       userId: req.user?._id
     });
 
