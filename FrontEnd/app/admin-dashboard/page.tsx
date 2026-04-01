@@ -20,7 +20,9 @@ import {
   CheckCircle, 
   XCircle, 
   Shield,
-  Plus
+  Plus,
+  ServerCrash,
+  RefreshCw
 } from "lucide-react"
 
 export default function AdminDashboardPage() {
@@ -31,6 +33,7 @@ export default function AdminDashboardPage() {
   const [users, setUsers] = useState<User[]>([])
   const [requests, setRequests] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [backendError, setBackendError] = useState<{ message: string; url?: string } | null>(null)
 
   useEffect(() => {
     if (!isLoading && (!user || user.role !== 'admin')) {
@@ -46,6 +49,7 @@ export default function AdminDashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
+      setBackendError(null)
       const [petsData, trainersData, usersData, requestsData] = await Promise.all([
         petApi.getAllPets(),
         trainerApi.getTrainers(),
@@ -57,8 +61,14 @@ export default function AdminDashboardPage() {
       setTrainers(trainersData)
       setUsers(usersData)
       setRequests(requestsData)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch dashboard data:', error)
+      if (error.isBackendDown || error.message?.includes('BACKEND_OFFLINE')) {
+        setBackendError({ 
+          message: error.message || 'Cannot reach backend server',
+          url: error.url 
+        })
+      }
     } finally {
       setLoading(false)
     }
@@ -110,6 +120,42 @@ export default function AdminDashboardPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
           <p className="text-muted-foreground">You need admin privileges to access this page.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (backendError) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-md mx-auto text-center">
+          <div className="bg-destructive/10 p-6 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+            <ServerCrash className="h-12 w-12 text-destructive" />
+          </div>
+          <h1 className="text-3xl font-bold mb-2">Backend Connection Error</h1>
+          <p className="text-muted-foreground mb-8">
+            {backendError.message}
+          </p>
+          <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-md text-left mb-8 text-sm font-mono break-all">
+            <p className="text-muted-foreground mb-2">Technical Details:</p>
+            <p>API Endpoint: {backendError.url || 'Internal Request'}</p>
+          </div>
+          <div className="flex flex-col gap-3">
+            <Button 
+              size="lg" 
+              className="w-full"
+              onClick={() => fetchDashboardData()}
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Retry Connection
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.reload()}
+            >
+              Reload Page
+            </Button>
+          </div>
         </div>
       </div>
     )

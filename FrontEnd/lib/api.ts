@@ -208,12 +208,15 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
         if (isLastAttempt) {
           throw new Error(`Request timed out after ${timeoutMs}ms. Please check your connection and try again.`);
         }
-      } else if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      } else if (error instanceof TypeError && (error.message === 'Failed to fetch' || error.message.includes('NetworkError'))) {
         console.error(`[API Connection Error] Cannot reach backend at ${API_BASE_URL} (Attempt ${attempt + 1})`);
         
         if (isLastAttempt) {
-          // Specific backend down identifier for boundary catching
-          throw new Error(`BACKEND_DOWN: Unable to connect to the server. Please check if the backend is running at ${API_BASE_URL}`);
+          // Specific backend down identifier for UI context boundary catching
+          const connectionError = new Error(`BACKEND_OFFLINE: Connection refused. Please ensure the backend is running at ${API_BASE_URL}`);
+          (connectionError as any).isBackendDown = true;
+          (connectionError as any).url = fullUrl;
+          throw connectionError;
         }
       } else if (error.message && error.message.startsWith('BACKEND_DOWN')) {
         // Re-throw backend down errors immediately
