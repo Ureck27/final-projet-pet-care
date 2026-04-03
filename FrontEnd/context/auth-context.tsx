@@ -7,9 +7,9 @@ import { authApi } from "@/lib/api"
 interface AuthContextType {
   user: User | null
   isLoading: boolean
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>
-  adminLogin: (email: string, password: string) => Promise<{ success: boolean; message?: string }>
-  register: (data: RegisterData) => Promise<{ success: boolean; message?: string }>
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: string }>
+  adminLogin: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: string }>
+  register: (data: RegisterData) => Promise<{ success: boolean; message?: string; role?: string }>
   logout: () => void
   forgotPassword: (email: string) => Promise<boolean>
 }
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; message?: string; role?: string }> => {
     setIsLoading(true)
     try {
       const data = await authApi.login({ email, password });
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("petcare_user", JSON.stringify(loggedUser))
       localStorage.setItem("petcare_token", data.token)
       setIsLoading(false)
-      return { success: true }
+      return { success: true, role: loggedUser.role }
     } catch (err: any) {
       localStorage.removeItem("petcare_token");
       localStorage.removeItem("petcare_user");
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const adminLogin = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
+  const adminLogin = async (email: string, password: string): Promise<{ success: boolean; message?: string; role?: string }> => {
     setIsLoading(true)
     try {
       const data = await authApi.adminLogin({ email, password });
@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("petcare_user", JSON.stringify(loggedUser))
       localStorage.setItem("petcare_token", data.token)
       setIsLoading(false)
-      return { success: true }
+      return { success: true, role: loggedUser.role }
     } catch (err: any) {
       localStorage.removeItem("petcare_token");
       localStorage.removeItem("petcare_user");
@@ -120,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const register = async (data: RegisterData): Promise<{ success: boolean; message?: string }> => {
+  const register = async (data: RegisterData): Promise<{ success: boolean; message?: string; role?: string }> => {
     setIsLoading(true)
     try {
       const resData = await authApi.register({ 
@@ -145,7 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("petcare_user", JSON.stringify(newUser))
       localStorage.setItem("petcare_token", resData.token)
       setIsLoading(false)
-      return { success: true }
+      return { success: true, role: newUser.role }
     } catch (err: any) {
       const errorMessage = err.message || 'Registration failed';
       console.error('[Auth Error] Registration failed:', errorMessage);

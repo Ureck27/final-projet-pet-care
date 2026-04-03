@@ -41,7 +41,13 @@ export function LoginForm() {
     const result = await login(data.email, data.password)
 
     if (result.success) {
-      router.push("/dashboard")
+      if (result.role === 'admin') {
+        router.push("/admin-dashboard")
+      } else if (result.role === 'trainer') {
+        router.push("/trainer-dashboard")
+      } else {
+        router.push("/dashboard")
+      }
     } else {
       setError(result.message || "Invalid email or password. Try: john@example.com")
     }

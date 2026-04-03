@@ -17,14 +17,10 @@ async function checkAdminUsers() {
       console.log('');
       console.log('📝 Creating default admin user...');
       
-      // Create default admin
-      const bcrypt = require('bcryptjs');
-      const hashedPassword = await bcrypt.hash('admin123', 10);
-      
       const adminUser = new User({
         name: 'Admin User',
         email: 'admin@petcare.com',
-        password: hashedPassword, // Pre-hashed password
+        password: 'admin123', // Will be hashed by pre-save hook
         role: 'admin',
         status: 'accepted'
       });
