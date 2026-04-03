@@ -3,7 +3,7 @@ const User = require('../models/User');
 const RoutineLog = require('../models/RoutineLog');
 const Pet = require('../models/Pet');
 const Notification = require('../models/Notification');
-const { io } = require('../server');
+const { getIO } = require('../config/socket');
 
 class NotificationService {
   constructor() {
@@ -33,6 +33,7 @@ class NotificationService {
       });
 
       // Emit real-time notification if io is available
+      const io = getIO();
       if (io) {
         io.emit('new_notification', {
           userId: userId.toString(),
