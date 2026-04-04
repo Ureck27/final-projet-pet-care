@@ -6,8 +6,9 @@ const getTasks = async (req, res) => {
   try {
     const tasks = await Task.find({})
       .populate('petId', 'name')
-      .populate('ownerId', 'fullName')
-      .populate('caregiverId', 'fullName');
+      .populate('ownerId', 'name')
+      .populate('caregiverId', 'name')
+      .populate('trainerId', 'name');
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -20,8 +21,9 @@ const getTaskById = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id)
       .populate('petId', 'name')
-      .populate('ownerId', 'fullName')
-      .populate('caregiverId', 'fullName');
+      .populate('ownerId', 'name')
+      .populate('caregiverId', 'name')
+      .populate('trainerId', 'name');
       
     if (task) {
       res.json(task);
@@ -37,12 +39,13 @@ const getTaskById = async (req, res) => {
 // @route   POST /api/tasks
 const createTask = async (req, res) => {
   try {
-    const { petId, ownerId, caregiverId, title, type, description, priority, dueDate, assignedTo } = req.body;
+    const { petId, ownerId, caregiverId, trainerId, title, type, description, priority, dueDate, assignedTo } = req.body;
     
     const task = await Task.create({
       petId,
       ownerId,
       caregiverId,
+      trainerId,
       title,
       type,
       description,
@@ -71,9 +74,10 @@ const updateTask = async (req, res) => {
     // Security check: Only owner, assigned caregiver, or admin can update task
     const isOwner = task.ownerId && task.ownerId.toString() === req.user._id.toString();
     const isCaregiver = task.caregiverId && task.caregiverId.toString() === req.user._id.toString();
+    const isTrainer = task.trainerId && task.trainerId.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
     
-    if (!isOwner && !isCaregiver && !isAdmin) {
+    if (!isOwner && !isCaregiver && !isTrainer && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to update this task' });
     }
 
@@ -108,9 +112,10 @@ const deleteTask = async (req, res) => {
     // Security check: Only owner, assigned caregiver, or admin can delete task
     const isOwner = task.ownerId && task.ownerId.toString() === req.user._id.toString();
     const isCaregiver = task.caregiverId && task.caregiverId.toString() === req.user._id.toString();
+    const isTrainer = task.trainerId && task.trainerId.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
     
-    if (!isOwner && !isCaregiver && !isAdmin) {
+    if (!isOwner && !isCaregiver && !isTrainer && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to delete this task' });
     }
 
