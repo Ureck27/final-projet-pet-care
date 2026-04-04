@@ -274,7 +274,7 @@ export default function PetUpdatePage() {
         
         <div className="flex items-center gap-4">
           <Avatar className="h-12 w-12">
-            <AvatarImage src={pet.image} alt={pet.name} />
+            <AvatarImage src={getMediaUrl(pet.image)} alt={pet.name} />
             <AvatarFallback>{pet.name[0]}</AvatarFallback>
           </Avatar>
           <div>
@@ -521,13 +521,13 @@ export default function PetUpdatePage() {
                         <div className="mb-2">
                           {update.type === 'photo' ? (
                             <img 
-                              src={update.content} 
+                              src={getMediaUrl(update.content)} 
                               alt="Update" 
                               className="w-full h-32 object-cover rounded"
                             />
                           ) : (
                             <video 
-                              src={update.content} 
+                              src={getMediaUrl(update.content)} 
                               className="w-full h-32 object-cover rounded"
                               controls
                             />

@@ -20,6 +20,7 @@ import {
   FileText
 } from "lucide-react"
 import type { Pet, PetProfile } from "@/lib/types"
+import { getMediaUrl } from "@/lib/api"
 import { format } from "date-fns"
 
 interface PetProfileDetailProps {
@@ -102,7 +103,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
               </CardHeader>
               <CardContent className="flex flex-wrap gap-4">
                 {(pet.images?.length ? pet.images : [pet.imageUrl || pet.photo]).map((img, i) => (
-                   img && <img key={i} src={img} alt={`${pet.name}`} className="w-full max-w-sm rounded-lg object-cover" />
+                   img && <img key={i} src={getMediaUrl(img)} alt={`${pet.name}`} className="w-full max-w-sm rounded-lg object-cover" />
                 ))}
               </CardContent>
             </Card>
@@ -115,7 +116,7 @@ export function PetProfileDetail({ pet, profile }: PetProfileDetailProps) {
               </CardHeader>
               <CardContent className="flex flex-wrap gap-4">
                 {pet.videos.map((vid, i) => (
-                  <video key={i} src={vid} controls className="w-full max-w-lg rounded-lg" />
+                  <video key={i} src={getMediaUrl(vid)} controls className="w-full max-w-lg rounded-lg" />
                 ))}
               </CardContent>
             </Card>

@@ -1,4 +1,5 @@
 const Pet = require('../models/Pet');
+const { getFileUrl } = require('../middleware/uploadMiddleware');
 
 const createPet = async (req, res) => {
   try {
@@ -6,7 +7,7 @@ const createPet = async (req, res) => {
     let image = req.body.image;
 
     if (req.file) {
-      image = `/uploads/pets/${req.file.filename}`;
+      image = getFileUrl(req.file.filename, 'pet');
     }
 
     if (!name || !type || age === undefined) {
@@ -154,7 +155,7 @@ const updatePet = async (req, res) => {
     if (description !== undefined) pet.description = description;
 
     if (req.file) {
-      pet.image = `/uploads/pets/${req.file.filename}`;
+      pet.image = getFileUrl(req.file.filename, 'pet');
     } else if (req.body.image) {
       pet.image = req.body.image;
     }

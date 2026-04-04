@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import type { Pet } from "@/lib/types"
+import { getMediaUrl } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -22,7 +23,7 @@ export function PetCard({ pet, onEdit, onDelete, onBook, className }: PetCardPro
   return (
     <Card className={`group overflow-hidden border-border transition-shadow hover:shadow-md ${className || ""}`}>
       <div className="relative aspect-square overflow-hidden bg-muted">
-        <img src={(pet as any).image || pet.photo || pet.imageUrl || "/placeholder.svg"} alt={pet.name} className="h-full w-full object-cover" />
+        <img src={getMediaUrl((pet as any).image || pet.photo || (pet as any).imageUrl)} alt={pet.name} className="h-full w-full object-cover" />
         <div className="absolute right-2 top-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

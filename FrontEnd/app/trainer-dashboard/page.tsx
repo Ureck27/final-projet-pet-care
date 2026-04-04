@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { petApi, trainerApi, type User, Trainer, type Pet } from "@/lib/api"
+import { petApi, trainerApi, getMediaUrl, type User, Trainer, type Pet } from "@/lib/api"
 import { Loader } from "@/components/common/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -289,7 +289,7 @@ export default function TrainerDashboardPage() {
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12 border-2 border-primary/10">
-                      <AvatarImage src={pet.image} alt={pet.name} className="object-cover" />
+                      <AvatarImage src={getMediaUrl(pet.image)} alt={pet.name} className="object-cover" />
                       <AvatarFallback className="bg-primary/5 text-primary">{pet.name[0]}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
