@@ -376,31 +376,33 @@ export default function HomePage() {
           <StaggerChildren staggerDelay={0.2} className="grid gap-6 md:grid-cols-4">
             {howItWorks.map((step, index) => (
               <StaggerItem key={step.title}>
-                <Card className="border-border shadow-soft hover:shadow-md hover:-translate-y-1 transition-smooth relative bg-glass group overflow-hidden">
+                <Card className="h-full border border-border/60 dark:border-primary/20 shadow-md hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300 relative bg-card dark:bg-gray-800/95 group overflow-hidden">
                   <motion.div 
                     initial={{ scale: 0 }} 
                     whileInView={{ scale: 1 }} 
                     transition={{ delay: index * 0.2 + 0.3 }}
-                    className="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out"
+                    className="absolute -right-8 -top-8 w-32 h-32 bg-primary/5 dark:bg-primary/10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"
                   />
-                  <CardContent className="p-6 relative z-10">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow">
-                      {index + 1}
+                  <CardContent className="p-8 relative z-10 flex flex-col">
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 dark:bg-primary/20 group-hover:bg-primary transition-colors duration-300 shadow-sm border border-primary/10">
+                        {step.icon && <step.icon className="h-7 w-7 text-primary dark:drop-shadow-sm group-hover:text-primary-foreground transition-colors" />}
+                      </div>
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground text-lg font-bold shadow-md group-hover:scale-110 transition-transform">
+                        {index + 1}
+                      </div>
                     </div>
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                      {step.icon && <step.icon className="h-6 w-6 icon-visible text-primary" />}
-                    </div>
-                    <h3 className="mb-2 font-semibold text-foreground group-hover:text-primary transition-colors">{step.title}</h3>
-                    <p className="text-sm text-muted-foreground">{step.description}</p>
+                    <h3 className="mb-3 text-xl font-bold text-foreground dark:text-white group-hover:text-primary transition-colors">{step.title}</h3>
+                    <p className="text-base text-gray-700 dark:text-gray-200 font-medium leading-relaxed">{step.description}</p>
                   </CardContent>
                   
                   {index < howItWorks.length - 1 && (
-                    <div className="hidden md:block absolute -right-3 top-1/2 transform -translate-y-1/2 z-20 pointer-events-none">
+                    <div className="hidden md:flex absolute -right-4 top-1/2 transform -translate-y-1/2 z-20 pointer-events-none items-center justify-center rounded-full bg-background dark:bg-gray-800 p-1.5 border border-border shadow-sm">
                       <motion.div
-                        animate={{ x: [0, 5, 0] }}
+                        animate={{ x: [0, 4, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       >
-                        <ArrowRight className="h-6 w-6 icon-visible text-primary/40" />
+                        <ArrowRight className="h-5 w-5 text-primary" />
                       </motion.div>
                     </div>
                   )}
