@@ -119,28 +119,28 @@ export default function ServicesPage() {
           {services.map((service) => (
             <Card
               key={service.title}
-              className="relative flex flex-col shadow-sm dark:shadow-none transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:hover:scale-[1.02] border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+              className="relative flex flex-col shadow-sm dark:shadow-none transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-none dark:hover:scale-[1.02] border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-2xl"
             >
-              {service.popular && <Badge className="absolute -top-2 right-4 bg-primary">Popular</Badge>}
+              {service.popular && <Badge className="absolute -top-2 right-4 bg-purple-100 text-purple-700 hover:bg-purple-100 border-none dark:bg-primary dark:text-white dark:hover:bg-primary">Popular</Badge>}
               <CardHeader>
-                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 dark:bg-primary/20">
+                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 dark:bg-primary/20">
                   <service.icon className="h-6 w-6 text-primary dark:text-primary" />
                 </div>
-                <CardTitle className="text-xl dark:text-white">{service.title}</CardTitle>
-                <CardDescription className="line-clamp-2 dark:text-gray-300">{service.description}</CardDescription>
+                <CardTitle className="text-xl text-gray-900 dark:text-white">{service.title}</CardTitle>
+                <CardDescription className="line-clamp-2 text-gray-500 dark:text-gray-300">{service.description}</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-1 flex-col">
                 <ul className="mb-4 flex-1 space-y-2">
                   {service.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-400">
+                    <li key={feature} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                       <CheckCircle2 className="h-4 w-4 text-success dark:text-success" />
                       {feature}
                     </li>
                   ))}
                 </ul>
                 <div className="mt-auto">
-                  <p className="mb-3 text-lg font-semibold text-primary dark:text-primary font-bold">{service.price}</p>
-                  <Button className="w-full transition-all hover:brightness-110 hover:scale-[1.02]" asChild>
+                  <p className="mb-3 text-lg font-semibold text-primary dark:text-primary">{service.price}</p>
+                  <Button className="w-full transition-all bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:brightness-110 hover:scale-[1.02] border-0" asChild>
                     <Link href="/trainers">
                       Book Now
                       <ArrowRight className="ml-2 h-4 w-4" />

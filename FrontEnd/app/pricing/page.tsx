@@ -99,36 +99,36 @@ export default function PricingPage() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col shadow-sm dark:shadow-none transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:hover:scale-[1.02] ${plan.popular ? "border-primary border-2 bg-white dark:bg-gray-900" : "border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"}`}
+              className={`relative flex flex-col shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-none dark:hover:scale-[1.02] rounded-2xl ${plan.popular ? "border-purple-500 border-2 bg-white shadow-md dark:shadow-none dark:bg-gray-900" : "border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"}`}
             >
               {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary px-4">Most Popular</Badge>
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 hover:bg-purple-100 border-none dark:bg-primary dark:text-white dark:hover:bg-primary px-4">Most Popular</Badge>
               )}
               <CardHeader className="text-center">
-                <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20">
+                <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-primary/20">
                   <plan.icon className="h-6 w-6 text-primary dark:text-primary" />
                 </div>
-                <CardTitle className="text-xl dark:text-white">{plan.name}</CardTitle>
-                <CardDescription className="dark:text-gray-300">{plan.description}</CardDescription>
+                <CardTitle className="text-xl text-gray-900 dark:text-white">{plan.name}</CardTitle>
+                <CardDescription className="text-gray-500 dark:text-gray-300">{plan.description}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold dark:text-white">{plan.price === 0 ? "Free" : `$${plan.price}`}</span>
-                  {plan.price > 0 && <span className="text-muted-foreground dark:text-gray-400">{plan.period}</span>}
+                  <span className="text-4xl font-bold text-gray-900 dark:text-white">{plan.price === 0 ? "Free" : `$${plan.price}`}</span>
+                  {plan.price > 0 && <span className="text-gray-500 dark:text-gray-400">{plan.period}</span>}
                 </div>
               </CardHeader>
               <CardContent className="flex flex-1 flex-col">
                 <ul className="mb-6 flex-1 space-y-3">
                   {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2 text-sm dark:text-gray-300">
+                    <li key={index} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                       {feature.included ? (
                         <Check className="h-4 w-4 shrink-0 text-primary dark:text-primary" />
                       ) : (
-                        <X className="h-4 w-4 shrink-0 text-muted-foreground/50 dark:text-gray-600" />
+                        <X className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-600" />
                       )}
-                      <span className={feature.included ? "" : "text-muted-foreground/50 dark:text-gray-500"}>{feature.text}</span>
+                      <span className={feature.included ? "text-gray-600 dark:text-gray-300" : "text-gray-400 dark:text-gray-500"}>{feature.text}</span>
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full transition-all hover:brightness-110 hover:scale-[1.02]" variant={plan.popular ? "default" : "outline"} asChild>
+                <Button className={`w-full transition-all hover:brightness-110 hover:scale-[1.02] ${plan.popular ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:text-white" : "text-gray-900 dark:text-white"}`} variant={plan.popular ? "default" : "outline"} asChild>
                   <Link href="/register">{plan.cta}</Link>
                 </Button>
               </CardContent>
@@ -148,7 +148,7 @@ export default function PricingPage() {
             {serviceRates.map((rate, index) => (
               <Card 
                 key={index} 
-                className="group relative overflow-hidden shadow-sm dark:shadow-none transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:hover:scale-[1.02] cursor-pointer border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+                className="group relative overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-none dark:hover:scale-[1.02] cursor-pointer border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-2xl"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${rate.color} opacity-0`} />
                 <CardHeader className="relative">
@@ -156,12 +156,12 @@ export default function PricingPage() {
                     <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${rate.color} text-white`}>
                       <rate.icon className="h-6 w-6" />
                     </div>
-                    <Badge variant="secondary" className="text-xs dark:bg-gray-800 dark:text-gray-300">
+                    <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border-none">
                       {rate.category}
                     </Badge>
                   </div>
-                  <CardTitle className="text-lg dark:text-white">{rate.service}</CardTitle>
-                  <CardDescription className="flex items-center gap-1 text-sm dark:text-gray-300">
+                  <CardTitle className="text-lg text-gray-900 dark:text-white mt-4">{rate.service}</CardTitle>
+                  <CardDescription className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
                     <Clock className="h-3 w-3" />
                     {rate.duration}
                   </CardDescription>
@@ -169,14 +169,14 @@ export default function PricingPage() {
                 <CardContent className="relative">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-muted-foreground dark:text-gray-400 mb-1">Price Range</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Price Range</p>
                       <p className={`text-xl font-bold bg-gradient-to-r ${rate.color} bg-clip-text text-transparent dark:brightness-110`}>
                         {rate.price}
                       </p>
                     </div>
                     <div className={`h-8 w-8 rounded-full bg-gradient-to-br ${rate.color} opacity-0`} />
                   </div>
-                  <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground dark:text-gray-400">
+                  <div className="mt-4 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                     <DollarSign className="h-3 w-3" />
                     <span>Varies by trainer & location</span>
                   </div>
