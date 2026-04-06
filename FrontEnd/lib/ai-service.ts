@@ -97,12 +97,9 @@ export interface AIHealthInsights {
 
 class AIService {
   private baseUrl: string
-  private apiKey: string
 
   constructor() {
-    // In production, these would come from environment variables
-    this.baseUrl = process.env.NEXT_PUBLIC_AI_API_URL || "https://api.petcare-ai.com/v1"
-    this.apiKey = process.env.NEXT_PUBLIC_AI_API_KEY || "demo-key"
+    this.baseUrl = "/api/ai-scan"
   }
 
   /**
@@ -124,16 +121,18 @@ class AIService {
         formData.append('context', request.additionalContext)
       }
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const response = await fetch(this.baseUrl, {
+        method: 'POST',
+        // Omit headers, letting browser process multipart/form-data naturally
+        body: formData
+      });
 
-      // Mock AI analysis based on pet characteristics
-      const mockAnalysis = this.generateMockAnalysis(request)
-      
-      return {
-        success: true,
-        analysis: mockAnalysis
+      if (!response.ok) {
+        throw new Error(`AI API error: ${response.statusText}`);
       }
+
+      const data = await response.json();
+      return data;
 
       // In production, you would make an actual API call:
       /*
@@ -170,17 +169,20 @@ class AIService {
    */
   async chat(request: AIChatRequest): Promise<AIChatResponse> {
     try {
-      // Simulate AI chat response
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const response = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'chat', request })
+      });
 
-      const mockResponse = this.generateMockChatResponse(request)
-      
-      return {
-        success: true,
-        response: mockResponse.response,
-        suggestions: mockResponse.suggestions,
-        followUpQuestions: mockResponse.followUpQuestions
+      if (!response.ok) {
+        throw new Error(`AI chat error: ${response.statusText}`);
       }
+
+      const data = await response.json();
+      return data;
 
       // In production:
       /*
@@ -223,12 +225,20 @@ class AIService {
     period: "daily" | "weekly" | "monthly"
   ): Promise<AIHealthInsights> {
     try {
-      // Simulate insights generation
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const response = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'insights', petId, period })
+      });
 
-      const mockInsights = this.generateMockInsights(petId, period)
-      
-      return mockInsights
+      if (!response.ok) {
+        throw new Error(`AI insights error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
 
       // In production:
       /*
@@ -249,200 +259,6 @@ class AIService {
     } catch (error) {
       console.error('Health insights generation failed:', error)
       throw error
-    }
-  }
-
-  /**
-   * Generate mock analysis for demo purposes
-   */
-  private generateMockAnalysis(request: AIAnalysisRequest): PetHealthAnalysis {
-    const isYoung = request.petAge < 2
-    const isSenior = request.petAge > 8
-    const fileType = request.file.type.startsWith('image/') ? 'image' : 'video'
-    
-    // Generate findings based on pet characteristics
-    const findings = []
-    
-    if (isSenior) {
-      findings.push({
-        type: "physical" as const,
-        concern: "Slightly reduced mobility detected",
-        severity: "medium" as const,
-        recommendation: "Consider joint supplements and gentler exercise"
-      })
-    }
-    
-    findings.push({
-      type: "behavior" as const,
-      concern: isYoung ? "High energy and playful behavior" : "Normal activity patterns",
-      severity: "low" as const,
-      recommendation: isYoung ? "Provide plenty of exercise and stimulation" : "Maintain current routine"
-    })
-    
-    findings.push({
-      type: "physical" as const,
-      concern: "Coat appears healthy and well-groomed",
-      severity: "low" as const,
-      recommendation: "Continue regular grooming schedule"
-    })
-
-    // Generate mood analysis
-    const emotions = [
-      { emotion: "content", confidence: 75 + Math.random() * 15 },
-      { emotion: "calm", confidence: 60 + Math.random() * 20 },
-      { emotion: "playful", confidence: isYoung ? 80 + Math.random() * 15 : 30 + Math.random() * 20 }
-    ]
-
-    const dominantEmotion = emotions.reduce((prev, current) => 
-      prev.confidence > current.confidence ? prev : current
-    ).emotion
-
-    return {
-      petId: request.petId,
-      overallStatus: isSenior ? "attention-needed" : "healthy",
-      confidence: 80 + Math.random() * 15,
-      findings,
-      moodAnalysis: {
-        dominantEmotion,
-        confidence: 70 + Math.random() * 20,
-        emotions
-      },
-      vitals: {
-        activityLevel: isYoung ? "high" : isSenior ? "low" : "moderate",
-        stressLevel: "low"
-      },
-      recommendations: [
-        "Maintain regular feeding schedule",
-        "Continue daily exercise appropriate for age",
-        "Schedule regular veterinary checkups",
-        isSenior ? "Monitor for signs of arthritis" : "Maintain current activity levels"
-      ],
-      followUpActions: [
-        "Monitor activity levels over the next week",
-        "Note any changes in appetite or behavior",
-        "Schedule vet appointment if concerns persist",
-        "Document any unusual symptoms"
-      ],
-      timestamp: new Date()
-    }
-  }
-
-  /**
-   * Generate mock chat response
-   */
-  private generateMockChatResponse(request: AIChatRequest): {
-    response: string
-    suggestions: string[]
-    followUpQuestions: string[]
-  } {
-    const role = request.userRole || "visitor"
-    const responses = [
-      {
-        response:
-          role === "visitor"
-            ? "Welcome to PetCare. I can answer general questions about pet care, services, pricing, and how the platform works. For pet-specific advice (based on your pet profile, routines, or bookings), please sign in."
-            : "Based on your question, I recommend monitoring your pet's behavior closely. Changes in routine can indicate various health aspects, and it's always good to be observant.",
-        suggestions: [
-          role === "visitor" ? "Explore services and pricing" : "Keep a daily log of activities",
-          role === "visitor" ? "Sign in to connect with trainers" : "Note any changes in eating habits",
-          role === "visitor" ? "Learn how bookings work" : "Monitor sleep patterns"
-        ],
-        followUpQuestions: [
-          role === "visitor" ? "What pet do you have (dog/cat/other)?" : "Have you noticed any recent changes in appetite?",
-          role === "visitor" ? "Are you looking for a trainer or a caregiver service?" : "How is their energy level compared to usual?",
-          role === "visitor" ? "Do you want help choosing a service package?" : "Are there any specific behaviors that concern you?"
-        ]
-      },
-      {
-        response:
-          role === "trainer" || role === "worker"
-            ? "If this is a care session update, include what you observed (energy, appetite, bathroom, mood) and I can help turn it into a clear owner-facing note and next-step recommendations."
-            : "That's a great question about your pet's wellbeing. Regular observation is key to maintaining their health. Every pet is unique, and understanding their normal behavior helps identify when something might be wrong.",
-        suggestions: [
-          role === "trainer" || role === "worker" ? "Draft a daily report summary" : "Establish a baseline for normal behavior",
-          role === "trainer" || role === "worker" ? "Create a simple care checklist" : "Take weekly photos to track physical changes",
-          role === "trainer" || role === "worker" ? "Flag any urgent symptoms to the owner/admin" : "Schedule regular veterinary checkups"
-        ],
-        followUpQuestions: [
-          role === "trainer" || role === "worker" ? "What did you observe today (walk/meal/mood)?" : "What specific behaviors are you observing?",
-          role === "trainer" || role === "worker" ? "Any photos/videos to attach to the report?" : "How long have you noticed these patterns?",
-          role === "trainer" || role === "worker" ? "Any concerns that need escalation?" : "Have there been any recent changes in environment?"
-        ]
-      },
-      {
-        response:
-          role === "admin"
-            ? "I can help with platform operations too: resolving bookings, role changes, trainer approvals, and writing announcements. Tell me what you’re trying to do."
-            : "I understand your concern for your pet's health. It's always better to be cautious when it comes to their wellbeing. Based on what you've described, here are some things to consider.",
-        suggestions: [
-          role === "admin" ? "Review trainer requests" : "Consult with a veterinarian if symptoms persist",
-          role === "admin" ? "Check dashboard stats" : "Monitor and document symptoms",
-          role === "admin" ? "Manage users and roles" : "Maintain regular routine for comfort"
-        ],
-        followUpQuestions: [
-          role === "admin" ? "What area do you need help with (users/pets/trainers/bookings)?" : "When did you first notice these symptoms?",
-          role === "admin" ? "Do you want a message template for users?" : "Are there any other accompanying symptoms?",
-          role === "admin" ? "Should this be a platform-wide announcement?" : "Has your pet's diet or routine changed recently?"
-        ]
-      }
-    ]
-
-    return responses[Math.floor(Math.random() * responses.length)]
-  }
-
-  /**
-   * Generate mock health insights
-   */
-  private generateMockInsights(petId: string, period: "daily" | "weekly" | "monthly"): AIHealthInsights {
-    const trends = ["improving", "stable", "declining"] as const
-    const trend = trends[Math.floor(Math.random() * trends.length)]
-    
-    return {
-      petId,
-      period,
-      insights: {
-        overallTrend: trend,
-        keyMetrics: {
-          healthScore: 70 + Math.random() * 25,
-          activityLevel: 60 + Math.random() * 35,
-          moodScore: 65 + Math.random() * 30,
-          routineConsistency: 75 + Math.random() * 20
-        },
-        patterns: [
-          {
-            type: "Activity",
-            description: "Consistent morning walk routine",
-            frequency: period === "daily" ? "Daily" : period === "weekly" ? "5-6 times per week" : "25-30 times per month",
-            impact: "positive"
-          },
-          {
-            type: "Eating",
-            description: "Regular meal times with good appetite",
-            frequency: period === "daily" ? "2-3 times daily" : period === "weekly" ? "Consistent" : "Consistent",
-            impact: "positive"
-          },
-          {
-            type: "Behavior",
-            description: trend === "declining" ? "Slightly increased rest periods" : "Normal play behavior",
-            frequency: period === "daily" ? "Daily observation" : period === "weekly" ? "Regular" : "Ongoing",
-            impact: trend === "declining" ? "concerning" : "neutral"
-          }
-        ],
-        recommendations: [
-          "Continue current exercise routine",
-          "Maintain consistent feeding schedule",
-          "Monitor for any changes in behavior",
-          trend === "declining" ? "Consider veterinary checkup" : "Schedule regular wellness visits"
-        ],
-        alerts: trend === "declining" ? [
-          {
-            type: "behavior",
-            message: "Slight decrease in activity levels noted",
-            priority: "medium"
-          }
-        ] : []
-      },
-      generatedAt: new Date()
     }
   }
 }

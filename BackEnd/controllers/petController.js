@@ -133,6 +133,11 @@ const getPetById = async (req, res) => {
       return res.status(404).json({ message: 'Pet not found' });
     }
 
+    // Security check: Only owner, trainer, or admin can fetch this pet
+    if (req.user.role !== 'admin' && req.user.role !== 'trainer' && pet.userId._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to view this pet' });
+    }
+
     res.json(pet);
   } catch (error) {
     console.error('Error fetching pet by ID:', error);

@@ -29,13 +29,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("petcare_user")
-    const token = localStorage.getItem("petcare_token")
+    const fetchUser = async () => {
+      try {
+        const userData = await authApi.getMe();
+        setUser(userData as unknown as User);
+      } catch (err) {
+        // Not logged in or error
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    if (savedUser && token) {
-      setUser(JSON.parse(savedUser))
-    }
-    setIsLoading(false)
+    fetchUser();
   }, [])
 
   const login = async (email: string, password: string): Promise<{ success: boolean; message?: string; role?: string }> => {
@@ -51,19 +56,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fullName: data.name,
         phone: '',
         role: data.role as UserRole,
-        status: (data.status as "pending" | "active" | "suspended" | "rejected") || "active",
+        status: (data.status as any) || "accepted",
         createdAt: new Date(),
-        updatedAt: new Date().toISOString()
       }
       setUser(loggedUser)
-      localStorage.setItem("petcare_user", JSON.stringify(loggedUser))
-      localStorage.setItem("petcare_token", data.token)
       setIsLoading(false)
       return { success: true, role: loggedUser.role }
     } catch (err: any) {
-      localStorage.removeItem("petcare_token");
-      localStorage.removeItem("petcare_user");
-      
       const errorMessage = err.message || 'Login failed';
       console.error('[Auth Error] Login failed:', errorMessage);
       setIsLoading(false)
@@ -87,19 +86,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fullName: data.name,
         phone: '',
         role: data.role as UserRole,
-        status: (data.status as "pending" | "active" | "suspended" | "rejected") || "active",
+        status: (data.status as any) || "accepted",
         createdAt: new Date(),
-        updatedAt: new Date().toISOString()
       }
       setUser(loggedUser)
-      localStorage.setItem("petcare_user", JSON.stringify(loggedUser))
-      localStorage.setItem("petcare_token", data.token)
       setIsLoading(false)
       return { success: true, role: loggedUser.role }
     } catch (err: any) {
-      localStorage.removeItem("petcare_token");
-      localStorage.removeItem("petcare_user");
-      
       let errorMessage = 'Admin Login failed';
       
       // Handle rate limiting errors specifically
@@ -139,11 +132,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: resData.role as UserRole,
         status: "pending", // All new users are pending
         createdAt: new Date(),
-        updatedAt: new Date().toISOString()
       }
       setUser(newUser)
-      localStorage.setItem("petcare_user", JSON.stringify(newUser))
-      localStorage.setItem("petcare_token", resData.token)
       setIsLoading(false)
       return { success: true, role: newUser.role }
     } catch (err: any) {
@@ -157,10 +147,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem("petcare_user")
-    localStorage.removeItem("petcare_token")
+  const logout = async () => {
+    try {
+      await authApi.logout();
+    } catch (e) {
+      console.error('Logout error', e);
+    } finally {
+      setUser(null);
+      // Fallback cleanup if token is still cached somehow
+    }
   }
 
   const forgotPassword = async (email: string): Promise<boolean> => {

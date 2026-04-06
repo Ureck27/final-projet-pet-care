@@ -21,6 +21,27 @@ const generateToken = (id, role) => {
   });
 };
 
+const sendTokenResponse = (user, statusCode, res) => {
+  const token = generateToken(user._id, user.role);
+
+  const options = {
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict'
+  };
+
+  res.status(statusCode).cookie('token', token, options).json({
+    _id: user._id,
+    id: user._id.toString(),
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    // Keep sending token in JSON for backward compatibility until frontend switch is fully live, or remove after frontend switch.
+    // We'll remove it entirely to enforce security
+  });
+};
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 const registerUser = async (req, res) => {
@@ -60,14 +81,7 @@ const registerUser = async (req, res) => {
     console.log('User created successfully:', user);
 
     if (user) {
-      res.status(201).json({
-        _id: user._id,
-        id: user._id.toString(),
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id, user.role),
-      });
+      sendTokenResponse(user, 201, res);
     } else {
       res.status(400).json({ message: 'Invalid user data' });
     }
@@ -105,14 +119,7 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid password. Please try again.', type: 'auth' });
     }
 
-    res.json({
-      _id: user._id,
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      token: generateToken(user._id, user.role),
-    });
+    sendTokenResponse(user, 200, res);
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: error.message });
@@ -221,13 +228,21 @@ const adminLogin = async (req, res) => {
       });
     }
 
-    res.json({
+    const token = generateToken(user._id, user.role);
+
+    const options = {
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict'
+    };
+
+    res.status(200).cookie('token', token, options).json({
       _id: user._id,
       id: user._id.toString(),
       name: user.name,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id, user.role),
       redirect: '/admin-dashboard'
     });
   } catch (error) {
@@ -274,4 +289,17 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, adminLogin, forgotPassword, resetPassword, getMe };
+// @desc    Logout user
+// @route   POST /api/auth/logout
+const logoutUser = (req, res) => {
+  res.cookie('token', 'none', {
+    expires: new Date(Date.now() + 10 * 1000), // expire in 10 seconds
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict'
+  });
+  
+  res.status(200).json({ success: true, message: 'User logged out successfully' });
+};
+
+module.exports = { registerUser, loginUser, adminLogin, logoutUser, forgotPassword, resetPassword, getMe };

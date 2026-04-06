@@ -25,6 +25,7 @@ export function getMediaUrl(path: string | null | undefined): string {
 
 /**
  * Decodes a JWT token without validation
+ * Note: Since tokens are now HttpOnly cookies, this is rarely used directly by clients unless explicitly passed.
  */
 export function decodeToken(token: string | null): any {
   if (!token) return null;
@@ -53,25 +54,15 @@ interface RequestOptions extends RequestInit {
 }
 
 export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('petcare_token') : null;
   const timeoutMs = options.timeout || 15000; // Increased default timeout to 15s
   const maxRetries = options.retries !== undefined ? options.retries : 2; // Default 2 retries
   const retryDelay = options.retryDelay || 1000; // Default 1s delay
   const enableRetry = options.enableRetry !== false; // Enable retry by default
   let attempt = 0;
   
-  // Debug logging & Role identification
+  // Debug logging
   if (typeof window !== 'undefined') {
-    const decoded = decodeToken(token);
-    const userRole = decoded?.role || 'unknown';
-    const userId = decoded?.id || 'unknown';
-    
-    console.log(`[API] ${options.method || 'GET'} ${endpoint}`, {
-      hasToken: !!token,
-      role: userRole,
-      userId: userId,
-      isClientSide: true
-    });
+    console.log(`[API] ${options.method || 'GET'} ${endpoint} (with credentials)`);
   }
   
   const headers = new Headers(options.headers || {});
@@ -79,16 +70,11 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
   if (!isFormData) {
     headers.set('Content-Type', 'application/json');
   }
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
-  } else {
-    console.warn('[API] No token found - request may fail authentication');
-  }
 
   const config: RequestInit = {
     ...options,
     headers,
-    credentials: 'include',
+    credentials: 'include', // Important: This ensures HttpOnly cookies are sent
   };
 
   if (options.body !== undefined) {
@@ -131,12 +117,9 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
         
         // Enhanced logging for 403 errors
         if (response.status === 403) {
-          const decoded = decodeToken(token);
           console.error(`[API] 403 Forbidden - Permission denied for ${endpoint}`, {
             endpoint,
             method: options.method || 'GET',
-            userRole: decoded?.role,
-            userId: decoded?.id,
             error: errorData,
           });
           
@@ -150,8 +133,7 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
         // Automatic token purge on 401 Unauthorized
         if (response.status === 401 && typeof window !== 'undefined') {
           console.warn('[API Auth] 401 Unauthorized - Purging credentials');
-          localStorage.removeItem('petcare_token');
-          localStorage.removeItem('petcare_user');
+          // Important: We no longer clear token here as it's an HttpOnly cookie, but we clear the user state if needed.
           // Optional: redirect to login if we have window.location
           if (endpoint !== '/auth/login' && endpoint !== '/auth/admin-login') {
             window.location.href = '/login';
@@ -378,6 +360,9 @@ export interface DashboardStats {
 
 // Auth API
 export const authApi = {
+  getMe: () => 
+    api.get<User>('/auth/me'),
+
   register: (userData: { name: string; email: string; password: string }) =>
     api.post<AuthResponse>('/auth/register', userData),
   
@@ -389,6 +374,9 @@ export const authApi = {
       retries: 1, // Reduce retries for admin login
       enableRetry: false // Disable retries for admin login to avoid rate limit issues
     }),
+
+  logout: () =>
+    api.post<{ success: boolean; message: string }>('/auth/logout', {}),
   
   forgotPassword: (email: string) =>
     api.post<{ message: string }>('/auth/forgot-password', { email }),
