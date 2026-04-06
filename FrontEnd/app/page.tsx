@@ -376,39 +376,39 @@ export default function HomePage() {
           <StaggerChildren staggerDelay={0.2} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {howItWorks.map((step, index) => (
               <StaggerItem key={step.title} className="relative h-full flex flex-col">
-                <Card className="h-full border-[#e5e7eb] dark:border-primary/20 shadow-[0_8px_24px_rgba(0,0,0,0.06)] dark:shadow-md hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] hover:-translate-y-[6px] hover:scale-[1.02] transition-all duration-300 relative bg-white dark:bg-gray-800/95 group overflow-hidden flex flex-col">
+                <Card className="h-full border-border shadow-soft dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-xl hover:border-primary/50 hover:-translate-y-[6px] hover:scale-[1.02] transition-all duration-300 relative bg-card dark:hover:bg-card/80 group overflow-hidden flex flex-col rounded-[1.5rem]">
                   <motion.div 
                     initial={{ scale: 0 }} 
                     whileInView={{ scale: 1 }} 
                     transition={{ delay: index * 0.2 + 0.3 }}
-                    className="absolute -right-8 -top-8 w-32 h-32 bg-primary/8 dark:bg-primary/10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out z-0"
+                    className="absolute -right-12 -top-12 w-40 h-40 bg-primary/10 dark:bg-primary/20 blur-xl rounded-full group-hover:scale-150 transition-transform duration-700 ease-out z-0"
                   />
                   
                   {/* Fixed Step Badge Top Right */}
-                  <div className="absolute top-6 right-6 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#a855f7] to-[#7c3aed] text-white text-lg font-bold shadow-md group-hover:scale-110 transition-all duration-300 cursor-default">
+                  <div className="absolute top-6 right-6 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-lg font-bold shadow-soft group-hover:scale-110 transition-all duration-300 cursor-default">
                     {index + 1}
                   </div>
 
-                  <CardContent className="p-8 relative z-10 flex flex-col flex-1">
-                    <div className="mb-6 mt-1">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f3e8ff] dark:bg-primary/20 group-hover:bg-[#7c3aed] group-hover:text-white transition-colors duration-300 shadow-sm border border-transparent dark:border-primary/10 text-[#7c3aed] dark:text-primary">
-                        {step.icon && <step.icon className="h-7 w-7 dark:drop-shadow-sm transition-colors" />}
+                  <CardContent className="p-8 md:p-10 relative z-10 flex flex-col flex-1">
+                    <div className="mb-8 mt-2">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-primary/80 group-hover:text-primary-foreground transition-all duration-300 shadow-sm border border-transparent dark:border-primary/20 text-primary">
+                        {step.icon && <step.icon className="h-8 w-8 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] transition-colors" />}
                       </div>
                     </div>
-                    <h3 className="mb-3 text-xl font-bold text-[#111827] dark:text-white group-hover:text-[#7c3aed] dark:group-hover:text-primary transition-colors">{step.title}</h3>
-                    <p className="text-base text-[#6b7280] dark:text-gray-200 font-medium leading-relaxed">{step.description}</p>
+                    <h3 className="mb-4 text-xl md:text-2xl font-bold text-foreground group-hover:text-primary transition-colors tracking-tight">{step.title}</h3>
+                    <p className="text-base text-muted-foreground font-medium leading-relaxed">{step.description}</p>
                   </CardContent>
                 </Card>
                 
                 {/* Vertically centered flex aligned arrow for Desktop */}
                 {index < howItWorks.length - 1 && (
                   <div className="hidden lg:flex absolute top-0 bottom-0 -right-4 translate-x-1/2 items-center justify-center z-20 pointer-events-none">
-                    <div className="flex items-center justify-center rounded-full bg-[#f3f4f6] dark:bg-gray-800 p-1.5 border border-border shadow-sm">
+                    <div className="flex items-center justify-center rounded-full bg-card p-1.5 border border-border shadow-sm">
                       <motion.div
                         animate={{ x: [0, 4, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       >
-                        <ArrowRight className="h-5 w-5 text-[#6b7280] dark:text-primary" />
+                        <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary" />
                       </motion.div>
                     </div>
                   </div>
