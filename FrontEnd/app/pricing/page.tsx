@@ -95,40 +95,44 @@ export default function PricingPage() {
       {/* Membership Plans */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="mb-8 text-center text-2xl font-bold">Membership Plans</h2>
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-[24px] grid-cols-[repeat(auto-fit,minmax(260px,1fr))] py-[40px]">
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-none dark:hover:scale-[1.02] rounded-2xl ${plan.popular ? "border-purple-500 border-2 bg-white shadow-md dark:shadow-none dark:bg-gray-900" : "border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"}`}
+              className={`relative flex flex-col transition-all duration-300 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.06)] hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:shadow-none dark:hover:shadow-none dark:hover:scale-[1.02] ${
+                plan.popular 
+                  ? "border-2 border-purple-500 bg-purple-50 dark:border-gray-800 dark:bg-slate-900" 
+                  : "border border-gray-200 bg-white dark:border-gray-800 dark:bg-slate-900"
+              }`}
             >
               {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 hover:bg-purple-100 border-none dark:bg-primary dark:text-white dark:hover:bg-primary px-4">Most Popular</Badge>
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-500 text-white hover:bg-purple-600 rounded-full px-3 py-1 border-none dark:bg-purple-600 dark:text-white">Most Popular</Badge>
               )}
-              <CardHeader className="text-center">
-                <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-primary/20">
-                  <plan.icon className="h-6 w-6 text-primary dark:text-primary" />
+              <CardHeader className="text-center gap-3">
+                <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-slate-800">
+                  <plan.icon className="h-7 w-7 text-purple-600 dark:text-purple-400" />
                 </div>
                 <CardTitle className="text-xl text-gray-900 dark:text-white">{plan.name}</CardTitle>
-                <CardDescription className="text-gray-500 dark:text-gray-300">{plan.description}</CardDescription>
+                <CardDescription className="text-gray-500 dark:text-gray-400">{plan.description}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900 dark:text-white">{plan.price === 0 ? "Free" : `$${plan.price}`}</span>
-                  {plan.price > 0 && <span className="text-gray-500 dark:text-gray-400">{plan.period}</span>}
+                  <span className="text-4xl font-bold text-purple-600 dark:text-purple-400">{plan.price === 0 ? "Free" : `$${plan.price}`}</span>
+                  {plan.price > 0 && <span className="text-gray-500 dark:text-gray-400 font-medium ml-1">{plan.period}</span>}
                 </div>
               </CardHeader>
-              <CardContent className="flex flex-1 flex-col">
+              <CardContent className="flex flex-1 flex-col gap-4">
                 <ul className="mb-6 flex-1 space-y-3">
                   {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                    <li key={index} className="flex items-center gap-3 text-sm">
                       {feature.included ? (
-                        <Check className="h-4 w-4 shrink-0 text-primary dark:text-primary" />
+                        <Check className="h-5 w-5 shrink-0 text-purple-600 dark:text-purple-400" />
                       ) : (
-                        <X className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-600" />
+                        <X className="h-5 w-5 shrink-0 text-gray-400 dark:text-gray-600" />
                       )}
                       <span className={feature.included ? "text-gray-600 dark:text-gray-300" : "text-gray-400 dark:text-gray-500"}>{feature.text}</span>
                     </li>
                   ))}
                 </ul>
-                <Button className={`w-full transition-all hover:brightness-110 hover:scale-[1.02] ${plan.popular ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:text-white" : "text-gray-900 dark:text-white"}`} variant={plan.popular ? "default" : "outline"} asChild>
+                <Button className="w-full transition-transform bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl px-5 py-3 hover:scale-105 border-0" variant="default" asChild>
                   <Link href="/register">{plan.cta}</Link>
                 </Button>
               </CardContent>
@@ -144,40 +148,40 @@ export default function PricingPage() {
           <p className="mb-8 text-center text-muted-foreground">
             Individual service pricing varies by trainer and location
           </p>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-[24px] grid-cols-[repeat(auto-fit,minmax(260px,1fr))] py-[40px]">
             {serviceRates.map((rate, index) => (
               <Card 
                 key={index} 
-                className="group relative overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-none dark:hover:scale-[1.02] cursor-pointer border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-2xl"
+                className="group relative overflow-hidden transition-all duration-300 rounded-2xl border border-gray-200 bg-white shadow-[0_10px_25px_rgba(0,0,0,0.06)] hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:border-gray-800 dark:bg-slate-900 dark:shadow-none dark:hover:shadow-none dark:hover:scale-[1.02] cursor-pointer"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${rate.color} opacity-0`} />
-                <CardHeader className="relative">
+                <CardHeader className="relative gap-3">
                   <div className="flex items-center justify-between">
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${rate.color} text-white`}>
-                      <rate.icon className="h-6 w-6" />
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-slate-800">
+                      <rate.icon className="h-7 w-7 text-purple-600 dark:text-purple-400" />
                     </div>
-                    <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border-none">
+                    <Badge variant="secondary" className="text-xs bg-purple-50 text-purple-700 dark:bg-slate-800 dark:text-purple-400 border-none px-3 py-1 rounded-full">
                       {rate.category}
                     </Badge>
                   </div>
-                  <CardTitle className="text-lg text-gray-900 dark:text-white mt-4">{rate.service}</CardTitle>
-                  <CardDescription className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
-                    <Clock className="h-3 w-3" />
+                  <CardTitle className="text-lg text-gray-900 dark:text-white mt-2">{rate.service}</CardTitle>
+                  <CardDescription className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <Clock className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                     {rate.duration}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="relative">
+                <CardContent className="relative gap-4 flex flex-col">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Price Range</p>
-                      <p className={`text-xl font-bold bg-gradient-to-r ${rate.color} bg-clip-text text-transparent dark:brightness-110`}>
+                      <p className="text-xl font-bold text-purple-600 dark:text-purple-400">
                         {rate.price}
                       </p>
                     </div>
                     <div className={`h-8 w-8 rounded-full bg-gradient-to-br ${rate.color} opacity-0`} />
                   </div>
-                  <div className="mt-4 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                    <DollarSign className="h-3 w-3" />
+                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                    <DollarSign className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                     <span>Varies by trainer & location</span>
                   </div>
                 </CardContent>

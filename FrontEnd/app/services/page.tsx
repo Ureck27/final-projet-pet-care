@@ -115,35 +115,35 @@ export default function ServicesPage() {
 
       {/* Services Grid */}
       <section className="container mx-auto px-4 py-16">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-[24px] grid-cols-[repeat(auto-fit,minmax(260px,1fr))] py-[40px]">
           {services.map((service) => (
             <Card
               key={service.title}
-              className="relative flex flex-col shadow-sm dark:shadow-none transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-none dark:hover:scale-[1.02] border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-2xl"
+              className={`relative flex flex-col transition-all duration-300 rounded-2xl border border-gray-200 bg-white shadow-[0_10px_25px_rgba(0,0,0,0.06)] hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:border-gray-800 dark:bg-slate-900 dark:shadow-none dark:hover:shadow-none dark:hover:scale-[1.02] ${service.popular ? "border-2 border-purple-500 bg-purple-50 dark:border-purple-500/50" : ""}`}
             >
-              {service.popular && <Badge className="absolute -top-2 right-4 bg-purple-100 text-purple-700 hover:bg-purple-100 border-none dark:bg-primary dark:text-white dark:hover:bg-primary">Popular</Badge>}
-              <CardHeader>
-                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 dark:bg-primary/20">
-                  <service.icon className="h-6 w-6 text-primary dark:text-primary" />
+              {service.popular && <Badge className="absolute -top-3 right-4 bg-purple-500 text-white hover:bg-purple-600 rounded-full px-3 py-1 border-none dark:bg-purple-600">Popular</Badge>}
+              <CardHeader className="gap-3">
+                <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-slate-800">
+                  <service.icon className="h-7 w-7 text-purple-600 dark:text-purple-400" />
                 </div>
                 <CardTitle className="text-xl text-gray-900 dark:text-white">{service.title}</CardTitle>
-                <CardDescription className="line-clamp-2 text-gray-500 dark:text-gray-300">{service.description}</CardDescription>
+                <CardDescription className="line-clamp-2 text-gray-500 dark:text-gray-400">{service.description}</CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-1 flex-col">
-                <ul className="mb-4 flex-1 space-y-2">
+              <CardContent className="flex flex-1 flex-col gap-4">
+                <ul className="mb-4 flex-1 space-y-3">
                   {service.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                      <CheckCircle2 className="h-4 w-4 text-success dark:text-success" />
+                    <li key={feature} className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
+                      <CheckCircle2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                       {feature}
                     </li>
                   ))}
                 </ul>
                 <div className="mt-auto">
-                  <p className="mb-3 text-lg font-semibold text-primary dark:text-primary">{service.price}</p>
-                  <Button className="w-full transition-all bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:brightness-110 hover:scale-[1.02] border-0" asChild>
-                    <Link href="/trainers">
+                  <p className="mb-4 text-xl font-bold text-purple-600 dark:text-purple-400">{service.price}</p>
+                  <Button className="w-full transition-transform bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl px-5 py-3 hover:scale-105 border-0" asChild>
+                    <Link href="/trainers" className="flex items-center justify-center gap-2">
                       Book Now
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                      <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                 </div>
