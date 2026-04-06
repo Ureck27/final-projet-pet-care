@@ -22,9 +22,25 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'paid', 'refunded'],
     default: 'pending'
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+  reminderSent: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true
+});
+
+// Soft delete query middleware
+bookingSchema.pre(/^find/, function(next) {
+  if (this.getQuery().isDeleted === undefined) {
+    this.find({ isDeleted: { $ne: true } });
+  }
+  next();
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);

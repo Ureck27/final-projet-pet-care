@@ -173,6 +173,30 @@ const updatePet = async (req, res) => {
   }
 };
 
+// Soft delete pet
+const deletePet = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const pet = await Pet.findById(id);
+
+    if (!pet) {
+      return res.status(404).json({ success: false, message: 'Pet not found' });
+    }
+
+    // Security check
+    if (req.user.role !== 'admin' && pet.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    pet.isDeleted = true;
+    await pet.save();
+
+    res.status(200).json({ success: true, data: null, message: 'Pet removed' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createPet,
   getAllPets,
@@ -181,5 +205,6 @@ module.exports = {
   getTrainerPets,
   getPetById,
   updatePetStatus,
-  updatePet
+  updatePet,
+  deletePet
 };

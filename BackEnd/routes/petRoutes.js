@@ -46,4 +46,10 @@ router.put('/:id', protect, authorizeRole('user'), uploadSingle('image'), valida
   return updatePet(req, res, next);
 });
 
+// DELETE /api/pets/:id - Soft delete pet (owner or admin only)
+router.delete('/:id', protect, authorizeRole('user', 'admin'), (req, res, next) => {
+  const { deletePet } = require('../controllers/petController');
+  return deletePet(req, res, next);
+});
+
 module.exports = router;

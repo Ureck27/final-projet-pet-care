@@ -14,6 +14,9 @@ dotenv.config();
 // Connect to database
 connectDB();
 
+const errorHandler = require('./middleware/errorHandler');
+const ApiError = require('./utils/ApiError');
+
 const app = express();
 
 // Route files
@@ -123,6 +126,7 @@ app.use('/api/trainer-requests', require('./routes/trainerRequestRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/reviews', require('./routes/reviewRoutes')); // New Review Routes
 
 // Basic route
 app.get('/', (req, res) => {
@@ -171,14 +175,13 @@ app.get('/api/test', async (req, res) => {
   }
 });
 
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    message: 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
+// 404 handler for unknown routes
+app.all('*', (req, res, next) => {
+  next(new ApiError(404, `Can't find ${req.originalUrl} on this server!`));
 });
+
+// Global error handler
+app.use(errorHandler);
 
 // Create HTTP server instead of using app.listen directly
 const http = require('http');
@@ -196,5 +199,22 @@ server.listen(PORT, '0.0.0.0', () => {
   📡 URL: http://localhost:${PORT}
   🛠️  Health Check: http://localhost:${PORT}/api/test
   `);
+
+  // Initialize Background Jobs and Cron System
+  try {
+    const { startReminderCron } = require('./cron/automatedReminders');
+    startReminderCron();
+    
+    // Attempting to require workers to start them (if BullMQ is installed)
+    require('./workers/jobWorker');
+    console.log('✅ Background workers initialized successfully.');
+  } catch (error) {
+    if (error.code === 'MODULE_NOT_FOUND') {
+      console.warn('⚠️  Could not start cron/job queue. Please run: npm install bullmq ioredis node-cron');
+    } else {
+      console.error('Error starting cron/workers:', error.message);
+    }
+  }
 });
+
 

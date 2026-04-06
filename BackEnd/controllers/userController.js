@@ -116,18 +116,19 @@ const updateUser = async (req, res) => {
 
 // @desc    Delete user
 // @route   DELETE /api/users/:id
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
 
     if (user) {
-      await User.deleteOne({ _id: user._id });
-      res.json({ message: 'User removed' });
+      user.isDeleted = true;
+      await user.save();
+      res.status(200).json({ success: true, data: null, message: 'User removed' });
     } else {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ success: false, message: 'User not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 

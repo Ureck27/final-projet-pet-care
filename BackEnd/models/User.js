@@ -34,9 +34,21 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Trainer',
     default: null
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true
+});
+
+// Soft delete query middleware
+userSchema.pre(/^find/, function(next) {
+  if (this.getQuery().isDeleted === undefined) {
+    this.find({ isDeleted: { $ne: true } });
+  }
+  next();
 });
 
 // Method to check if entered password matches hashed password in DB

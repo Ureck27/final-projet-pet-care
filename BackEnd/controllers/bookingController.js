@@ -61,25 +61,25 @@ const getBookingById = async (req, res) => {
 
 // @desc    Create new booking
 // @route   POST /api/bookings
-const createBooking = async (req, res) => {
+const createBooking = async (req, res, next) => {
   try {
     const { petId, trainerId, service, date, time, notes, packageType } = req.body;
+    const { createBookingService } = require('../services/bookingService');
     
-    const booking = await Booking.create({
+    const booking = await createBookingService({
       petId,
       trainerId,
-      ownerId: req.user._id, // Enforce ownerId from authenticated user
+      ownerId: req.user._id,
       service,
       date,
       time,
       notes,
-      packageType,
-      status: 'pending'
+      packageType
     });
 
-    res.status(201).json(booking);
+    res.status(201).json({ success: true, data: booking });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -115,12 +115,12 @@ const updateBooking = async (req, res) => {
 
 // @desc    Delete booking
 // @route   DELETE /api/bookings/:id
-const deleteBooking = async (req, res) => {
+const deleteBooking = async (req, res, next) => {
   try {
     const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
+      return res.status(404).json({ success: false, message: 'Booking not found' });
     }
     
     // Security check: Only owner or admin can delete booking
@@ -128,13 +128,14 @@ const deleteBooking = async (req, res) => {
     const isAdmin = req.user.role === 'admin';
     
     if (!isOwner && !isAdmin) {
-      return res.status(403).json({ message: 'Not authorized to delete this booking' });
+      return res.status(403).json({ success: false, message: 'Not authorized to delete this booking' });
     }
 
-    await Booking.deleteOne({ _id: booking._id });
-    res.json({ message: 'Booking removed' });
+    booking.isDeleted = true;
+    await booking.save();
+    res.status(200).json({ success: true, data: null, message: 'Booking removed' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
