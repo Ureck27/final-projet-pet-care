@@ -1,4 +1,5 @@
 const Trainer = require('../models/Trainer');
+const { delPattern } = require('../services/cacheService');
 
 // @desc    Get all trainers (admin only)
 // @route   GET /api/trainers
@@ -30,6 +31,9 @@ const createTrainer = async (req, res) => {
       price
     });
     
+    // Invalidate trainer cache
+    await delPattern('trainers:*');
+    
     res.status(201).json(trainer);
   } catch (error) {
     console.error('Error creating trainer:', error);
@@ -37,7 +41,23 @@ const createTrainer = async (req, res) => {
   }
 };
 
+// @desc    Get trainer by ID
+// @route   GET /api/trainers/:id
+const getTrainerById = async (req, res) => {
+  try {
+    const trainer = await Trainer.findById(req.params.id);
+    if (!trainer) {
+      return res.status(404).json({ message: 'Trainer not found' });
+    }
+    res.json(trainer);
+  } catch (error) {
+    console.error('Error fetching trainer by ID:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getTrainers,
+  getTrainerById,
   createTrainer
 };

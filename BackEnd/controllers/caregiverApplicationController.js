@@ -1,7 +1,6 @@
 const CaregiverApplication = require('../models/CaregiverApplication');
 const User = require('../models/User');
 const { sendAdminNotification } = require('../services/emailService');
-const { getFileUrl } = require('../middleware/uploadMiddleware');
 
 // @desc    Submit caregiver application
 // @route   POST /api/caregiver/apply
@@ -24,10 +23,10 @@ const submitCaregiverApplication = async (req, res) => {
 
     if (req.files) {
       if (req.files.profileImage && req.files.profileImage[0]) {
-        profileImageUrl = getFileUrl(req.files.profileImage[0].filename, 'trainer');
+        profileImageUrl = req.files.profileImage[0].path;
       }
       if (req.files.certificateImage && req.files.certificateImage[0]) {
-        certificateImageUrl = getFileUrl(req.files.certificateImage[0].filename, 'certificate');
+        certificateImageUrl = req.files.certificateImage[0].path;
       }
     }
 

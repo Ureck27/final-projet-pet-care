@@ -43,5 +43,11 @@ bookingSchema.pre(/^find/, function(next) {
   next();
 });
 
+// Indexes for faster queries
+bookingSchema.index({ trainerId: 1, date: 1 });
+bookingSchema.index({ ownerId: 1, status: 1 });
+bookingSchema.index({ date: 1, status: 1 });
+bookingSchema.index({ petId: 1, status: 1 });
+
 const Booking = mongoose.model('Booking', bookingSchema);
 module.exports = Booking;

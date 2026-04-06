@@ -1,15 +1,38 @@
 const User = require('../models/User');
 
-// @desc    Get all users
+// @desc    Get all users (admin only - cursor-based pagination)
 // @route   GET /api/users
 const getUsers = async (req, res) => {
   try {
-    const filter = {};
-    if (req.query.role) {
-      filter.role = req.query.role;
+    const { cursor, limit = 20, role } = req.query;
+    const filter = { isDeleted: { $ne: true } };
+    
+    if (role) {
+      filter.role = role;
     }
-    const users = await User.find(filter).select('-password');
-    res.json(users);
+
+    if (cursor) {
+      filter._id = { $lt: cursor };
+    }
+
+    const users = await User.find(filter)
+      .select('-password')
+      .sort({ _id: -1 })
+      .limit(Number(limit) + 1);
+
+    const hasNextPage = users.length > limit;
+    const results = hasNextPage ? users.slice(0, -1) : users;
+    const nextCursor = hasNextPage ? results[results.length - 1]._id : null;
+
+    res.json({
+      success: true,
+      data: results,
+      pagination: {
+        nextCursor,
+        hasNextPage,
+        count: results.length
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

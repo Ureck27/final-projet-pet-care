@@ -53,12 +53,13 @@ const connectDB = async (retries = 5, delay = 5000) => {
     try {
       const conn = await mongoose.connect(uri, {
         serverSelectionTimeoutMS: 5000,
-        socketTimeoutMS: 60000,
+        socketTimeoutMS: 45000,
         connectTimeoutMS: 30000,
         retryWrites: true,
         w: 'majority',
-        family: 4, // Force IPv4
-        maxPoolSize: 10,
+        maxPoolSize: process.env.NODE_ENV === 'production' ? 50 : 10,
+        minPoolSize: process.env.NODE_ENV === 'production' ? 10 : 2,
+        heartbeatFrequencyMS: 10000,
       });
 
       isConnected = true;

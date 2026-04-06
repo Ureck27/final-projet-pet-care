@@ -1,7 +1,7 @@
 const TrainerRequest = require('../models/TrainerRequest');
 const User = require('../models/User');
 const Trainer = require('../models/Trainer');
-const { getFileUrl } = require('../middleware/uploadMiddleware');
+const Trainer = require('../models/Trainer');
 const { sendAdminNotification } = require('../services/emailService');
 
 // @desc    Submit a trainer request with images
@@ -37,14 +37,12 @@ const createTrainerRequest = async (req, res) => {
     
     // Handle profile image
     if (req.files && req.files.profileImage && req.files.profileImage.length > 0) {
-      profileImageUrl = getFileUrl(req.files.profileImage[0].filename, 'trainer');
+      profileImageUrl = req.files.profileImage[0].path;
     }
     
     // Handle certificate images
     if (req.files && req.files.certificateImage && req.files.certificateImage.length > 0) {
-      certificateImageUrls = req.files.certificateImage.map(file => 
-        getFileUrl(file.filename, 'certificate')
-      );
+      certificateImageUrls = req.files.certificateImage.map(file => file.path);
     }
 
     const trainerRequest = await TrainerRequest.create({
@@ -286,15 +284,13 @@ const deleteTrainerRequest = async (req, res) => {
     const { deleteFile } = require('../middleware/uploadMiddleware');
     
     if (request.profileImage) {
-      const filename = request.profileImage.split('/').pop();
-      deleteFile(`uploads/trainers/${filename}`);
+      await deleteFile(request.profileImage);
     }
     
     if (request.certificateImages && request.certificateImages.length > 0) {
-      request.certificateImages.forEach(imageUrl => {
-        const filename = imageUrl.split('/').pop();
-        deleteFile(`uploads/certificates/${filename}`);
-      });
+      for (const imageUrl of request.certificateImages) {
+        await deleteFile(imageUrl);
+      }
     }
 
     await TrainerRequest.findByIdAndDelete(req.params.id);

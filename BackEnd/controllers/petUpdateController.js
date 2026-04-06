@@ -1,7 +1,7 @@
 const PetUpdate = require('../models/PetUpdate');
 const Pet = require('../models/Pet');
 const Trainer = require('../models/Trainer');
-const { getFileUrl } = require('../middleware/uploadMiddleware');
+const Trainer = require('../models/Trainer');
 
 // @desc    Create a new pet update with media
 // @route   POST /api/pet-updates
@@ -37,7 +37,7 @@ const createPetUpdate = async (req, res) => {
     // Handle file upload
     let mediaUrl = null;
     if (req.file) {
-      mediaUrl = getFileUrl(req.file.filename, 'pet-updates');
+      mediaUrl = req.file.path;
     }
 
     const petUpdate = await PetUpdate.create({
@@ -145,8 +145,7 @@ const deletePetUpdate = async (req, res) => {
     // Delete associated media file
     if (update.mediaUrl) {
       const { deleteFile } = require('../middleware/uploadMiddleware');
-      const filename = update.mediaUrl.split('/').pop();
-      deleteFile(`uploads/pet-updates/${filename}`);
+      await deleteFile(update.mediaUrl);
     }
 
     await PetUpdate.findByIdAndDelete(req.params.id);

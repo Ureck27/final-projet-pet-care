@@ -34,13 +34,35 @@ const getConversations = async (req, res) => {
   }
 };
 
-// @desc    Get messages for a conversation
+// @desc    Get messages for a conversation (cursor-based pagination)
 // @route   GET /api/chat/:conversationId
 const getMessages = async (req, res) => {
   try {
-    const messages = await Message.find({ conversationId: req.params.conversationId })
-      .sort({ createdAt: 1 });
-    res.json(messages);
+    const { conversationId } = req.params;
+    const { cursor, limit = 20 } = req.query;
+    
+    const query = { conversationId };
+    if (cursor) {
+      query.createdAt = { $lt: new Date(cursor) };
+    }
+
+    const messages = await Message.find(query)
+      .sort({ createdAt: -1 }) // Get newest first for pagination
+      .limit(Number(limit) + 1); // Fetch one extra to check if there's a next page
+
+    const hasNextPage = messages.length > limit;
+    const results = hasNextPage ? messages.slice(0, -1) : messages;
+    const nextCursor = hasNextPage ? results[results.length - 1].createdAt : null;
+
+    res.json({
+      success: true,
+      data: results.reverse(), // Reverse back to chronological order
+      pagination: {
+        nextCursor,
+        hasNextPage,
+        count: results.length
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

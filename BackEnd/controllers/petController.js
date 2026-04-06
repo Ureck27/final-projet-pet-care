@@ -1,5 +1,4 @@
 const Pet = require('../models/Pet');
-const { getFileUrl } = require('../middleware/uploadMiddleware');
 
 const createPet = async (req, res) => {
   try {
@@ -7,7 +6,7 @@ const createPet = async (req, res) => {
     let image = req.body.image;
 
     if (req.file) {
-      image = getFileUrl(req.file.filename, 'pet');
+      image = req.file.path;
     }
 
     if (!name || !type || age === undefined) {
@@ -32,15 +31,38 @@ const createPet = async (req, res) => {
   }
 };
 
-// Get all pets (admin only, or filtered for user)
+// Get all pets (admin only, or filtered for user - cursor-based)
 const getAllPets = async (req, res) => {
   try {
-    const filter = {};
+    const { cursor, limit = 10 } = req.query;
+    const filter = { isDeleted: { $ne: true } };
+    
     if (req.user.role !== 'admin') {
       filter.userId = req.user._id;
     }
-    const pets = await Pet.find(filter).populate('userId', 'name email');
-    res.json(pets);
+
+    if (cursor) {
+      filter._id = { $lt: cursor };
+    }
+
+    const pets = await Pet.find(filter)
+      .populate('userId', 'name email')
+      .sort({ _id: -1 })
+      .limit(Number(limit) + 1);
+
+    const hasNextPage = pets.length > limit;
+    const results = hasNextPage ? pets.slice(0, -1) : pets;
+    const nextCursor = hasNextPage ? results[results.length - 1]._id : null;
+
+    res.json({
+      success: true,
+      data: results,
+      pagination: {
+        nextCursor,
+        hasNextPage,
+        count: results.length
+      }
+    });
   } catch (error) {
     console.error('Error fetching all pets:', error);
     res.status(500).json({ message: 'Server error while fetching pets' });
@@ -160,7 +182,7 @@ const updatePet = async (req, res) => {
     if (description !== undefined) pet.description = description;
 
     if (req.file) {
-      pet.image = getFileUrl(req.file.filename, 'pet');
+      pet.image = req.file.path;
     } else if (req.body.image) {
       pet.image = req.body.image;
     }

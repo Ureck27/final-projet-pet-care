@@ -1,10 +1,11 @@
 const Booking = require('../models/Booking');
 
-// @desc    Get all bookings
+// @desc    Get all bookings (cursor-based pagination)
 // @route   GET /api/bookings
 const getBookings = async (req, res) => {
   try {
-    const filter = {};
+    const { cursor, limit = 10, ownerId } = req.query;
+    const filter = { isDeleted: { $ne: true } };
     
     // If not admin, restrict to owner's or trainer's bookings
     if (req.user.role === 'user') {
@@ -15,17 +16,36 @@ const getBookings = async (req, res) => {
       if (trainer) {
         filter.trainerId = trainer._id;
       } else {
-        return res.json([]); // No trainer profile, no bookings
+        return res.json({ success: true, data: [], pagination: { hasNextPage: false } });
       }
-    } else if (req.user.role === 'admin' && req.query.ownerId) {
-      filter.ownerId = req.query.ownerId;
+    } else if (req.user.role === 'admin' && ownerId) {
+      filter.ownerId = ownerId;
+    }
+
+    if (cursor) {
+      filter._id = { $lt: cursor };
     }
 
     const bookings = await Booking.find(filter)
       .populate('petId', 'name type breed')
       .populate('trainerId')
-      .populate('ownerId', 'fullName email');
-    res.json(bookings);
+      .populate('ownerId', 'fullName email')
+      .sort({ _id: -1 })
+      .limit(Number(limit) + 1);
+
+    const hasNextPage = bookings.length > limit;
+    const results = hasNextPage ? bookings.slice(0, -1) : bookings;
+    const nextCursor = hasNextPage ? results[results.length - 1]._id : null;
+
+    res.json({
+      success: true,
+      data: results,
+      pagination: {
+        nextCursor,
+        hasNextPage,
+        count: results.length
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

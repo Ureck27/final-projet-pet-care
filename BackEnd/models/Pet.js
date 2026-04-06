@@ -65,8 +65,9 @@ petSchema.pre(/^find/, function(next) {
 });
 
 // Index for faster queries
-petSchema.index({ userId: 1 });
+petSchema.index({ userId: 1, isDeleted: 1 });
 petSchema.index({ type: 1 });
+petSchema.index({ status: 1 });
 
 const Pet = mongoose.model('Pet', petSchema);
 module.exports = Pet;
