@@ -119,28 +119,28 @@ export default function ServicesPage() {
           {services.map((service) => (
             <Card
               key={service.title}
-              className={`relative flex flex-col transition-all duration-300 rounded-2xl border border-gray-200 bg-white shadow-[0_10px_25px_rgba(0,0,0,0.06)] hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:border-gray-800 dark:bg-slate-900 dark:shadow-none dark:hover:shadow-none dark:hover:scale-[1.02] ${service.popular ? "border-2 border-purple-500 bg-purple-50 dark:border-purple-500/50" : ""}`}
+              className={`service-card relative flex flex-col transition-all duration-300 rounded-2xl dark:border-gray-800 dark:bg-slate-900 dark:shadow-none dark:hover:shadow-none dark:hover:scale-[1.02] ${service.popular ? "popular dark:border-purple-500/50" : ""}`}
             >
               {service.popular && <Badge className="absolute -top-3 right-4 bg-purple-500 text-white hover:bg-purple-600 rounded-full px-3 py-1 border-none dark:bg-purple-600">Popular</Badge>}
               <CardHeader className="gap-3">
                 <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-slate-800">
                   <service.icon className="h-7 w-7 text-purple-600 dark:text-purple-400" />
                 </div>
-                <CardTitle className="text-xl text-gray-900 dark:text-white">{service.title}</CardTitle>
-                <CardDescription className="line-clamp-2 text-gray-500 dark:text-gray-400">{service.description}</CardDescription>
+                <CardTitle className="text-xl dark:text-white">{service.title}</CardTitle>
+                <CardDescription className="line-clamp-2 dark:text-gray-400">{service.description}</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-1 flex-col gap-4">
                 <ul className="mb-4 flex-1 space-y-3">
                   {service.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
-                      <CheckCircle2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    <li key={feature} className="flex items-center gap-3 text-sm dark:text-gray-300">
+                      <CheckCircle2 className="feature-check h-5 w-5 dark:text-purple-400" />
                       {feature}
                     </li>
                   ))}
                 </ul>
                 <div className="mt-auto">
-                  <p className="mb-4 text-xl font-bold text-purple-600 dark:text-purple-400">{service.price}</p>
-                  <Button className="w-full transition-transform bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl px-5 py-3 hover:scale-105 border-0" asChild>
+                  <p className="price-text mb-4 text-xl dark:text-purple-400">{service.price}</p>
+                  <Button className="card-button w-full transition-transform rounded-xl px-5 py-3 hover:scale-105 border-0" asChild>
                     <Link href="/trainers" className="flex items-center justify-center gap-2">
                       Book Now
                       <ArrowRight className="h-4 w-4" />

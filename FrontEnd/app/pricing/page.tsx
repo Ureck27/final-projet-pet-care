@@ -99,10 +99,10 @@ export default function PricingPage() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col transition-all duration-300 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.06)] hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:shadow-none dark:hover:shadow-none dark:hover:scale-[1.02] ${
+              className={`pricing-card relative flex flex-col transition-all duration-300 rounded-2xl dark:shadow-none dark:hover:shadow-none dark:hover:scale-[1.02] ${
                 plan.popular 
-                  ? "border-2 border-purple-500 bg-purple-50 dark:border-gray-800 dark:bg-slate-900" 
-                  : "border border-gray-200 bg-white dark:border-gray-800 dark:bg-slate-900"
+                  ? "popular dark:border-gray-800 dark:bg-slate-900" 
+                  : "dark:border-gray-800 dark:bg-slate-900"
               }`}
             >
               {plan.popular && (
@@ -112,11 +112,11 @@ export default function PricingPage() {
                 <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-slate-800">
                   <plan.icon className="h-7 w-7 text-purple-600 dark:text-purple-400" />
                 </div>
-                <CardTitle className="text-xl text-gray-900 dark:text-white">{plan.name}</CardTitle>
-                <CardDescription className="text-gray-500 dark:text-gray-400">{plan.description}</CardDescription>
+                <CardTitle className="text-xl dark:text-white">{plan.name}</CardTitle>
+                <CardDescription className="dark:text-gray-400">{plan.description}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-purple-600 dark:text-purple-400">{plan.price === 0 ? "Free" : `$${plan.price}`}</span>
-                  {plan.price > 0 && <span className="text-gray-500 dark:text-gray-400 font-medium ml-1">{plan.period}</span>}
+                  <span className="price-text text-4xl dark:text-purple-400">{plan.price === 0 ? "Free" : `$${plan.price}`}</span>
+                  {plan.price > 0 && <span className="dark:text-gray-400 font-medium ml-1">{plan.period}</span>}
                 </div>
               </CardHeader>
               <CardContent className="flex flex-1 flex-col gap-4">
@@ -124,15 +124,15 @@ export default function PricingPage() {
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-center gap-3 text-sm">
                       {feature.included ? (
-                        <Check className="h-5 w-5 shrink-0 text-purple-600 dark:text-purple-400" />
+                        <Check className="feature-check h-5 w-5 shrink-0 dark:text-purple-400" />
                       ) : (
-                        <X className="h-5 w-5 shrink-0 text-gray-400 dark:text-gray-600" />
+                        <X className="feature-disabled h-5 w-5 shrink-0 dark:text-gray-600" />
                       )}
-                      <span className={feature.included ? "text-gray-600 dark:text-gray-300" : "text-gray-400 dark:text-gray-500"}>{feature.text}</span>
+                      <span className={feature.included ? "dark:text-gray-300" : "dark:text-gray-500"}>{feature.text}</span>
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full transition-transform bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl px-5 py-3 hover:scale-105 border-0" variant="default" asChild>
+                <Button className="card-button w-full transition-transform rounded-xl px-5 py-3 hover:scale-105 border-0" variant="default" asChild>
                   <Link href="/register">{plan.cta}</Link>
                 </Button>
               </CardContent>
@@ -152,7 +152,7 @@ export default function PricingPage() {
             {serviceRates.map((rate, index) => (
               <Card 
                 key={index} 
-                className="group relative overflow-hidden transition-all duration-300 rounded-2xl border border-gray-200 bg-white shadow-[0_10px_25px_rgba(0,0,0,0.06)] hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:border-gray-800 dark:bg-slate-900 dark:shadow-none dark:hover:shadow-none dark:hover:scale-[1.02] cursor-pointer"
+                className="service-card group relative overflow-hidden transition-all duration-300 rounded-2xl dark:border-gray-800 dark:bg-slate-900 dark:shadow-none dark:hover:shadow-none dark:hover:scale-[1.02] cursor-pointer"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${rate.color} opacity-0`} />
                 <CardHeader className="relative gap-3">
@@ -164,8 +164,8 @@ export default function PricingPage() {
                       {rate.category}
                     </Badge>
                   </div>
-                  <CardTitle className="text-lg text-gray-900 dark:text-white mt-2">{rate.service}</CardTitle>
-                  <CardDescription className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                  <CardTitle className="text-lg dark:text-white mt-2">{rate.service}</CardTitle>
+                  <CardDescription className="flex items-center gap-2 text-sm dark:text-gray-400">
                     <Clock className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                     {rate.duration}
                   </CardDescription>
@@ -173,14 +173,14 @@ export default function PricingPage() {
                 <CardContent className="relative gap-4 flex flex-col">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Price Range</p>
-                      <p className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                      <p className="text-xs dark:text-gray-400 mb-1">Price Range</p>
+                      <p className="price-text text-xl dark:text-purple-400">
                         {rate.price}
                       </p>
                     </div>
                     <div className={`h-8 w-8 rounded-full bg-gradient-to-br ${rate.color} opacity-0`} />
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-2 text-xs dark:text-gray-400">
                     <DollarSign className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                     <span>Varies by trainer & location</span>
                   </div>
