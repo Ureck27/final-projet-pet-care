@@ -15,14 +15,14 @@ describe('Booking API', () => {
       name: 'Booking User',
       email: 'booking@example.com',
       password: 'Password123!',
-      role: 'user'
+      role: 'user',
     });
     userId = user._id;
 
     const loginRes = await request(app)
       .post('/api/auth/login')
       .send({ email: 'booking@example.com', password: 'Password123!' });
-    
+
     userToken = loginRes.headers['set-cookie'];
 
     // Create a pet for the user
@@ -31,7 +31,7 @@ describe('Booking API', () => {
       type: 'Dog',
       owner: userId,
       breed: 'Golden Retriever',
-      age: 3
+      age: 3,
     });
     petId = pet._id;
   });
@@ -43,7 +43,7 @@ describe('Booking API', () => {
         service: 'Walking',
         startDate: new Date(Date.now() + 86400000), // tomorrow
         endDate: new Date(Date.now() + 86436000), // tomorrow + 1 hour
-        totalPrice: 25
+        totalPrice: 25,
       };
 
       const res = await request(app)
@@ -66,19 +66,16 @@ describe('Booking API', () => {
         startDate,
         endDate,
         totalPrice: 25,
-        status: 'confirmed'
+        status: 'confirmed',
       });
 
-      const res = await request(app)
-        .post('/api/bookings')
-        .set('Cookie', userToken)
-        .send({
-          pet: petId,
-          service: 'Boarding',
-          startDate,
-          endDate,
-          totalPrice: 50
-        });
+      const res = await request(app).post('/api/bookings').set('Cookie', userToken).send({
+        pet: petId,
+        service: 'Boarding',
+        startDate,
+        endDate,
+        totalPrice: 50,
+      });
 
       expect(res.statusCode).toEqual(400);
       expect(res.body.message).toMatch(/already booked/i);

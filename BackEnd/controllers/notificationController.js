@@ -3,13 +3,12 @@ const Notification = require('../models/Notification');
 // Get user notifications
 const getNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find({ userId: req.user._id })
-      .sort({ sentAt: -1 });
-    
+    const notifications = await Notification.find({ userId: req.user._id }).sort({ sentAt: -1 });
+
     // Map _id to id to match frontend type requirements if needed
-    const formattedNotifications = notifications.map(notif => ({
+    const formattedNotifications = notifications.map((notif) => ({
       ...notif._doc,
-      id: notif._id.toString()
+      id: notif._id.toString(),
     }));
 
     res.json(formattedNotifications);
@@ -23,11 +22,11 @@ const getNotifications = async (req, res) => {
 const markAsRead = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const notification = await Notification.findOneAndUpdate(
       { _id: id, userId: req.user._id },
       { read: true },
-      { new: true }
+      { new: true },
     );
 
     if (!notification) {
@@ -43,5 +42,5 @@ const markAsRead = async (req, res) => {
 
 module.exports = {
   getNotifications,
-  markAsRead
+  markAsRead,
 };

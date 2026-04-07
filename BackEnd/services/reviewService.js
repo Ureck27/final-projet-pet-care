@@ -8,11 +8,14 @@ const createReviewService = async (userId, trainerId, rating, comment) => {
     ownerId: userId,
     trainerId: trainerId,
     status: 'completed',
-    isDeleted: { $ne: true }
+    isDeleted: { $ne: true },
   });
 
   if (!completedBooking) {
-    throw new ApiError(403, 'Forbidden: You can only review caregivers you have completed a booking with.');
+    throw new ApiError(
+      403,
+      'Forbidden: You can only review caregivers you have completed a booking with.',
+    );
   }
 
   // Optional: check if they already reviewed
@@ -25,12 +28,12 @@ const createReviewService = async (userId, trainerId, rating, comment) => {
     userId,
     trainerId,
     rating,
-    comment
+    comment,
   });
 
   return review;
 };
 
 module.exports = {
-  createReviewService
+  createReviewService,
 };

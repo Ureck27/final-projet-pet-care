@@ -1,54 +1,59 @@
 const mongoose = require('mongoose');
 
-const trainerRequestSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+const trainerRequestSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    experience: {
+      type: String,
+      required: true,
+    },
+    certifications: {
+      type: String,
+      required: true,
+    },
+    message: {
+      type: String,
+      required: true,
+    },
+    profileImage: {
+      type: String,
+      required: false,
+    },
+    certificateImages: [
+      {
+        type: String,
+      },
+    ],
+    status: {
+      type: String,
+      enum: ['pending', 'accepted', 'rejected'],
+      default: 'pending',
+    },
+    rejectionReason: {
+      type: String,
+      default: '',
+    },
   },
-  name: {
-    type: String,
-    required: true
+  {
+    timestamps: true, // Automatically adds createdAt
   },
-  email: {
-    type: String,
-    required: true
-  },
-  phone: {
-    type: String,
-    required: true
-  },
-  experience: {
-    type: String,
-    required: true
-  },
-  certifications: {
-    type: String,
-    required: true
-  },
-  message: {
-    type: String,
-    required: true
-  },
-  profileImage: {
-    type: String,
-    required: false
-  },
-  certificateImages: [{
-    type: String
-  }],
-  status: {
-    type: String,
-    enum: ['pending', 'accepted', 'rejected'],
-    default: 'pending'
-  },
-  rejectionReason: {
-    type: String,
-    default: ''
-  }
-}, {
-  timestamps: true // Automatically adds createdAt
-});
+);
 
 // Index for faster queries
 trainerRequestSchema.index({ status: 1 });

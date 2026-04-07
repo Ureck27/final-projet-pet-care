@@ -24,7 +24,7 @@ const getTaskById = async (req, res) => {
       .populate('ownerId', 'name')
       .populate('caregiverId', 'name')
       .populate('trainerId', 'name');
-      
+
     if (task) {
       res.json(task);
     } else {
@@ -39,8 +39,19 @@ const getTaskById = async (req, res) => {
 // @route   POST /api/tasks
 const createTask = async (req, res) => {
   try {
-    const { petId, ownerId, caregiverId, trainerId, title, type, description, priority, dueDate, assignedTo } = req.body;
-    
+    const {
+      petId,
+      ownerId,
+      caregiverId,
+      trainerId,
+      title,
+      type,
+      description,
+      priority,
+      dueDate,
+      assignedTo,
+    } = req.body;
+
     const task = await Task.create({
       petId,
       ownerId,
@@ -52,7 +63,7 @@ const createTask = async (req, res) => {
       priority,
       dueDate,
       assignedTo,
-      status: 'pending'
+      status: 'pending',
     });
 
     res.status(201).json(task);
@@ -70,13 +81,13 @@ const updateTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
-    
+
     // Security check: Only owner, assigned caregiver, or admin can update task
     const isOwner = task.ownerId && task.ownerId.toString() === req.user._id.toString();
     const isCaregiver = task.caregiverId && task.caregiverId.toString() === req.user._id.toString();
     const isTrainer = task.trainerId && task.trainerId.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
-    
+
     if (!isOwner && !isCaregiver && !isTrainer && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to update this task' });
     }
@@ -87,7 +98,7 @@ const updateTask = async (req, res) => {
     task.dueDate = req.body.dueDate ?? task.dueDate;
     task.priority = req.body.priority ?? task.priority;
     task.completionNotes = req.body.completionNotes ?? task.completionNotes;
-    
+
     if (req.body.status === 'completed' && task.status !== 'completed') {
       task.completedAt = new Date();
     }
@@ -108,13 +119,13 @@ const deleteTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
-    
+
     // Security check: Only owner, assigned caregiver, or admin can delete task
     const isOwner = task.ownerId && task.ownerId.toString() === req.user._id.toString();
     const isCaregiver = task.caregiverId && task.caregiverId.toString() === req.user._id.toString();
     const isTrainer = task.trainerId && task.trainerId.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
-    
+
     if (!isOwner && !isCaregiver && !isTrainer && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to delete this task' });
     }
@@ -131,5 +142,5 @@ module.exports = {
   getTaskById,
   createTask,
   updateTask,
-  deleteTask
+  deleteTask,
 };

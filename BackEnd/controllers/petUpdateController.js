@@ -1,36 +1,35 @@
 const PetUpdate = require('../models/PetUpdate');
 const Pet = require('../models/Pet');
 const Trainer = require('../models/Trainer');
-const Trainer = require('../models/Trainer');
 
 // @desc    Create a new pet update with media
 // @route   POST /api/pet-updates
 const createPetUpdate = async (req, res) => {
   try {
     const { petId, type, description, location, mood } = req.body;
-    
+
     // Validate required fields
     if (!petId || !type || !description) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        message: 'Missing required fields: petId, type, and description are required' 
+        message: 'Missing required fields: petId, type, and description are required',
       });
     }
 
     // Verify trainer exists and is assigned to this pet
     const trainer = await Trainer.findOne({ userId: req.user._id });
     if (!trainer) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         success: false,
-        message: 'Only approved trainers can post updates' 
+        message: 'Only approved trainers can post updates',
       });
     }
 
     const pet = await Pet.findById(petId);
     if (!pet) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
-        message: 'Pet not found' 
+        message: 'Pet not found',
       });
     }
 
@@ -48,26 +47,26 @@ const createPetUpdate = async (req, res) => {
       description,
       location,
       mood,
-      mediaUrl
+      mediaUrl,
     });
 
     console.log('Pet update created successfully:', {
       id: petUpdate._id,
       petId,
       trainerId: trainer._id,
-      type
+      type,
     });
 
     res.status(201).json({
       success: true,
       message: 'Pet update created successfully',
-      data: petUpdate
+      data: petUpdate,
     });
   } catch (error) {
     console.error('Error creating pet update:', error);
-    res.status(400).json({ 
+    res.status(400).json({
       success: false,
-      message: error.message || 'Failed to create pet update' 
+      message: error.message || 'Failed to create pet update',
     });
   }
 };
@@ -77,7 +76,7 @@ const createPetUpdate = async (req, res) => {
 const getPetUpdates = async (req, res) => {
   try {
     const { petId } = req.params;
-    
+
     const updates = await PetUpdate.find({ petId })
       .populate('trainerId', 'name email')
       .sort({ createdAt: -1 })
@@ -85,13 +84,13 @@ const getPetUpdates = async (req, res) => {
 
     res.json({
       success: true,
-      data: updates
+      data: updates,
     });
   } catch (error) {
     console.error('Error fetching pet updates:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: error.message 
+      message: error.message,
     });
   }
 };
@@ -101,7 +100,7 @@ const getPetUpdates = async (req, res) => {
 const getTrainerUpdates = async (req, res) => {
   try {
     const { trainerId } = req.params;
-    
+
     const updates = await PetUpdate.find({ trainerId })
       .populate('petId', 'name type')
       .sort({ createdAt: -1 })
@@ -109,13 +108,13 @@ const getTrainerUpdates = async (req, res) => {
 
     res.json({
       success: true,
-      data: updates
+      data: updates,
     });
   } catch (error) {
     console.error('Error fetching trainer updates:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: error.message 
+      message: error.message,
     });
   }
 };
@@ -125,20 +124,20 @@ const getTrainerUpdates = async (req, res) => {
 const deletePetUpdate = async (req, res) => {
   try {
     const update = await PetUpdate.findById(req.params.id);
-    
+
     if (!update) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
-        message: 'Update not found' 
+        message: 'Update not found',
       });
     }
 
     // Check if user owns this update (trainer who created it)
     const trainer = await Trainer.findOne({ userId: req.user._id });
     if (!trainer || update.trainerId.toString() !== trainer._id.toString()) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         success: false,
-        message: 'Not authorized to delete this update' 
+        message: 'Not authorized to delete this update',
       });
     }
 
@@ -152,13 +151,13 @@ const deletePetUpdate = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Pet update deleted successfully'
+      message: 'Pet update deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting pet update:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: error.message 
+      message: error.message,
     });
   }
 };
@@ -167,5 +166,5 @@ module.exports = {
   createPetUpdate,
   getPetUpdates,
   getTrainerUpdates,
-  deletePetUpdate
+  deletePetUpdate,
 };

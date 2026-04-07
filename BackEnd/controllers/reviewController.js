@@ -6,13 +6,8 @@ const { createReviewService } = require('../services/reviewService');
 const createReview = async (req, res, next) => {
   try {
     const { trainerId, rating, comment } = req.body;
-    
-    const review = await createReviewService(
-      req.user._id,
-      trainerId,
-      rating,
-      comment
-    );
+
+    const review = await createReviewService(req.user._id, trainerId, rating, comment);
 
     res.status(201).json({ success: true, data: review });
   } catch (error) {
@@ -26,7 +21,7 @@ const getTrainerReviews = async (req, res, next) => {
   try {
     const { trainerId } = req.params;
     const reviews = await Review.find({ trainerId }).populate('userId', 'name avatar');
-    
+
     res.status(200).json({ success: true, data: reviews });
   } catch (error) {
     next(error);
@@ -60,5 +55,5 @@ const deleteReview = async (req, res, next) => {
 module.exports = {
   createReview,
   getTrainerReviews,
-  deleteReview
+  deleteReview,
 };

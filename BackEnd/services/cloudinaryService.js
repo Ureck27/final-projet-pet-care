@@ -8,7 +8,7 @@ dotenv.config();
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 /**
@@ -23,7 +23,7 @@ const uploadToCloudinary = async (filePath, folder = 'general') => {
       folder: `petcare/${folder}`,
       use_filename: true,
       unique_filename: true,
-      resource_type: 'auto'
+      resource_type: 'auto',
     });
     return result;
   } catch (error) {
@@ -60,10 +60,10 @@ const getCloudinaryStorage = (folder = 'general') => {
       allowed_formats: ['jpg', 'png', 'jpeg', 'mp4', 'mov', 'pdf'],
       resource_type: 'auto',
       public_id: (req, file) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         return `${file.fieldname}-${uniqueSuffix}`;
-      }
-    }
+      },
+    },
   });
 };
 
@@ -71,5 +71,5 @@ module.exports = {
   cloudinary,
   uploadToCloudinary,
   deleteFromCloudinary,
-  getCloudinaryStorage
+  getCloudinaryStorage,
 };

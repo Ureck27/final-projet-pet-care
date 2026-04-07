@@ -5,10 +5,9 @@ const Message = require('../models/Message');
 // @route   GET /api/chat/conversations
 const getConversations = async (req, res) => {
   try {
-    const userId = req.user._id;
     // Find conversations where user is either userId or trainerId
     // Assuming req.user.role determines if they are fetching as User or Trainer
-    
+
     let query = {};
     if (req.user.role === 'trainer') {
       // If role trainer, they find by trainerId. Note: req.user._id is the User id.
@@ -40,7 +39,7 @@ const getMessages = async (req, res) => {
   try {
     const { conversationId } = req.params;
     const { cursor, limit = 20 } = req.query;
-    
+
     const query = { conversationId };
     if (cursor) {
       query.createdAt = { $lt: new Date(cursor) };
@@ -60,8 +59,8 @@ const getMessages = async (req, res) => {
       pagination: {
         nextCursor,
         hasNextPage,
-        count: results.length
-      }
+        count: results.length,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -73,12 +72,12 @@ const getMessages = async (req, res) => {
 const initiateConversation = async (req, res) => {
   try {
     const { userId, trainerId } = req.body;
-    
+
     let conversation = await Conversation.findOne({ userId, trainerId });
     if (!conversation) {
       conversation = await Conversation.create({ userId, trainerId });
     }
-    
+
     res.json(conversation);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -88,5 +87,5 @@ const initiateConversation = async (req, res) => {
 module.exports = {
   getConversations,
   getMessages,
-  initiateConversation
+  initiateConversation,
 };

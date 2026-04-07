@@ -15,8 +15,22 @@ const getActivities = async (req, res) => {
 // @route   POST /api/daily-activities
 const createActivity = async (req, res) => {
   try {
-    const { petId, activityType, title, description, duration, startTime, endTime, photo, videoUrl, emotion, emotionConfidence, caregiverNotes, location } = req.body;
-    
+    const {
+      petId,
+      activityType,
+      title,
+      description,
+      duration,
+      startTime,
+      endTime,
+      photo,
+      videoUrl,
+      emotion,
+      emotionConfidence,
+      caregiverNotes,
+      location,
+    } = req.body;
+
     const activity = await DailyActivity.create({
       petId,
       caregiverId: req.user._id,
@@ -31,7 +45,7 @@ const createActivity = async (req, res) => {
       emotion,
       emotionConfidence,
       caregiverNotes,
-      location
+      location,
     });
 
     res.status(201).json(activity);
@@ -46,17 +60,32 @@ const updateActivity = async (req, res) => {
   try {
     const activity = await DailyActivity.findById(req.params.id);
     if (activity) {
-      if (activity.caregiverId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      if (
+        activity.caregiverId.toString() !== req.user._id.toString() &&
+        req.user.role !== 'admin'
+      ) {
         return res.status(403).json({ message: 'Not authorized' });
       }
-      
-      const updatableFields = ['activityType', 'title', 'description', 'duration', 'startTime', 'endTime', 'photo', 'videoUrl', 'emotion', 'caregiverNotes', 'location'];
-      updatableFields.forEach(field => {
+
+      const updatableFields = [
+        'activityType',
+        'title',
+        'description',
+        'duration',
+        'startTime',
+        'endTime',
+        'photo',
+        'videoUrl',
+        'emotion',
+        'caregiverNotes',
+        'location',
+      ];
+      updatableFields.forEach((field) => {
         if (req.body[field] !== undefined) {
           activity[field] = req.body[field];
         }
       });
-      
+
       const updatedActivity = await activity.save();
       res.json(updatedActivity);
     } else {
@@ -73,7 +102,10 @@ const deleteActivity = async (req, res) => {
   try {
     const activity = await DailyActivity.findById(req.params.id);
     if (activity) {
-      if (activity.caregiverId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      if (
+        activity.caregiverId.toString() !== req.user._id.toString() &&
+        req.user.role !== 'admin'
+      ) {
         return res.status(403).json({ message: 'Not authorized' });
       }
       await DailyActivity.deleteOne({ _id: activity._id });
@@ -90,5 +122,5 @@ module.exports = {
   getActivities,
   createActivity,
   updateActivity,
-  deleteActivity
+  deleteActivity,
 };

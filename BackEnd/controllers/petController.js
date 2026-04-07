@@ -20,7 +20,7 @@ const createPet = async (req, res) => {
       description,
       image: image || '/placeholder.svg',
       userId: req.user._id,
-      status: 'pending'
+      status: 'pending',
     });
 
     const savedPet = await pet.save();
@@ -36,7 +36,7 @@ const getAllPets = async (req, res) => {
   try {
     const { cursor, limit = 10 } = req.query;
     const filter = { isDeleted: { $ne: true } };
-    
+
     if (req.user.role !== 'admin') {
       filter.userId = req.user._id;
     }
@@ -60,8 +60,8 @@ const getAllPets = async (req, res) => {
       pagination: {
         nextCursor,
         hasNextPage,
-        count: results.length
-      }
+        count: results.length,
+      },
     });
   } catch (error) {
     console.error('Error fetching all pets:', error);
@@ -73,7 +73,7 @@ const getAllPets = async (req, res) => {
 const getPetsByUserId = async (req, res) => {
   try {
     const userId = req.query.userId || req.query.ownerId;
-    
+
     if (!userId) {
       return res.status(400).json({ message: 'userId or ownerId is required' });
     }
@@ -128,11 +128,7 @@ const updatePetStatus = async (req, res) => {
       return res.status(400).json({ message: 'Invalid status. Must be accepted or rejected' });
     }
 
-    const pet = await Pet.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true, runValidators: true }
-    );
+    const pet = await Pet.findByIdAndUpdate(id, { status }, { new: true, runValidators: true });
 
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });
@@ -156,7 +152,11 @@ const getPetById = async (req, res) => {
     }
 
     // Security check: Only owner, trainer, or admin can fetch this pet
-    if (req.user.role !== 'admin' && req.user.role !== 'trainer' && pet.userId._id.toString() !== req.user._id.toString()) {
+    if (
+      req.user.role !== 'admin' &&
+      req.user.role !== 'trainer' &&
+      pet.userId._id.toString() !== req.user._id.toString()
+    ) {
       return res.status(403).json({ message: 'Not authorized to view this pet' });
     }
 
@@ -228,5 +228,5 @@ module.exports = {
   getPetById,
   updatePetStatus,
   updatePet,
-  deletePet
+  deletePet,
 };

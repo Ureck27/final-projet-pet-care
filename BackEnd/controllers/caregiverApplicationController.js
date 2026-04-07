@@ -6,16 +6,7 @@ const { sendAdminNotification } = require('../services/emailService');
 // @route   POST /api/caregiver/apply
 const submitCaregiverApplication = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      phone,
-      location,
-      experience,
-      petTypes,
-      certifications,
-      bio,
-    } = req.body;
+    const { name, email, phone, location, experience, petTypes, certifications, bio } = req.body;
 
     // Process uploaded files
     let profileImageUrl = req.body.profileImage;
@@ -33,12 +24,12 @@ const submitCaregiverApplication = async (req, res) => {
     // Check if user already has a pending application
     const existingApplication = await CaregiverApplication.findOne({
       email,
-      status: 'pending'
+      status: 'pending',
     });
 
     if (existingApplication) {
-      return res.status(400).json({ 
-        message: 'You already have a pending application. Please wait for it to be reviewed.' 
+      return res.status(400).json({
+        message: 'You already have a pending application. Please wait for it to be reviewed.',
       });
     }
 
@@ -53,7 +44,7 @@ const submitCaregiverApplication = async (req, res) => {
       bio,
       profileImage: profileImageUrl,
       idDocument: req.body.idDocument, // ID document can be handled similarly if needed
-      userId: req.user?._id
+      userId: req.user?._id,
     });
 
     // Send admin notification
@@ -71,12 +62,12 @@ const submitCaregiverApplication = async (req, res) => {
         <li><strong>Application Date:</strong> ${new Date().toLocaleDateString()}</li>
       </ul>
       <p>Please review this application in the admin dashboard.</p>
-      `
+      `,
     );
 
     res.status(201).json({
       message: 'Application submitted successfully',
-      application
+      application,
     });
   } catch (error) {
     console.error('Error submitting caregiver application:', error);
@@ -89,14 +80,13 @@ const submitCaregiverApplication = async (req, res) => {
 const getCaregiverApplications = async (req, res) => {
   try {
     const { status } = req.query;
-    
+
     let filter = {};
     if (status && ['pending', 'approved', 'rejected'].includes(status)) {
       filter.status = status;
     }
 
-    const applications = await CaregiverApplication.find(filter)
-      .sort({ createdAt: -1 });
+    const applications = await CaregiverApplication.find(filter).sort({ createdAt: -1 });
 
     res.json(applications);
   } catch (error) {
@@ -110,7 +100,7 @@ const getCaregiverApplications = async (req, res) => {
 const approveCaregiverApplication = async (req, res) => {
   try {
     const application = await CaregiverApplication.findById(req.params.id);
-    
+
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }
@@ -135,12 +125,12 @@ const approveCaregiverApplication = async (req, res) => {
         <li><strong>Location:</strong> ${application.location}</li>
         <li><strong>Approval Date:</strong> ${new Date().toLocaleDateString()}</li>
       </ul>
-      `
+      `,
     );
 
-    res.json({ 
+    res.json({
       message: 'Caregiver application approved successfully',
-      application 
+      application,
     });
   } catch (error) {
     console.error('Error approving caregiver application:', error);
@@ -154,7 +144,7 @@ const rejectCaregiverApplication = async (req, res) => {
   try {
     const { rejectionReason } = req.body;
     const application = await CaregiverApplication.findById(req.params.id);
-    
+
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }
@@ -176,12 +166,12 @@ const rejectCaregiverApplication = async (req, res) => {
         <li><strong>Rejection Reason:</strong> ${application.rejectionReason}</li>
         <li><strong>Rejection Date:</strong> ${new Date().toLocaleDateString()}</li>
       </ul>
-      `
+      `,
     );
 
-    res.json({ 
+    res.json({
       message: 'Caregiver application rejected successfully',
-      application 
+      application,
     });
   } catch (error) {
     console.error('Error rejecting caregiver application:', error);
@@ -194,7 +184,7 @@ const rejectCaregiverApplication = async (req, res) => {
 const deleteCaregiverApplication = async (req, res) => {
   try {
     const application = await CaregiverApplication.findById(req.params.id);
-    
+
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }
@@ -212,7 +202,7 @@ const deleteCaregiverApplication = async (req, res) => {
         <li><strong>Location:</strong> ${application.location}</li>
         <li><strong>Deletion Date:</strong> ${new Date().toLocaleDateString()}</li>
       </ul>
-      `
+      `,
     );
 
     res.json({ message: 'Caregiver application deleted successfully' });
@@ -230,18 +220,18 @@ const getCaregiverStats = async (req, res) => {
       {
         $group: {
           _id: '$status',
-          count: { $sum: 1 }
-        }
-      }
+          count: { $sum: 1 },
+        },
+      },
     ]);
 
     const statsMap = {
       pending: 0,
       approved: 0,
-      rejected: 0
+      rejected: 0,
     };
 
-    stats.forEach(stat => {
+    stats.forEach((stat) => {
       statsMap[stat._id] = stat.count;
     });
 
@@ -249,7 +239,7 @@ const getCaregiverStats = async (req, res) => {
       totalApplications: statsMap.pending + statsMap.approved + statsMap.rejected,
       pendingApplications: statsMap.pending,
       approvedCaregivers: statsMap.approved,
-      rejectedApplications: statsMap.rejected
+      rejectedApplications: statsMap.rejected,
     });
   } catch (error) {
     console.error('Error fetching caregiver stats:', error);
@@ -263,5 +253,5 @@ module.exports = {
   approveCaregiverApplication,
   rejectCaregiverApplication,
   deleteCaregiverApplication,
-  getCaregiverStats
+  getCaregiverStats,
 };

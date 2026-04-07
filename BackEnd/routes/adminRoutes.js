@@ -13,11 +13,11 @@ const {
   deleteUser,
   getPendingRequests,
   acceptRequest,
-  rejectRequest
+  rejectRequest,
 } = require('../controllers/adminController');
 const {
   approveTrainerRequest,
-  rejectTrainerRequest
+  rejectTrainerRequest,
 } = require('../controllers/trainerRequestController');
 const { protect, authorizeRole } = require('../middleware/authMiddleware');
 

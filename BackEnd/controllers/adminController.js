@@ -2,7 +2,6 @@ const User = require('../models/User');
 const Pet = require('../models/Pet');
 const Trainer = require('../models/Trainer');
 const TrainerRequest = require('../models/TrainerRequest');
-const { sendAdminNotification } = require('../services/emailService');
 
 // @desc    Get all users
 // @route   GET /api/admin/users
@@ -61,7 +60,7 @@ const getDashboardStats = async (req, res) => {
       totalUsers: userCount,
       totalPets: petCount,
       totalTrainers: trainerCount,
-      pendingTrainerRequests: pendingRequestsCount
+      pendingTrainerRequests: pendingRequestsCount,
     };
 
     res.json(stats);
@@ -69,7 +68,6 @@ const getDashboardStats = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // @desc    Update user role
 // @route   PUT /api/admin/users/:id/role
@@ -107,7 +105,7 @@ const updateUserStatus = async (req, res) => {
     }
     user.status = status;
     await user.save();
-    
+
     // If the user's role is trainer and status is suspended/rejected, we should probably update their Trainer object status too.
     if (user.role === 'trainer') {
       const trainer = await Trainer.findOne({ userId: user._id });
@@ -116,7 +114,7 @@ const updateUserStatus = async (req, res) => {
         await trainer.save();
       }
     }
-    
+
     const userObj = user.toObject();
     delete userObj.password;
     res.json(userObj);
@@ -171,7 +169,7 @@ const deleteUser = async (req, res) => {
     await Pet.deleteMany({ userId: req.params.id });
     await Trainer.deleteOne({ userId: req.params.id });
     await TrainerRequest.deleteMany({ userId: req.params.id });
-    
+
     await User.deleteOne({ _id: req.params.id });
     res.json({ message: 'User and associated data deleted' });
   } catch (error) {
@@ -186,17 +184,16 @@ const getPendingRequests = async (req, res) => {
     const pendingUsers = await User.find({ status: 'pending' }).select('-password');
     const pendingPets = await Pet.find({ status: 'pending' }).populate('userId', 'name email');
     const pendingTrainers = await Trainer.find({ status: 'pending' });
-    
     // Format them uniformly
     const requests = [
-      ...pendingUsers.map(u => ({ ...u.toObject(), requestType: 'user' })),
-      ...pendingPets.map(p => ({ ...p.toObject(), requestType: 'pet' })),
-      ...pendingTrainers.map(t => ({ ...t.toObject(), requestType: 'trainer' }))
+      ...pendingUsers.map((u) => ({ ...u.toObject(), requestType: 'user' })),
+      ...pendingPets.map((p) => ({ ...p.toObject(), requestType: 'pet' })),
+      ...pendingTrainers.map((t) => ({ ...t.toObject(), requestType: 'trainer' })),
     ];
-    
+
     // Sort by createdAt descending
     requests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
+
     res.json(requests);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -212,7 +209,9 @@ const acceptRequest = async (req, res) => {
 
     switch (type) {
       case 'user':
-        updatedDoc = await User.findByIdAndUpdate(id, { status: 'accepted' }, { new: true }).select('-password');
+        updatedDoc = await User.findByIdAndUpdate(id, { status: 'accepted' }, { new: true }).select(
+          '-password',
+        );
         break;
       case 'pet':
         updatedDoc = await Pet.findByIdAndUpdate(id, { status: 'accepted' }, { new: true });
@@ -243,7 +242,9 @@ const rejectRequest = async (req, res) => {
 
     switch (type) {
       case 'user':
-        updatedDoc = await User.findByIdAndUpdate(id, { status: 'rejected' }, { new: true }).select('-password');
+        updatedDoc = await User.findByIdAndUpdate(id, { status: 'rejected' }, { new: true }).select(
+          '-password',
+        );
         break;
       case 'pet':
         updatedDoc = await Pet.findByIdAndUpdate(id, { status: 'rejected' }, { new: true });
@@ -278,6 +279,5 @@ module.exports = {
   deleteUser,
   getPendingRequests,
   acceptRequest,
-  rejectRequest
+  rejectRequest,
 };
-

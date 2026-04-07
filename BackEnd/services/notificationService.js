@@ -12,8 +12,8 @@ class NotificationService {
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER || 'your-email@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your-app-password'
-      }
+        pass: process.env.EMAIL_PASS || 'your-app-password',
+      },
     });
   }
 
@@ -29,7 +29,7 @@ class NotificationService {
         type,
         priority,
         actionUrl,
-        sentAt: new Date()
+        sentAt: new Date(),
       });
 
       // Emit real-time notification if io is available
@@ -39,8 +39,8 @@ class NotificationService {
           userId: userId.toString(),
           notification: {
             ...notification._doc,
-            id: notification._id.toString()
-          }
+            id: notification._id.toString(),
+          },
         });
       }
 
@@ -89,7 +89,7 @@ class NotificationService {
         aiMessage: routineLog.aiMessage,
         trainerName: (routineLog.trainerId && routineLog.trainerId.name) || 'Trainer',
         timestamp: routineLog.createdAt,
-        photoUrl: routineLog.photoUrl
+        photoUrl: routineLog.photoUrl,
       };
 
       // Send notifications to different recipients
@@ -103,7 +103,7 @@ class NotificationService {
         `AI system detected: ${routineLog.aiMessage}`,
         'health-alert',
         'critical',
-        `/user-dashboard/pets/${pet._id}`
+        `/user-dashboard/pets/${pet._id}`,
       );
       results.push({ recipient: 'owner', email: ownerEmailResult.success });
 
@@ -116,7 +116,7 @@ class NotificationService {
           `Critical status reported for ${pet.name} by trainer.`,
           'health-alert',
           'critical',
-          `/admin-dashboard`
+          `/admin-dashboard`,
         );
         results.push({ recipient: 'admin', adminId: admin._id, email: adminEmailResult.success });
       }
@@ -124,15 +124,14 @@ class NotificationService {
       return {
         success: true,
         message: 'Urgent alerts sent successfully',
-        results: results
+        results: results,
       };
-
     } catch (error) {
       console.error('Error sending urgent alert:', error);
       return {
         success: false,
         message: 'Failed to send urgent alert',
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -146,7 +145,7 @@ class NotificationService {
         from: process.env.EMAIL_USER,
         to: owner.email,
         subject: `🚨 Urgent Alert: ${data.petName}'s Health Status`,
-        html: this.generateOwnerEmailTemplate(data)
+        html: this.generateOwnerEmailTemplate(data),
       };
 
       const result = await this.transporter.sendMail(mailOptions);
@@ -165,7 +164,7 @@ class NotificationService {
         from: process.env.EMAIL_USER,
         to: admin.email,
         subject: `🚨 Admin Alert: Urgent Pet Health Issue - ${data.petName}`,
-        html: this.generateAdminEmailTemplate(data)
+        html: this.generateAdminEmailTemplate(data),
       };
 
       const result = await this.transporter.sendMail(mailOptions);
@@ -184,7 +183,7 @@ class NotificationService {
         from: process.env.EMAIL_USER,
         to: trainer.email,
         subject: `🚨 Alert: ${data.petName} Health Status Update`,
-        html: this.generateTrainerEmailTemplate(data)
+        html: this.generateTrainerEmailTemplate(data),
       };
 
       const result = await this.transporter.sendMail(mailOptions);
@@ -404,7 +403,7 @@ class NotificationService {
         from: process.env.EMAIL_USER,
         to: process.env.EMAIL_USER, // Send test to self
         subject: 'Test Email - Pet Care Platform',
-        html: '<h1>Test Email</h1><p>This is a test email from the Pet Care Platform notification system.</p>'
+        html: '<h1>Test Email</h1><p>This is a test email from the Pet Care Platform notification system.</p>',
       };
 
       const result = await this.transporter.sendMail(mailOptions);

@@ -18,14 +18,14 @@ async function testAuth() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      credentials: 'include'
+      credentials: 'include',
     });
-    
+
     console.log('Response status:', response.status);
     console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-    
+
     if (response.ok) {
       const data = await response.json();
       console.log('Success! Pet data:', data);
@@ -46,13 +46,13 @@ async function testAdminEndpoint() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      credentials: 'include'
+      credentials: 'include',
     });
-    
+
     console.log('Admin endpoint status:', response.status);
-    
+
     if (response.ok) {
       const data = await response.json();
       console.log('Admin endpoint success:', data);

@@ -13,17 +13,17 @@ const uploadPhoto = async (req, res) => {
     }
 
     const photoUrl = `/uploads/${req.file.filename}`;
-    
+
     res.status(200).json({
       success: true,
       photoUrl: photoUrl,
-      message: 'Image uploaded successfully'
+      message: 'Image uploaded successfully',
     });
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error uploading image', 
-      error: error.message 
+      message: 'Error uploading image',
+      error: error.message,
     });
   }
 };
@@ -53,8 +53,9 @@ const completeRoutine = async (req, res) => {
       (req.user.role === 'trainer' || req.user.role === 'worker') &&
       routine.trainerId.toString() !== req.user._id.toString()
     ) {
-      return res.status(403).json({ 
-        message: 'You are not authorized to complete this routine. Only the assigned trainer can complete it.' 
+      return res.status(403).json({
+        message:
+          'You are not authorized to complete this routine. Only the assigned trainer can complete it.',
       });
     }
 
@@ -76,7 +77,7 @@ const completeRoutine = async (req, res) => {
       trainerId: routine.trainerId,
       photoUrl: photoUrl,
       aiStatus: aiAnalysis.status,
-      aiMessage: aiAnalysis.message
+      aiMessage: aiAnalysis.message,
     });
 
     await routineLog.save();
@@ -98,15 +99,14 @@ const completeRoutine = async (req, res) => {
         routine,
         routineLog,
         aiAnalysis,
-        notifications: notificationResult
-      }
+        notifications: notificationResult,
+      },
     });
-
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error completing routine', 
-      error: error.message 
+      message: 'Error completing routine',
+      error: error.message,
     });
   }
 };
@@ -122,13 +122,13 @@ const getMyRoutines = async (req, res) => {
     res.status(200).json({
       success: true,
       count: routines.length,
-      data: routines
+      data: routines,
     });
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error fetching routines', 
-      error: error.message 
+      message: 'Error fetching routines',
+      error: error.message,
     });
   }
 };
@@ -139,7 +139,7 @@ const getPetRoutineLogs = async (req, res) => {
   try {
     const { petId } = req.params;
     const pet = await Pet.findById(petId);
-    
+
     if (!pet) {
       return res.status(404).json({ message: 'Pet not found' });
     }
@@ -149,8 +149,8 @@ const getPetRoutineLogs = async (req, res) => {
     const isAdmin = req.user.role === 'admin';
 
     if (!isOwner && !isAssignedTrainer && !isAdmin) {
-      return res.status(403).json({ 
-        message: 'You are not authorized to view this pet\'s routine logs' 
+      return res.status(403).json({
+        message: "You are not authorized to view this pet's routine logs",
       });
     }
 
@@ -162,13 +162,13 @@ const getPetRoutineLogs = async (req, res) => {
     res.status(200).json({
       success: true,
       count: logs.length,
-      data: logs
+      data: logs,
     });
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error fetching routine logs', 
-      error: error.message 
+      message: 'Error fetching routine logs',
+      error: error.message,
     });
   }
 };
@@ -180,7 +180,7 @@ const getAllRoutinesAdmin = async (req, res) => {
     const { page = 1, limit = 50, status, petId } = req.query;
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
-    
+
     const filter = {};
     if (status) filter.status = status;
     if (petId) filter.petId = petId;
@@ -202,13 +202,13 @@ const getAllRoutinesAdmin = async (req, res) => {
     res.status(200).json({
       success: true,
       routines: { count: routines.length, data: routines },
-      logs: { count: logs.length, data: logs }
+      logs: { count: logs.length, data: logs },
     });
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error fetching admin data', 
-      error: error.message 
+      message: 'Error fetching admin data',
+      error: error.message,
     });
   }
 };
@@ -218,5 +218,5 @@ module.exports = {
   completeRoutine,
   getMyRoutines,
   getPetRoutineLogs,
-  getAllRoutinesAdmin
+  getAllRoutinesAdmin,
 };

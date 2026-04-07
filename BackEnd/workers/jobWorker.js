@@ -9,12 +9,12 @@ const emailWorker = new Worker(
     // Simulate sending email logic...
     // const emailService = require('../services/emailService');
     // await emailService.sendEmail(job.data.to, job.data.subject, job.data.body);
-    
+
     // Simulating delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     console.log(`[EmailWorker] Finished job ${job.id}`);
   },
-  { connection }
+  { connection },
 );
 
 emailWorker.on('completed', (job) => {
@@ -31,10 +31,10 @@ const aiTaskWorker = new Worker(
   async (job) => {
     console.log(`[AITaskWorker] Processing job ${job.id} with data`, job.data);
     // Simulate AI scanning...
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     console.log(`[AITaskWorker] Finished job ${job.id}`);
   },
-  { connection }
+  { connection },
 );
 
 aiTaskWorker.on('completed', (job) => {
@@ -47,5 +47,5 @@ aiTaskWorker.on('failed', (job, err) => {
 
 module.exports = {
   emailWorker,
-  aiTaskWorker
+  aiTaskWorker,
 };

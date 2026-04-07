@@ -1,32 +1,30 @@
-const js = require("@eslint/js");
-const prettierRecommended = require("eslint-plugin-prettier/recommended");
-const globals = require("globals");
+const js = require('@eslint/js');
+const prettierRecommended = require('eslint-plugin-prettier/recommended');
+const globals = require('globals');
 
 module.exports = [
   {
-    ignores: [
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/build/**",
-      "**/coverage/**",
-      "logs/**",
-    ],
+    ignores: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/coverage/**', 'logs/**'],
   },
   js.configs.recommended,
   prettierRecommended,
   {
     languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "commonjs",
+      ecmaVersion: 'latest',
+      sourceType: 'commonjs',
       globals: {
         ...globals.node,
         ...globals.jest,
       },
     },
     rules: {
-      "prettier/prettier": "error",
-      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-      "no-console": "warn",
+      'prettier/prettier': 'error',
+      'no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+      ],
+      'no-console':
+        process.env.NODE_ENV === 'production' ? ['warn', { allow: ['warn', 'error'] }] : 'off',
     },
   },
 ];

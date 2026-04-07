@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   getConversations,
   getMessages,
-  initiateConversation
+  initiateConversation,
 } = require('../controllers/chatController');
 const { protect } = require('../middleware/authMiddleware');
 

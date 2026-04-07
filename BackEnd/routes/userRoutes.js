@@ -5,18 +5,19 @@ const {
   getUserById,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
 } = require('../controllers/userController');
 const { protect, authorizeRole } = require('../middleware/authMiddleware');
 
-router.route('/')
+router
+  .route('/')
   .get(protect, authorizeRole('admin'), getUsers)
   .post(protect, authorizeRole('admin'), createUser);
 
-router.route('/profile')
-  .get(protect, getUserById);
+router.route('/profile').get(protect, getUserById);
 
-router.route('/:id')
+router
+  .route('/:id')
   .get(protect, getUserById)
   .put(protect, updateUser)
   .delete(protect, authorizeRole('admin'), deleteUser);

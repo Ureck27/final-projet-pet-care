@@ -1,7 +1,5 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { sendAdminNotification } = require('../services/emailService');
 
 // Validation helper functions
 const isValidEmail = (email) => {
@@ -28,7 +26,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Strict'
+    sameSite: 'Strict',
   };
 
   res.status(statusCode).cookie('token', token, options).json({
@@ -59,8 +57,9 @@ const registerUser = async (req, res) => {
     }
 
     if (!isStrongPassword(password)) {
-      return res.status(400).json({ 
-        message: 'Password must be at least 8 characters long and contain: 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (@$!%*?&)' 
+      return res.status(400).json({
+        message:
+          'Password must be at least 8 characters long and contain: 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (@$!%*?&)',
       });
     }
 
@@ -76,7 +75,7 @@ const registerUser = async (req, res) => {
       name,
       email: normalizedEmail,
       password, // Pre-save hook will hash this
-      role: 'user' // Force role to 'user' for registration
+      role: 'user', // Force role to 'user' for registration
     });
     console.log('User created successfully:', user);
 
@@ -98,7 +97,9 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Please provide email and password', type: 'validation' });
+      return res
+        .status(400)
+        .json({ message: 'Please provide email and password', type: 'validation' });
     }
 
     const normalizedEmail = email.toLowerCase();
@@ -108,7 +109,9 @@ const loginUser = async (req, res) => {
 
     if (!user) {
       console.log('Login failed: User not found in DB');
-      return res.status(401).json({ message: 'User not found. Please check your email.', type: 'auth' });
+      return res
+        .status(401)
+        .json({ message: 'User not found. Please check your email.', type: 'auth' });
     }
 
     console.log('User found in DB:', user._id);
@@ -136,19 +139,19 @@ const forgotPassword = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    
+
     // Generate reset token
     const resetToken = require('crypto').randomBytes(32).toString('hex');
     const resetTokenExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
-    
+
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpiry = resetTokenExpiry;
     await user.save();
-    
+
     // Send reset email (in production, use actual email service)
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
     console.log('Password reset link:', resetUrl); // For development
-    
+
     res.json({ message: 'Password reset link sent to email' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -160,22 +163,22 @@ const forgotPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
   try {
     const { token, newPassword } = req.body;
-    
+
     const user = await User.findOne({
       resetPasswordToken: token,
-      resetPasswordExpiry: { $gt: Date.now() }
+      resetPasswordExpiry: { $gt: Date.now() },
     });
-    
+
     if (!user) {
       return res.status(400).json({ message: 'Invalid or expired reset token' });
     }
-    
+
     // Update password
     user.password = newPassword;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpiry = undefined;
     await user.save();
-    
+
     res.json({ message: 'Password reset successful' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -190,16 +193,16 @@ const adminLogin = async (req, res) => {
 
     // Validate input
     if (!email || !password) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'Please provide email and password',
-        type: 'validation'
+        type: 'validation',
       });
     }
 
     if (!isValidEmail(email)) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'Please provide a valid email address',
-        type: 'validation'
+        type: 'validation',
       });
     }
 
@@ -211,9 +214,9 @@ const adminLogin = async (req, res) => {
 
     if (!user) {
       console.log('Admin login failed: Admin user not found in DB');
-      return res.status(401).json({ 
+      return res.status(401).json({
         message: 'Admin user not found',
-        type: 'auth'
+        type: 'auth',
       });
     }
 
@@ -222,9 +225,9 @@ const adminLogin = async (req, res) => {
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       console.log('Admin login failed: Invalid admin password');
-      return res.status(401).json({ 
+      return res.status(401).json({
         message: 'Invalid admin password',
-        type: 'auth'
+        type: 'auth',
       });
     }
 
@@ -234,7 +237,7 @@ const adminLogin = async (req, res) => {
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict'
+      sameSite: 'Strict',
     };
 
     res.status(200).cookie('token', token, options).json({
@@ -243,23 +246,23 @@ const adminLogin = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      redirect: '/admin-dashboard'
+      redirect: '/admin-dashboard',
     });
   } catch (error) {
     console.error('Admin login error:', error);
-    
+
     // Handle rate limiting errors specifically
     if (error.status === 429) {
       return res.status(429).json({
         error: 'Too many admin login attempts. Please try again later.',
         type: 'rate_limit',
-        retryAfter: '15 minutes'
+        retryAfter: '15 minutes',
       });
     }
-    
-    res.status(500).json({ 
+
+    res.status(500).json({
       error: 'Internal server error during admin login',
-      type: 'server'
+      type: 'server',
     });
   }
 };
@@ -269,7 +272,7 @@ const adminLogin = async (req, res) => {
 const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -281,7 +284,7 @@ const getMe = async (req, res) => {
       email: user.email,
       role: user.role,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
     });
   } catch (error) {
     console.error('Get user error:', error);
@@ -296,10 +299,18 @@ const logoutUser = (req, res) => {
     expires: new Date(Date.now() + 10 * 1000), // expire in 10 seconds
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Strict'
+    sameSite: 'Strict',
   });
-  
+
   res.status(200).json({ success: true, message: 'User logged out successfully' });
 };
 
-module.exports = { registerUser, loginUser, adminLogin, logoutUser, forgotPassword, resetPassword, getMe };
+module.exports = {
+  registerUser,
+  loginUser,
+  adminLogin,
+  logoutUser,
+  forgotPassword,
+  resetPassword,
+  getMe,
+};

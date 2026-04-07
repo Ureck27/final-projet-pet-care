@@ -1,50 +1,55 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: ['user', 'admin', 'trainer'],
+      default: 'user',
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'accepted', 'rejected'],
+      default: 'pending',
+    },
+    pets: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Pet',
+      },
+    ],
+    trainer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Trainer',
+      default: null,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true
+  {
+    timestamps: true,
   },
-  password: {
-    type: String,
-    required: true
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin', 'trainer'],
-    default: 'user'
-  },
-  status: {
-    type: String,
-    enum: ['pending', 'accepted', 'rejected'],
-    default: 'pending'
-  },
-  pets: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Pet'
-  }],
-  trainer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Trainer',
-    default: null
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false
-  }
-}, {
-  timestamps: true
-});
+);
 
 // Soft delete query middleware
-userSchema.pre(/^find/, function(next) {
+userSchema.pre(/^find/, function (next) {
   if (this.getQuery().isDeleted === undefined) {
     this.find({ isDeleted: { $ne: true } });
   }

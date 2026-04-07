@@ -6,7 +6,7 @@ const {
   approveCaregiverApplication,
   rejectCaregiverApplication,
   deleteCaregiverApplication,
-  getCaregiverStats
+  getCaregiverStats,
 } = require('../controllers/caregiverApplicationController');
 const { uploadTrainerFiles, handleUploadError } = require('../middleware/uploadMiddleware');
 

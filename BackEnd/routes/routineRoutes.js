@@ -5,16 +5,30 @@ const {
   completeRoutine,
   getMyRoutines,
   getPetRoutineLogs,
-  getAllRoutinesAdmin
+  getAllRoutinesAdmin,
 } = require('../controllers/routineController');
 const { protect, authorizeRole } = require('../middleware/authMiddleware');
 const { uploadSingle, handleUploadError } = require('../middleware/uploadMiddleware');
 
 // POST /api/routine/upload - Care staff (trainer/worker) or admin can upload
-router.post('/upload', protect, authorizeRole('trainer', 'worker', 'admin'), uploadSingle('photo'), handleUploadError, uploadPhoto);
+router.post(
+  '/upload',
+  protect,
+  authorizeRole('trainer', 'worker', 'admin'),
+  uploadSingle('photo'),
+  handleUploadError,
+  uploadPhoto,
+);
 
 // POST /api/routine/complete - Care staff (trainer/worker) or admin can complete routines
-router.post('/complete', protect, authorizeRole('trainer', 'worker', 'admin'), uploadSingle('photo'), handleUploadError, completeRoutine);
+router.post(
+  '/complete',
+  protect,
+  authorizeRole('trainer', 'worker', 'admin'),
+  uploadSingle('photo'),
+  handleUploadError,
+  completeRoutine,
+);
 
 // GET /api/routine/my-routines - Get routines for current caregiver
 router.get('/my-routines', protect, authorizeRole('trainer', 'worker'), getMyRoutines);

@@ -1,32 +1,15 @@
 const multer = require('multer');
 const { getCloudinaryStorage } = require('../services/cloudinaryService');
 
-/**
- * Determine upload folder on Cloudinary based on field name or path
- * @param {express.Request} req 
- * @param {express.Multer.File} file 
- * @returns {string} Folder name
- */
-const getFolder = (req, file) => {
-  if (file.fieldname === 'petImage' || req.path.includes('/pets')) {
-    return 'pets';
-  } else if (file.fieldname === 'petVideo' || req.path.includes('/videos')) {
-    return 'videos';
-  } else if (file.fieldname === 'certificateImage' || file.fieldname === 'certificates') {
-    return 'certificates';
-  } else if (file.fieldname === 'profileImage' || req.path.includes('/trainers')) {
-    return 'trainers';
-  } else if (req.path.includes('/pet-updates')) {
-    return 'pet-updates';
-  }
-  return 'general';
-};
-
 // Multer configuration using Cloudinary
 const upload = multer({
   storage: getCloudinaryStorage('general'), // Default, but overridden by field specific middleware if needed
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/') || file.mimetype === 'application/pdf') {
+    if (
+      file.mimetype.startsWith('image/') ||
+      file.mimetype.startsWith('video/') ||
+      file.mimetype === 'application/pdf'
+    ) {
       cb(null, true);
     } else {
       cb(new Error('Only image, video, and PDF files are allowed'), false);
@@ -34,8 +17,8 @@ const upload = multer({
   },
   limits: {
     fileSize: 20 * 1024 * 1024, // 20MB limit
-    files: 5
-  }
+    files: 5,
+  },
 });
 
 // Single file upload middleware
@@ -62,7 +45,7 @@ const uploadTrainerFiles = (req, res, next) => {
   const storage = getCloudinaryStorage('trainers');
   const uploader = multer({ storage }).fields([
     { name: 'profileImage', maxCount: 1 },
-    { name: 'certificateImage', maxCount: 3 }
+    { name: 'certificateImage', maxCount: 3 },
   ]);
   uploader(req, res, next);
 };
@@ -71,7 +54,7 @@ const uploadPetFiles = (req, res, next) => {
   const storage = getCloudinaryStorage('pets');
   const uploader = multer({ storage }).fields([
     { name: 'petImage', maxCount: 1 },
-    { name: 'petVideo', maxCount: 1 }
+    { name: 'petVideo', maxCount: 1 },
   ]);
   uploader(req, res, next);
 };
@@ -96,11 +79,11 @@ const handleUploadError = (error, req, res, next) => {
     }
     return res.status(400).json({ message: 'File upload error: ' + error.message });
   }
-  
+
   if (error.message.includes('Only image, video, and PDF files are allowed')) {
     return res.status(400).json({ message: error.message });
   }
-  
+
   next(error);
 };
 
@@ -112,7 +95,7 @@ const handleUploadError = (error, req, res, next) => {
 const deleteFile = async (secureUrl) => {
   try {
     if (!secureUrl || !secureUrl.includes('cloudinary.com')) return false;
-    
+
     // Extract public ID from Cloudinary URL
     // Format: https://res.cloudinary.com/cloud_name/image/upload/v1234567/petcare/folder/public_id.jpg
     const parts = secureUrl.split('/');
@@ -121,7 +104,7 @@ const deleteFile = async (secureUrl) => {
 
     const publicIdWithExt = parts.slice(uploadIndex + 2).join('/');
     const publicId = publicIdWithExt.split('.')[0];
-    
+
     const { deleteFromCloudinary } = require('../services/cloudinaryService');
     await deleteFromCloudinary(publicId);
     return true;
@@ -139,5 +122,5 @@ module.exports = {
   uploadPetFiles,
   uploadPetMedia,
   handleUploadError,
-  deleteFile
+  deleteFile,
 };

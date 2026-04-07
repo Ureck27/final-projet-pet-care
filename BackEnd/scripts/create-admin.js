@@ -19,7 +19,7 @@ const createAdmin = async () => {
 
     // Check if admin already exists
     const adminExists = await User.findOne({ email: process.env.ADMIN_EMAIL });
-    
+
     if (adminExists) {
       console.log('❌ Admin with this email already exists!');
       console.log('Email:', adminExists.email);
@@ -33,7 +33,7 @@ const createAdmin = async () => {
       email: process.env.ADMIN_EMAIL,
       password: 'AdminPass123!', // Change this password!
       role: 'admin',
-      status: 'active'
+      status: 'active',
     });
 
     console.log('✅ Admin account created successfully!');

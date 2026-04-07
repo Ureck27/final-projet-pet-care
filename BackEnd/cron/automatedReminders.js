@@ -11,29 +11,26 @@ const startReminderCron = () => {
       const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000); // exactly 24 hours from now
 
       // We look for bookings starting within the next 24 hours (and we add a buffer of 1 hour to catch them early)
-      const bufferStart = new Date(in24Hours.getTime() - 60 * 60 * 1000); 
-
       const upcomingBookings = await Booking.find({
         date: { $gte: startOfDay(now), $lte: endOfDay(in24Hours) }, // basic date filter first
         status: 'confirmed',
         reminderSent: false,
-        isDeleted: { $ne: true }
+        isDeleted: { $ne: true },
       }).populate('ownerId');
 
       for (const booking of upcomingBookings) {
         // Precise time logic: booking.time is "HH:mm"
         const [hours, minutes] = booking.time.split(':').map(Number);
-        
+
         const bookingDateTime = new Date(booking.date);
         bookingDateTime.setHours(hours, minutes, 0, 0);
 
         // If booking is within the next 24 hours but greater than now
         if (bookingDateTime > now && bookingDateTime <= in24Hours) {
-          
           await emailQueue.add('send-reminder', {
             to: booking.ownerId.email,
             subject: 'Upcoming PetCare Booking Reminder',
-            body: `Hello, this is a reminder for your upcoming booking on ${booking.date.toDateString()} at ${booking.time}.`
+            body: `Hello, this is a reminder for your upcoming booking on ${booking.date.toDateString()} at ${booking.time}.`,
           });
 
           // Mark as sent
@@ -64,5 +61,5 @@ function endOfDay(date) {
 }
 
 module.exports = {
-  startReminderCron
+  startReminderCron,
 };

@@ -1,50 +1,53 @@
 const mongoose = require('mongoose');
 
-const messageSchema = new mongoose.Schema({
-  conversationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Conversation',
-    required: true
+const messageSchema = new mongoose.Schema(
+  {
+    conversationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Conversation',
+      required: true,
+    },
+    senderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      refPath: 'senderModel',
+    },
+    senderModel: {
+      type: String,
+      required: true,
+      enum: ['User', 'Trainer', 'Admin'],
+    },
+    text: {
+      type: String,
+      default: '',
+    },
+    image: {
+      type: String,
+      default: '',
+    },
+    video: {
+      type: String,
+      default: '',
+    },
+    voice: {
+      type: String,
+      default: '',
+    },
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
+    deliveredAt: {
+      type: Date,
+    },
+    readAt: {
+      type: Date,
+    },
   },
-  senderId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    refPath: 'senderModel'
+  {
+    timestamps: true,
   },
-  senderModel: {
-    type: String,
-    required: true,
-    enum: ['User', 'Trainer', 'Admin']
-  },
-  text: {
-    type: String,
-    default: ''
-  },
-  image: {
-    type: String,
-    default: ''
-  },
-  video: {
-    type: String,
-    default: ''
-  },
-  voice: {
-    type: String,
-    default: ''
-  },
-  isRead: {
-    type: Boolean,
-    default: false
-  },
-  deliveredAt: {
-    type: Date
-  },
-  readAt: {
-    type: Date
-  }
-}, {
-  timestamps: true
-});
+);
 
 // Index for faster conversation history queries and unread fetches
 messageSchema.index({ conversationId: 1, createdAt: -1 });

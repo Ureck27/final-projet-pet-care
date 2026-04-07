@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   createReview,
   getTrainerReviews,
-  deleteReview
+  deleteReview,
 } = require('../controllers/reviewController');
 const { protect, authorizeRole } = require('../middleware/authMiddleware');
 

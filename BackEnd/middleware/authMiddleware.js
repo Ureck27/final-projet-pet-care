@@ -7,7 +7,7 @@ const protect = async (req, res, next) => {
   // First check cookies
   if (req.cookies && req.cookies.token) {
     token = req.cookies.token;
-  } 
+  }
   // Fallback to headers
   else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
@@ -33,8 +33,8 @@ const authorizeRole = (...roles) => {
       return res.status(401).json({ message: 'Not authorized, user not found' });
     }
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ 
-        message: `User role '${req.user.role}' is not authorized to access this route`
+      return res.status(403).json({
+        message: `User role '${req.user.role}' is not authorized to access this route`,
       });
     }
     next();

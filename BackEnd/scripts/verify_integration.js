@@ -6,22 +6,20 @@
 
 const axios = require('axios');
 
-const API_URL = 'http://localhost:5000/api';
-
-async function verify() {
+async function _verify() {
   console.log('--- Starting Verification ---');
 
   // 1. Check if server is running
   try {
-    const res = await axios.get('http://localhost:5000/');
+    const _res = await axios.get('http://localhost:5000/');
     console.log('✅ Server is running');
-  } catch (err) {
+  } catch (_err) {
     console.warn('⚠️ Server is not running at http://localhost:5000. Skipping live tests.');
-    // return; 
+    // return;
   }
 
   // 2. Logic Check: Pet Model & Controller alignment
-  // (We've already verified this by viewing the code, 
+  // (We've already verified this by viewing the code,
   // but a live test would involve creating a pet with fullName and type)
   console.log('✅ Pet model aligned with fullName and type');
   console.log('✅ Auth controller maps name to User model correctly');
@@ -32,4 +30,6 @@ async function verify() {
 }
 
 // verify();
-console.log('Verification script created. Run with "node BackEnd/scripts/verify_integration.js" (requires axios)');
+console.log(
+  'Verification script created. Run with "node BackEnd/scripts/verify_integration.js" (requires axios)',
+);

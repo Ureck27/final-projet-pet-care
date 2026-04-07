@@ -1,17 +1,29 @@
 const Redis = require('ioredis');
-const { promisify } = require('util');
 
+const isTest = process.env.NODE_ENV === 'test';
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-const redis = new Redis(redisUrl, {
-  maxRetriesPerRequest: 3,
-  retryStrategy: (times) => {
-    const delay = Math.min(times * 50, 2000);
-    return delay;
-  }
-});
 
-redis.on('connect', () => console.log('✓ Redis Connected'));
-redis.on('error', (err) => console.warn('⚠ Redis Connection Error:', err.message));
+// Mock Redis for tests to prevent hanging connections
+const redis = isTest
+  ? {
+      on: () => {},
+      get: async () => null,
+      set: async () => {},
+      del: async () => {},
+      keys: async () => [],
+    }
+  : new Redis(redisUrl, {
+      maxRetriesPerRequest: null,
+      retryStrategy: (times) => {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      },
+    });
+
+if (!isTest) {
+  redis.on('connect', () => console.log('✓ Redis Connected'));
+  redis.on('error', (err) => console.warn('⚠ Redis Connection Error:', err.message));
+}
 
 /**
  * Cache service for frequently accessed data
@@ -19,7 +31,7 @@ redis.on('error', (err) => console.warn('⚠ Redis Connection Error:', err.messa
 const cacheService = {
   /**
    * Get value from cache
-   * @param {string} key 
+   * @param {string} key
    * @returns {Promise<any>}
    */
   async get(key) {
@@ -34,8 +46,8 @@ const cacheService = {
 
   /**
    * Set value in cache with TTL
-   * @param {string} key 
-   * @param {any} value 
+   * @param {string} key
+   * @param {any} value
    * @param {number} ttl - Time to live in seconds (default: 3600)
    */
   async set(key, value, ttl = process.env.CACHE_TTL || 3600) {
@@ -48,7 +60,7 @@ const cacheService = {
 
   /**
    * Delete value from cache
-   * @param {string} key 
+   * @param {string} key
    */
   async del(key) {
     try {
@@ -60,7 +72,7 @@ const cacheService = {
 
   /**
    * Delete values matching a pattern
-   * @param {string} pattern 
+   * @param {string} pattern
    */
   async delPattern(pattern) {
     try {
@@ -81,24 +93,24 @@ const cacheService = {
   cacheMiddleware(keyPrefix, ttl) {
     return async (req, res, next) => {
       if (process.env.NODE_ENV === 'test') return next();
-      
+
       const key = `${keyPrefix}:${req.originalUrl || req.url}`;
       const cachedData = await cacheService.get(key);
-      
+
       if (cachedData) {
         return res.json(cachedData);
       }
-      
+
       // Override res.json to cache the result
       const originalJson = res.json;
-      res.json = function(data) {
+      res.json = function (data) {
         cacheService.set(key, data, ttl);
         return originalJson.call(this, data);
       };
-      
+
       next();
     };
-  }
+  },
 };
 
 module.exports = cacheService;

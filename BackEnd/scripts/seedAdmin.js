@@ -23,7 +23,7 @@ const seedAdmin = async () => {
         name: 'Admin',
         email: adminEmail,
         password: 'admin123',
-        role: 'admin'
+        role: 'admin',
       });
       console.log('Admin user seeded successfully with properly hashed password.');
     } else {
@@ -31,12 +31,14 @@ const seedAdmin = async () => {
       // Test if password matches "admin123"
       const isMatch = await existingAdmin.matchPassword('admin123');
       if (!isMatch) {
-         console.log('Password does not match "admin123". Re-hashing the password to "admin123" to ensure it is correct...');
-         existingAdmin.password = 'admin123';
-         await existingAdmin.save();
-         console.log('Password reset successfully to "admin123".');
+        console.log(
+          'Password does not match "admin123". Re-hashing the password to "admin123" to ensure it is correct...',
+        );
+        existingAdmin.password = 'admin123';
+        await existingAdmin.save();
+        console.log('Password reset successfully to "admin123".');
       } else {
-         console.log('Password matches properly.');
+        console.log('Password matches properly.');
       }
     }
 

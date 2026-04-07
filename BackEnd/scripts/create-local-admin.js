@@ -13,7 +13,7 @@ const adminCredentials = {
   email: 'admin@petcare.com',
   password: 'Admin123!',
   name: 'System Administrator',
-  role: 'admin'
+  role: 'admin',
 };
 
 console.log('🔧 Creating admin credentials for testing...');
@@ -35,7 +35,7 @@ console.log('3. Go to: http://localhost:3000/admin-login');
 console.log('4. Enter the email and password above');
 console.log('');
 console.log('⚠️  Note: These credentials work when the database is connected.');
-console.log('    If database connection fails, the login won\'t work.');
+console.log("    If database connection fails, the login won't work.");
 
 // Save credentials to a file for reference
 const credentialsPath = path.join(__dirname, 'admin-credentials.json');

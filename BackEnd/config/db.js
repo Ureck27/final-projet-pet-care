@@ -59,7 +59,6 @@ const connectDB = async (retries = 5, delay = 5000) => {
       // Setup event listeners
       setupEventListeners();
       return conn;
-
     } catch (error) {
       retries -= 1;
       console.error(`✗ MongoDB connection FAILED. Retries left: ${retries}`);
@@ -70,8 +69,8 @@ const connectDB = async (retries = 5, delay = 5000) => {
         process.exit(1);
       }
 
-      console.log(`  Waiting ${delay/1000}s before next attempt...`);
-      await new Promise(res => setTimeout(res, delay));
+      console.log(`  Waiting ${delay / 1000}s before next attempt...`);
+      await new Promise((res) => setTimeout(res, delay));
     }
   }
 };
@@ -122,7 +121,10 @@ function handleFinalError(error) {
   console.error('FATAL: MongoDB Connection Could Not Be Established');
   console.error('='.repeat(50));
 
-  if (error.message.includes('ECONNREFUSED') || error.message.includes('Server selection timed out')) {
+  if (
+    error.message.includes('ECONNREFUSED') ||
+    error.message.includes('Server selection timed out')
+  ) {
     console.error('\n  ► Root cause  : Local MongoDB service is NOT responding.');
     console.error('  ► Solution    : Run "sudo systemctl start mongod" in your terminal.');
   } else if (error.message.includes('ENOTFOUND')) {

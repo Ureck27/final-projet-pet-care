@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const User = require('./models/User');
 require('dotenv').config();
 
@@ -24,7 +23,7 @@ async function fixAdmin() {
         email,
         password: 'admin123',
         role: 'admin',
-        status: 'accepted'
+        status: 'accepted',
       });
       await user.save();
       console.log('Admin user created successfully');
@@ -34,8 +33,7 @@ async function fixAdmin() {
     const savedUser = await User.findOne({ email }).select('+password');
     const isMatch = await savedUser.matchPassword('admin123');
     console.log('Password match test:', isMatch);
-
-  } catch(error) {
+  } catch (error) {
     console.error(error);
   } finally {
     process.exit();

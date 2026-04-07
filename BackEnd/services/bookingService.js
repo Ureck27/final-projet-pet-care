@@ -7,9 +7,9 @@ const createBookingService = async (bookingData) => {
   // Convert incoming "HH:MM" to minutes for easier comparison
   const [startHour, startMin] = time.split(':').map(Number);
   const startMinutes = startHour * 60 + startMin;
-  
+
   // Assuming a default 1-hour duration for all bookings
-  const endMinutes = startMinutes + 60; 
+  const endMinutes = startMinutes + 60;
 
   // Get all bookings for the same trainer on the same date that are not cancelled
   const startOfDay = new Date(date);
@@ -20,7 +20,7 @@ const createBookingService = async (bookingData) => {
   const existingBookings = await Booking.find({
     trainerId,
     date: { $gte: startOfDay, $lt: endOfDay },
-    status: { $ne: 'cancelled' }
+    status: { $ne: 'cancelled' },
   });
 
   // Check for time overlap
@@ -45,12 +45,12 @@ const createBookingService = async (bookingData) => {
     time,
     notes,
     packageType,
-    status: 'pending'
+    status: 'pending',
   });
 
   return booking;
 };
 
 module.exports = {
-  createBookingService
+  createBookingService,
 };

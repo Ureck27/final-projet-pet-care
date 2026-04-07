@@ -18,7 +18,7 @@ const getTrainers = async (req, res) => {
 const createTrainer = async (req, res) => {
   try {
     const { name, email, services, price } = req.body;
-    
+
     // Validation
     if (!name || !email) {
       return res.status(400).json({ message: 'Please provide name and email' });
@@ -28,12 +28,12 @@ const createTrainer = async (req, res) => {
       name,
       email,
       services: services || [],
-      price
+      price,
     });
-    
+
     // Invalidate trainer cache
     await delPattern('trainers:*');
-    
+
     res.status(201).json(trainer);
   } catch (error) {
     console.error('Error creating trainer:', error);
@@ -59,5 +59,5 @@ const getTrainerById = async (req, res) => {
 module.exports = {
   getTrainers,
   getTrainerById,
-  createTrainer
+  createTrainer,
 };

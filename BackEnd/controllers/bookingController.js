@@ -6,7 +6,7 @@ const getBookings = async (req, res) => {
   try {
     const { cursor, limit = 10, ownerId } = req.query;
     const filter = { isDeleted: { $ne: true } };
-    
+
     // If not admin, restrict to owner's or trainer's bookings
     if (req.user.role === 'user') {
       filter.ownerId = req.user._id;
@@ -43,8 +43,8 @@ const getBookings = async (req, res) => {
       pagination: {
         nextCursor,
         hasNextPage,
-        count: results.length
-      }
+        count: results.length,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -59,20 +59,21 @@ const getBookingById = async (req, res) => {
       .populate('petId', 'name type breed')
       .populate('trainerId')
       .populate('ownerId', 'fullName email');
-      
+
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
-    
+
     // Security check: Only owner, assigned trainer, or admin can view booking
     const isOwner = booking.ownerId._id.toString() === req.user._id.toString();
-    const isTrainer = booking.trainerId && booking.trainerId._id.toString() === req.user._id.toString();
+    const isTrainer =
+      booking.trainerId && booking.trainerId._id.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
-    
+
     if (!isOwner && !isTrainer && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to view this booking' });
     }
-    
+
     res.json(booking);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -85,7 +86,7 @@ const createBooking = async (req, res, next) => {
   try {
     const { petId, trainerId, service, date, time, notes, packageType } = req.body;
     const { createBookingService } = require('../services/bookingService');
-    
+
     const booking = await createBookingService({
       petId,
       trainerId,
@@ -94,7 +95,7 @@ const createBooking = async (req, res, next) => {
       date,
       time,
       notes,
-      packageType
+      packageType,
     });
 
     res.status(201).json({ success: true, data: booking });
@@ -112,12 +113,12 @@ const updateBooking = async (req, res) => {
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
-    
+
     // Security check: Only owner, assigned trainer, or admin can update booking
     const isOwner = booking.ownerId.toString() === req.user._id.toString();
     const isTrainer = booking.trainerId && booking.trainerId.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
-    
+
     if (!isOwner && !isTrainer && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to update this booking' });
     }
@@ -142,13 +143,15 @@ const deleteBooking = async (req, res, next) => {
     if (!booking) {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
-    
+
     // Security check: Only owner or admin can delete booking
     const isOwner = booking.ownerId.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
-    
+
     if (!isOwner && !isAdmin) {
-      return res.status(403).json({ success: false, message: 'Not authorized to delete this booking' });
+      return res
+        .status(403)
+        .json({ success: false, message: 'Not authorized to delete this booking' });
     }
 
     booking.isDeleted = true;
@@ -164,5 +167,5 @@ module.exports = {
   getBookingById,
   createBooking,
   updateBooking,
-  deleteBooking
+  deleteBooking,
 };

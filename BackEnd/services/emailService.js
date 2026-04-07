@@ -5,15 +5,15 @@ const createTransporter = () => {
     service: process.env.EMAIL_SERVICE || 'gmail',
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
+      pass: process.env.EMAIL_PASS,
+    },
   });
 };
 
 const sendAdminNotification = async (subject, message) => {
   try {
     const transporter = createTransporter();
-    
+
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
@@ -36,7 +36,7 @@ const sendAdminNotification = async (subject, message) => {
             </p>
           </div>
         </div>
-      `
+      `,
     };
 
     await transporter.sendMail(mailOptions);
@@ -47,5 +47,5 @@ const sendAdminNotification = async (subject, message) => {
 };
 
 module.exports = {
-  sendAdminNotification
+  sendAdminNotification,
 };

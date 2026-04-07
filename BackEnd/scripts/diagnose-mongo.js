@@ -5,7 +5,6 @@
 
 const dns = require('dns');
 const https = require('https');
-const { execSync } = require('child_process');
 
 console.log('🔍 MongoDB Atlas Connection Diagnostic Tool\n');
 
@@ -14,7 +13,9 @@ dns.setDefaultResultOrder('ipv4first');
 
 async function runDiagnostics() {
   const clusterHost = 'cluster0.okn4ami.mongodb.net';
-  const mongoUri = process.env.MONGO_URI || 'mongodb+srv://rachidaourik18_db_user:iaeuBHp7uH8zx5s4@cluster0.okn4ami.mongodb.net/petcare';
+  const mongoUri =
+    process.env.MONGO_URI ||
+    'mongodb+srv://rachidaourik18_db_user:iaeuBHp7uH8zx5s4@cluster0.okn4ami.mongodb.net/petcare';
 
   console.log('1. 📡 Testing DNS Resolution...');
   try {
@@ -55,7 +56,7 @@ async function runDiagnostics() {
     const ip = await new Promise((resolve, reject) => {
       const req = https.request('https://api.ipify.org?format=json', (res) => {
         let data = '';
-        res.on('data', chunk => data += chunk);
+        res.on('data', (chunk) => (data += chunk));
         res.on('end', () => {
           try {
             resolve(JSON.parse(data).ip);
@@ -81,7 +82,7 @@ async function runDiagnostics() {
   console.log('   ✅ Connection String Format: Valid');
   console.log(`   📝 Database Name: petcare`);
   console.log(`   🏷️  Cluster Host: ${clusterHost}`);
-  
+
   if (mongoUri.includes('<db_password>')) {
     console.log('   ❌ Password placeholder detected - replace with real password');
   } else {
@@ -100,7 +101,9 @@ async function runDiagnostics() {
   console.log('      - Run: npm run dev');
 
   console.log('\n6. 🔍 Network Debugging Commands...');
-  console.log('   Test DNS:      node -e "console.log(require(\'dns\').lookup(\'cluster0.okn4ami.mongodb.net\', console.log))"');
+  console.log(
+    "   Test DNS:      node -e \"console.log(require('dns').lookup('cluster0.okn4ami.mongodb.net', console.log))\"",
+  );
   console.log('   Test internet:  ping 8.8.8.8');
   console.log('   Test MongoDB:  curl -I https://cloud.mongodb.com');
   console.log('   Check IP:      curl -s https://api.ipify.org');

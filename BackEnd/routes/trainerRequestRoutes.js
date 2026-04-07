@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { 
-  createTrainerRequest, 
-  getTrainerRequests, 
+const {
+  createTrainerRequest,
+  getTrainerRequests,
   getTrainerRequestById,
   getUserTrainerRequest,
-  approveTrainerRequest, 
+  approveTrainerRequest,
   rejectTrainerRequest,
-  deleteTrainerRequest
+  deleteTrainerRequest,
 } = require('../controllers/trainerRequestController');
 const { protect, authorizeRole } = require('../middleware/authMiddleware');
 const { uploadTrainerFiles, handleUploadError } = require('../middleware/uploadMiddleware');

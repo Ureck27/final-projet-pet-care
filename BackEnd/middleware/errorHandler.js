@@ -1,6 +1,6 @@
 const ApiError = require('../utils/ApiError');
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   let error = err;
 
   if (!(error instanceof ApiError)) {
@@ -23,10 +23,12 @@ const errorHandler = (err, req, res, next) => {
 
   // Mongoose validation error
   if (err.name === 'ValidationError') {
-    const message = Object.values(err.errors).map(val => val.message).join(', ');
+    const message = Object.values(err.errors)
+      .map((val) => val.message)
+      .join(', ');
     error = new ApiError(400, message);
   }
-  
+
   // JWT errors
   if (err.name === 'JsonWebTokenError') {
     error = new ApiError(401, 'Invalid token. Please log in again!');

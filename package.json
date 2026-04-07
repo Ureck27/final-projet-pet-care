@@ -32,12 +32,15 @@
     "prettier": "^3.8.1"
   },
   "lint-staged": {
-    "BackEnd/**/*.{js,json}": [
+    "BackEnd/**/*.js": [
       "eslint --config BackEnd/eslint.config.js --cache --fix",
       "prettier --write"
     ],
-    "FrontEnd/**/*.{ts,tsx,js,json}": [
+    "FrontEnd/**/*.{ts,tsx,js}": [
       "eslint --config FrontEnd/eslint.config.js --cache --fix",
+      "prettier --write"
+    ],
+    "**/*.json": [
       "prettier --write"
     ]
   }

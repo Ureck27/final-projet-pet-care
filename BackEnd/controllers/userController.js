@@ -6,7 +6,7 @@ const getUsers = async (req, res) => {
   try {
     const { cursor, limit = 20, role } = req.query;
     const filter = { isDeleted: { $ne: true } };
-    
+
     if (role) {
       filter.role = role;
     }
@@ -30,8 +30,8 @@ const getUsers = async (req, res) => {
       pagination: {
         nextCursor,
         hasNextPage,
-        count: results.length
-      }
+        count: results.length,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -58,7 +58,7 @@ const getUserById = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const { name, fullName, email, password, role, phone, avatar } = req.body;
-    
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
@@ -76,7 +76,7 @@ const createUser = async (req, res) => {
       password,
       role: role || 'user',
       phone,
-      avatar
+      avatar,
     });
 
     // Return user without password
@@ -89,7 +89,7 @@ const createUser = async (req, res) => {
       phone: user.phone,
       avatar: user.avatar,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
     };
 
     res.status(201).json(userResponse);
@@ -112,23 +112,22 @@ const updateUser = async (req, res) => {
       user.avatar = req.body.avatar || user.avatar;
       if (req.body.role) user.role = req.body.role;
 
-
       const updatedUser = await user.save();
-    
-    // Return user without password
-    const userResponse = {
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      fullName: updatedUser.fullName,
-      email: updatedUser.email,
-      role: updatedUser.role,
-      phone: updatedUser.phone,
-      avatar: updatedUser.avatar,
-      createdAt: updatedUser.createdAt,
-      updatedAt: updatedUser.updatedAt
-    };
-    
-    res.json(userResponse);
+
+      // Return user without password
+      const userResponse = {
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        fullName: updatedUser.fullName,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        phone: updatedUser.phone,
+        avatar: updatedUser.avatar,
+        createdAt: updatedUser.createdAt,
+        updatedAt: updatedUser.updatedAt,
+      };
+
+      res.json(userResponse);
     } else {
       res.status(404).json({ message: 'User not found' });
     }
@@ -160,5 +159,5 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
 };
