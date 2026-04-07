@@ -11,8 +11,10 @@ const { connectDB } = require('./config/db-ipv4');
 // Load env vars
 dotenv.config();
 
-// Connect to database
-connectDB();
+// Connect to database (skip in test mode)
+if (process.env.NODE_ENV !== 'test') {
+  connectDB();
+}
 
 const errorHandler = require('./middleware/errorHandler');
 const ApiError = require('./utils/ApiError');
@@ -40,7 +42,7 @@ const limiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
   message: {
     error: 'Too many requests from this IP, please try again later',
-    retryAfter: '15 minutes'
+    retryAfter: '15 minutes',
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
@@ -53,7 +55,7 @@ const userAuthLimiter = rateLimit({
   message: {
     error: 'Too many login attempts. Please try again later.',
     retryAfter: '15 minutes',
-    type: 'auth'
+    type: 'auth',
   },
   skipSuccessfulRequests: true,
   standardHeaders: true,
@@ -67,7 +69,7 @@ const adminAuthLimiter = rateLimit({
   message: {
     error: 'Too many admin login attempts. Please try again later.',
     retryAfter: '15 minutes',
-    type: 'admin'
+    type: 'admin',
   },
   skipSuccessfulRequests: true,
   standardHeaders: true,
@@ -84,21 +86,23 @@ app.use(limiter); // Apply general rate limiter to all routes
 // Middleware
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:3000',
-  'http://localhost:3000'
+  'http://localhost:3000',
 ];
 
-app.use(cors({ 
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token']
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
+  }),
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -138,12 +142,12 @@ app.get('/api/test', async (req, res) => {
   try {
     // Test database connection
     const db = require('mongoose').connection;
-    
+
     if (db.readyState !== 1) {
       return res.status(503).json({
         status: 'error',
         message: 'Database not connected',
-        readyState: db.readyState
+        readyState: db.readyState,
       });
     }
 
@@ -157,20 +161,20 @@ app.get('/api/test', async (req, res) => {
       database: {
         connected: true,
         host: db.host,
-        database: db.name
+        database: db.name,
       },
       admin: {
         exists: !!adminCheck,
-        email: adminCheck?.email || 'No admin found'
+        email: adminCheck?.email || 'No admin found',
       },
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
     });
   } catch (error) {
     res.status(500).json({
       status: 'error',
       message: 'Test endpoint error',
       error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
@@ -192,29 +196,35 @@ const socketIO = require('./config/socket');
 socketIO.init(server);
 
 // Start the server
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`
-  🚀 Server running in ${process.env.NODE_ENV || 'development'} mode
-  📡 URL: http://localhost:${PORT}
-  🛠️  Health Check: http://localhost:${PORT}/api/test
-  `);
+// Export app for testing
+module.exports = app;
 
-  // Initialize Background Jobs and Cron System
-  try {
-    const { startReminderCron } = require('./cron/automatedReminders');
-    startReminderCron();
-    
-    // Attempting to require workers to start them (if BullMQ is installed)
-    require('./workers/jobWorker');
-    console.log('✅ Background workers initialized successfully.');
-  } catch (error) {
-    if (error.code === 'MODULE_NOT_FOUND') {
-      console.warn('⚠️  Could not start cron/job queue. Please run: npm install bullmq ioredis node-cron');
-    } else {
-      console.error('Error starting cron/workers:', error.message);
+// Start the server only if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 5000;
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`
+    🚀 Server running in ${process.env.NODE_ENV || 'development'} mode
+    📡 URL: http://localhost:${PORT}
+    🛠️  Health Check: http://localhost:${PORT}/api/test
+    `);
+
+    // Initialize Background Jobs and Cron System
+    try {
+      const { startReminderCron } = require('./cron/automatedReminders');
+      startReminderCron();
+
+      // Attempting to require workers to start them (if BullMQ is installed)
+      require('./workers/jobWorker');
+      console.log('✅ Background workers initialized successfully.');
+    } catch (error) {
+      if (error.code === 'MODULE_NOT_FOUND') {
+        console.warn(
+          '⚠️  Could not start cron/job queue. Please run: npm install bullmq ioredis node-cron',
+        );
+      } else {
+        console.error('Error starting cron/workers:', error.message);
+      }
     }
-  }
-});
-
-
+  });
+}

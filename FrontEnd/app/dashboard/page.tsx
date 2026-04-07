@@ -193,7 +193,7 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold">Welcome back, {user.name.split(" ")[0]}!</h1>
           <p className="text-muted-foreground">{"Here's what's happening with your pets today."}</p>
         </div>
-        <Button asChild>
+        <Button asChild data-testid="dashboard-add-pet">
           <Link href="/add-pet">
             <Plus className="mr-2 h-4 w-4" />
             Add Pet
@@ -280,7 +280,7 @@ export default function DashboardPage() {
                   <CardTitle className="text-lg">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start bg-transparent" asChild>
+                  <Button variant="outline" className="w-full justify-start bg-transparent" asChild data-testid="dashboard-book-session">
                     <Link href="/trainers">
                       <Calendar className="mr-2 h-4 w-4" />
                       Book a Session

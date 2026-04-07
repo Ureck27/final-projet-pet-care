@@ -80,6 +80,7 @@ export function LoginForm() {
               placeholder="john@example.com"
               {...register("email")}
               className={errors.email ? "border-destructive" : ""}
+              data-testid="login-email"
             />
             {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
           </div>
@@ -97,6 +98,7 @@ export function LoginForm() {
               placeholder="••••••••"
               {...register("password")}
               className={errors.password ? "border-destructive" : ""}
+              data-testid="login-password"
             />
             {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
           </div>
@@ -112,7 +114,7 @@ export function LoginForm() {
             </Label>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-submit">
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

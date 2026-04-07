@@ -103,6 +103,7 @@ export function RegisterForm() {
               placeholder="John Smith"
               {...register("name")}
               className={errors.name ? "border-destructive" : ""}
+              data-testid="register-name"
             />
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
@@ -115,6 +116,7 @@ export function RegisterForm() {
               placeholder="john@example.com"
               {...register("email")}
               className={errors.email ? "border-destructive" : ""}
+              data-testid="register-email"
             />
             {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
           </div>
@@ -129,6 +131,7 @@ export function RegisterForm() {
                   placeholder="••••••••"
                   {...register("password")}
                   className={cn("pr-10", errors.password ? "border-destructive" : "")}
+                  data-testid="register-password"
                 />
                 <button
                   type="button"
@@ -150,6 +153,7 @@ export function RegisterForm() {
                   placeholder="••••••••"
                   {...register("confirmPassword")}
                   className={cn("pr-10", errors.confirmPassword ? "border-destructive" : "")}
+                  data-testid="register-confirm-password"
                 />
                 <button
                   type="button"
@@ -207,7 +211,7 @@ export function RegisterForm() {
           </div>
           {errors.acceptTerms && <p className="text-xs text-destructive">{errors.acceptTerms.message}</p>}
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full" disabled={isLoading} data-testid="register-submit">
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

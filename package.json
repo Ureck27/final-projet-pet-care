@@ -1,0 +1,44 @@
+{
+  "name": "final-projet-pet-care",
+  "version": "1.0.0",
+  "description": "![Pet Care Banner](https://via.placeholder.com/1200x400?text=Pet+Care+Platform+Banner)",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test --prefix BackEnd && npm test --prefix FrontEnd",
+    "lint": "npm run lint --prefix BackEnd && npm run lint --prefix FrontEnd",
+    "format": "npm run format --prefix BackEnd && npm run format --prefix FrontEnd",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ureck27/final-projet-pet-care.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ureck27/final-projet-pet-care/issues"
+  },
+  "homepage": "https://github.com/Ureck27/final-projet-pet-care#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1"
+  },
+  "lint-staged": {
+    "BackEnd/**/*.{js,json}": [
+      "eslint --config BackEnd/eslint.config.js --cache --fix",
+      "prettier --write"
+    ],
+    "FrontEnd/**/*.{ts,tsx,js,json}": [
+      "eslint --config FrontEnd/eslint.config.js --cache --fix",
+      "prettier --write"
+    ]
+  }
+}

@@ -83,6 +83,7 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
               placeholder="Max"
               {...register("name")}
               className={errors.name ? "border-destructive" : ""}
+              data-testid="pet-name"
             />
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
@@ -102,12 +103,12 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
             <div className="space-y-2">
               <Label htmlFor="type">Type</Label>
               <Select value={watch("type")} onValueChange={(value) => setValue("type", value as "dog" | "cat")}>
-                <SelectTrigger>
+                <SelectTrigger data-testid="pet-type">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="dog">Dog</SelectItem>
-                  <SelectItem value="cat">Cat</SelectItem>
+                  <SelectItem value="dog" data-testid="pet-type-dog">Dog</SelectItem>
+                  <SelectItem value="cat" data-testid="pet-type-cat">Cat</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -120,6 +121,7 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
                 min="0"
                 {...register("age", { valueAsNumber: true })}
                 className={errors.age ? "border-destructive" : ""}
+                data-testid="pet-age"
               />
               {errors.age && <p className="text-xs text-destructive">{errors.age.message}</p>}
             </div>
@@ -132,6 +134,7 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
               placeholder="Golden Retriever"
               {...register("breed")}
               className={errors.breed ? "border-destructive" : ""}
+              data-testid="pet-breed"
             />
             {errors.breed && <p className="text-xs text-destructive">{errors.breed.message}</p>}
           </div>
@@ -188,7 +191,7 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} data-testid="pet-submit">
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
