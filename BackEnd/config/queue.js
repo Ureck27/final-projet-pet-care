@@ -6,11 +6,11 @@ const connection = {
   password: process.env.REDIS_PASSWORD || undefined,
   maxRetriesPerRequest: null,
   retryStrategy: (times) => {
-    if (times > 3) {
-      console.warn('⚠ BullMQ Redis connection attempts exhausted.');
-      return null;
+    if (times === 1) {
+      console.warn('⚠ BullMQ waiting for Redis connection...');
     }
-    return Math.min(times * 500, 2000);
+    // Never give up, just keep retrying
+    return Math.min(times * 1000, 10000);
   },
 };
 

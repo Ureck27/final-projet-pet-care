@@ -52,7 +52,7 @@ const connectDB = async (retries = 5, delay = 5000) => {
   while (retries > 0) {
     try {
       const conn = await mongoose.connect(uri, {
-        serverSelectionTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 30000,
         socketTimeoutMS: 45000,
         connectTimeoutMS: 30000,
         retryWrites: true,

@@ -26,11 +26,11 @@ const init = (httpServer) => {
       const redisOptions = {
         maxRetriesPerRequest: null,
         retryStrategy: (times) => {
-          if (times > 3) {
-            console.warn('⚠ Redis connection attempts exhausted. Disabling Redis Socket Adapter.');
-            return null;
+          if (times === 1) {
+            console.warn('⚠ Redis connection failure. Retrying...');
           }
-          return Math.min(times * 500, 2000);
+          // Never give up (don't return null), just keep retrying with a cap
+          return Math.min(times * 1000, 10000);
         },
       };
       const pubClient = new Redis(redisUrl, redisOptions);
