@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { ImageUpload } from "@/components/ui/image-upload"
 import { VideoUpload } from "@/components/ui/video-upload"
 import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
 import { useState } from "react"
 import type { Pet } from "@/lib/types"
 
@@ -61,6 +62,7 @@ export function PetForm({ open, onOpenChange, pet, onSubmit }: PetFormProps) {
     reset()
     onOpenChange(false)
     setIsLoading(false)
+    toast.success(pet ? "Pet updated successfully!" : "Pet added successfully!")
   }
 
   return (

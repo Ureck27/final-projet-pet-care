@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, Send, Phone, Video, MoreVertical, Check, CheckCheck, Plus } from "lucide-react"
+import { toast } from "sonner"
 
 export default function MessagingCenter() {
   const { user } = useAuth()
@@ -20,6 +21,8 @@ export default function MessagingCenter() {
   const [messageText, setMessageText] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
   const [typingUsers, setTypingUsers] = useState<string[]>([])
+  const [isLoadingConversations, setIsLoadingConversations] = useState(true)
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false)
   const socketRef = useRef<Socket | null>(null)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -99,6 +102,7 @@ export default function MessagingCenter() {
   }, [messages])
 
   const fetchConversations = async () => {
+    setIsLoadingConversations(true)
     try {
       const data = await chatApi.getConversations()
       setConversations(data || [])
@@ -107,6 +111,9 @@ export default function MessagingCenter() {
       }
     } catch (error) {
       console.error('Failed to load conversations:', error)
+      toast.error("Failed to load conversations")
+    } finally {
+      setIsLoadingConversations(false)
     }
   }
 
@@ -114,16 +121,22 @@ export default function MessagingCenter() {
     setSelectedConversation(conv)
     if (socketRef.current) {
       socketRef.current.emit('join_conversation', conv._id)
-      socketRef.current.emit('message_read', {
-        conversationId: conv._id,
-        userId: user._id || user.id
-      })
+      if (user) {
+        socketRef.current.emit('message_read', {
+          conversationId: conv._id,
+          userId: user._id || user.id
+        })
+      }
     }
+    setIsLoadingMessages(true)
     try {
       const msgs = await chatApi.getMessages(conv._id)
       setMessages(msgs || [])
     } catch (error) {
       console.error('Failed to fetch messages:', error)
+      toast.error("Failed to fetch messages")
+    } finally {
+      setIsLoadingMessages(false)
     }
   }
 
@@ -153,6 +166,9 @@ export default function MessagingCenter() {
       socketRef.current.emit('send_message', messageData, (response: any) => {
         if (response?.success) {
           setMessages(prev => prev.map(m => m._id === tempId ? response.message : m))
+        } else {
+          toast.error("Failed to send message")
+          setMessages(prev => prev.filter(m => m._id !== tempId)) // Optimistic rollback
         }
       })
     }
@@ -177,7 +193,7 @@ export default function MessagingCenter() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-80px)] gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <div className="flex h-[calc(100dvh-80px)] gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       {/* Conversations List */}
       <Card className="w-full sm:w-96 flex flex-col border-0 shadow-lg h-full">
         <CardHeader className="border-b">
@@ -199,7 +215,17 @@ export default function MessagingCenter() {
         </CardHeader>
         <ScrollArea className="flex-1">
           <div className="space-y-2 p-4">
-            {filteredConversations.length === 0 ? (
+            {isLoadingConversations ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={`skel-conv-${i}`} className="flex gap-3 p-3 rounded-lg border border-border bg-slate-50 dark:bg-slate-900/50">
+                  <div className="h-10 w-10 bg-muted animate-pulse rounded-full shrink-0"></div>
+                  <div className="flex-1 space-y-2 py-1">
+                    <div className="h-4 bg-muted animate-pulse w-1/3 rounded"></div>
+                    <div className="h-3 bg-muted animate-pulse w-2/3 rounded"></div>
+                  </div>
+                </div>
+              ))
+            ) : filteredConversations.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
                 No conversations found
               </p>
@@ -266,7 +292,13 @@ export default function MessagingCenter() {
 
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
-              {messages.map((message) => {
+              {isLoadingMessages ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <div key={`skel-msg-${i}`} className={`flex ${i % 2 === 0 ? "justify-start" : "justify-end"}`}>
+                    <div className={`w-[60%] h-16 rounded-lg bg-muted animate-pulse ${i % 2 === 0 ? "rounded-bl-none" : "rounded-br-none"}`}></div>
+                  </div>
+                ))
+              ) : messages.map((message) => {
                 const isOwn = isMessageOwn(message.senderId)
                 return (
                   <div
@@ -310,7 +342,7 @@ export default function MessagingCenter() {
             </div>
           </ScrollArea>
 
-          <div className="border-t p-4">
+          <div className="border-t p-4 sticky bottom-0 bg-card z-10 pb-[env(safe-area-inset-bottom,1rem)]">
             <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
               <Button type="button" variant="ghost" size="icon" className="shrink-0" title="Attach file">
                 <Plus className="w-5 h-5 text-muted-foreground" />

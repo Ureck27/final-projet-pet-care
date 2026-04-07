@@ -77,3 +77,34 @@ export function TrainerCard({ trainer, user, onBook }: TrainerCardProps) {
     </Card>
   )
 }
+
+export function TrainerCardSkeleton() {
+  return (
+    <Card className="border-border">
+      <CardContent className="p-6">
+        <div className="flex gap-4">
+          <div className="h-16 w-16 bg-muted animate-pulse rounded-full shrink-0"></div>
+          <div className="flex-1 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="h-5 bg-muted animate-pulse rounded w-1/3"></div>
+              <div className="h-4 bg-muted animate-pulse rounded w-12"></div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-4 bg-muted animate-pulse rounded w-20"></div>
+              <div className="h-4 bg-muted animate-pulse rounded w-24"></div>
+            </div>
+            <div className="space-y-2">
+              <div className="h-3 bg-muted animate-pulse rounded w-full"></div>
+              <div className="h-3 bg-muted animate-pulse rounded w-5/6"></div>
+            </div>
+            <div className="flex gap-1">
+              <div className="h-5 w-16 bg-muted animate-pulse rounded-full"></div>
+              <div className="h-5 w-20 bg-muted animate-pulse rounded-full"></div>
+            </div>
+            <div className="h-10 bg-muted animate-pulse rounded w-full mt-2"></div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

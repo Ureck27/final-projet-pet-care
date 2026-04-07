@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, AlertCircle } from "lucide-react"
+import { toast } from "sonner"
 
 export function LoginForm() {
   const router = useRouter()
@@ -41,6 +42,7 @@ export function LoginForm() {
     const result = await login(data.email, data.password)
 
     if (result.success) {
+      toast.success("Welcome back!")
       if (result.role === 'admin') {
         router.push("/admin-dashboard")
       } else if (result.role === 'trainer') {

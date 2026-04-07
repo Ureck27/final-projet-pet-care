@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
 import { useState } from "react"
 import type { Trainer, Pet } from "@/lib/types"
 import { services, timeSlots, mockTrainers, mockUsers } from "@/lib/mock-data"
@@ -46,6 +47,7 @@ export function BookingForm({ open, onOpenChange, pet, trainer, onSubmit }: Book
     reset()
     onOpenChange(false)
     setIsLoading(false)
+    toast.success("Booking confirmed!")
   }
 
   return (

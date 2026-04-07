@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Loader2, AlertCircle, User, GraduationCap, Eye, EyeOff, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 export function RegisterForm() {
   const router = useRouter()
@@ -62,6 +63,7 @@ export function RegisterForm() {
     })
 
     if (result.success) {
+      toast.success("Account created successfully!")
       router.push("/dashboard")
     } else {
       setError(result.message || "Registration failed. Please try again.")
