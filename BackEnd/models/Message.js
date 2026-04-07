@@ -32,16 +32,23 @@ const messageSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  read: {
+  isRead: {
     type: Boolean,
     default: false
+  },
+  deliveredAt: {
+    type: Date
+  },
+  readAt: {
+    type: Date
   }
 }, {
   timestamps: true
 });
 
-// Index for faster conversation history queries
+// Index for faster conversation history queries and unread fetches
 messageSchema.index({ conversationId: 1, createdAt: -1 });
+messageSchema.index({ conversationId: 1, isRead: 1 });
 
 const Message = mongoose.model('Message', messageSchema);
 module.exports = Message;

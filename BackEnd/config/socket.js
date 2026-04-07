@@ -1,4 +1,7 @@
 const { Server } = require('socket.io');
+const { createAdapter } = require('@socket.io/redis-adapter');
+const Redis = require('ioredis');
+const { handleSocketConnection } = require('../services/socketService');
 
 let io;
 
@@ -16,36 +19,24 @@ const init = (httpServer) => {
     }
   });
 
+  // Setup Redis Adapter for horizontal scaling
+  try {
+    const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+    const pubClient = new Redis(redisUrl);
+    const subClient = pubClient.duplicate();
+
+    pubClient.on('error', (err) => console.error('Redis Adapter Pub Error:', err));
+    subClient.on('error', (err) => console.error('Redis Adapter Sub Error:', err));
+
+    io.adapter(createAdapter(pubClient, subClient));
+    console.log('✅ Redis Adapter initialized for Socket.io');
+  } catch (error) {
+    console.error('⚠ Failed to initialize Redis Adapter. Falling back to memory adapter.', error.message);
+  }
+
+  // Handle incoming connections using the centralized socket service
   io.on('connection', (socket) => {
-    console.log('User connected to chat:', socket.id);
-
-    socket.on('join_conversation', (conversationId) => {
-      socket.join(conversationId);
-      console.log(`User joined conversation: ${conversationId}`);
-    });
-
-    socket.on('send_message', async (data) => {
-      try {
-        // data expects: { conversationId, senderId, senderModel, text, image, voice, video }
-        const Message = require('../models/Message');
-        const Conversation = require('../models/Conversation');
-        
-        const newMessage = await Message.create(data);
-        
-        await Conversation.findByIdAndUpdate(data.conversationId, {
-          lastMessage: newMessage._id
-        });
-
-        // Broadcast to everyone in the room (including sender)
-        io.to(data.conversationId).emit('receive_message', newMessage);
-      } catch (error) {
-        console.error('Socket send_message error:', error);
-      }
-    });
-
-    socket.on('disconnect', () => {
-      console.log('User disconnected from chat:', socket.id);
-    });
+    handleSocketConnection(io, socket);
   });
 
   return io;
@@ -58,8 +49,6 @@ const init = (httpServer) => {
  */
 const getIO = () => {
   if (!io) {
-    // Return a dummy object or just warn if not initialized yet to avoid crashing 
-    // during boot, but generally it should be initialized in server.js
     console.warn('⚠ Socket.io not initialized yet!');
   }
   return io;

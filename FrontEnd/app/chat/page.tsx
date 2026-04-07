@@ -59,6 +59,9 @@ export default function ChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
+  const [typingUsers, setTypingUsers] = useState<string[]>([])
+  // Typing debounce timer ref
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   
   // React 19 Optimistic UI hook
   const [optimisticMessages, addOptimisticMessage] = useOptimistic<Message[], Message>(
@@ -94,7 +97,8 @@ export default function ChatPage() {
   const initializeSocket = () => {
     const socketInstance = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
       auth: {
-        token: localStorage.getItem('petcare_token')
+        token: localStorage.getItem('petcare_token'),
+        userId: (user as any)?.id || (user as any)?._id
       }
     })
 
@@ -107,10 +111,46 @@ export default function ChatPage() {
     })
 
     socketInstance.on('receive_message', (message: Message) => {
+      // Always add to the selected conversation if it matches
       if (selectedConversation && message.conversationId === selectedConversation._id) {
-        setMessages(prev => [...prev, message])
+        setMessages(prev => {
+          // Prevent duplicates incase we are the sender and Optimistic UI already kicked in
+          if (prev.some(m => m._id === message._id)) return prev;
+          return [...prev, message];
+        })
+        
+        // Emit that we've read it (since we are actively in the conversation)
+        if (message.senderId !== ((user as any)?.id || (user as any)?._id)) {
+          socketInstance.emit('message_read', {
+            conversationId: message.conversationId,
+            userId: (user as any)?.id || (user as any)?._id
+          });
+        }
       }
       updateConversationLastMessage(message.conversationId, message._id)
+    })
+
+    socketInstance.on('sync_unread', (unreadMessages: Message[]) => {
+      // When offline messages arrive, append them if matching current conversation
+      if (selectedConversation && unreadMessages.length > 0) {
+        const relevant = unreadMessages.filter(m => m.conversationId === selectedConversation._id);
+        if (relevant.length > 0) {
+          setMessages(prev => [...prev, ...relevant]);
+          // Mark as read
+          socketInstance.emit('message_read', {
+            conversationId: selectedConversation._id,
+            userId: (user as any)?.id || (user as any)?._id
+          });
+        }
+      }
+    })
+
+    socketInstance.on('message_read_receipt', ({ conversationId, readBy }) => {
+      if (selectedConversation && conversationId === selectedConversation._id) {
+        setMessages(prev => prev.map(msg => 
+          (msg.senderId !== readBy) ? { ...msg, read: true } : msg
+        ));
+      }
     })
 
     socketInstance.on('user_typing', (data: { userId: string, conversationId: string }) => {
@@ -191,6 +231,12 @@ export default function ChatPage() {
     
     if (socket) {
       socket.emit('join_conversation', conversation._id)
+      
+      // Mark messages as read since we just opened it
+      socket.emit('message_read', {
+        conversationId: conversation._id,
+        userId: (user as any)?.id || (user as any)?._id
+      });
     }
   }
 
@@ -221,13 +267,18 @@ export default function ChatPage() {
     // Immediately update UI
     addOptimisticMessage(optimisticMsg)
 
-    // Execute API request
+    // Execute API request with acknowledgment
     try {
-      socket.emit('send_message', messageData)
+      socket.emit('send_message', messageData, (response: any) => {
+        if (response?.success) {
+          // Replace optimistic message with actual
+          setMessages(prev => 
+            prev.filter(m => m._id !== tempId).concat(response.message)
+          )
+        }
+      })
     } catch (err) {
       console.error("Message failed to send:", err)
-      // If it's a standard mutation, we'd roll back state here. 
-      // Socket.io often fires without blocking errors unless ack is used.
     }
     
     setNewMessage("")
@@ -432,8 +483,13 @@ export default function ChatPage() {
                           />
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1 px-1">
+                      <p className="text-xs text-muted-foreground mt-1 px-1 flex items-center gap-1">
                         {message.createdAt.toLocaleTimeString()}
+                        {message.senderId === ((user as any)?.id || (user as any)?._id) && !message.isPending && (
+                          <span className={`${message.read ? 'text-blue-500' : 'text-muted-foreground'}`}>
+                            {message.read ? '✓✓' : '✓'}
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -475,7 +531,25 @@ export default function ChatPage() {
                 <Input
                   placeholder="Type a message..."
                   value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
+                  onChange={(e) => {
+                    setNewMessage(e.target.value)
+                    
+                    if (socket && selectedConversation && user) {
+                      socket.emit('start_typing', {
+                        conversationId: selectedConversation._id,
+                        senderId: (user as any).id || (user as any)._id
+                      })
+                      
+                      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+                      
+                      typingTimeoutRef.current = setTimeout(() => {
+                        socket.emit('stop_typing', {
+                          conversationId: selectedConversation._id,
+                          senderId: (user as any).id || (user as any)._id
+                        })
+                      }, 1000)
+                    }
+                  }}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                   className="flex-1"
                 />

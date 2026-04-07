@@ -19,7 +19,9 @@ export default function MessagingCenter() {
   const [selectedConversation, setSelectedConversation] = useState<any>(null)
   const [messageText, setMessageText] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
+  const [typingUsers, setTypingUsers] = useState<string[]>([])
   const socketRef = useRef<Socket | null>(null)
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -29,22 +31,68 @@ export default function MessagingCenter() {
     // Init Socket
     socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
       withCredentials: true,
+      auth: {
+        token: localStorage.getItem('petcare_token'),
+        userId: user._id || user.id
+      }
     })
 
     socketRef.current.on('receive_message', (newMessage) => {
-      setMessages((prev) => [...prev, newMessage])
+      setMessages((prev) => {
+        // Prevent dupes
+        if (prev.some(m => m._id === newMessage._id)) return prev;
+        return [...prev, newMessage];
+      })
+      
       setConversations((prev) => 
         prev.map(c => c._id === newMessage.conversationId 
           ? { ...c, lastMessage: newMessage, updatedAt: new Date() } 
           : c
         ).sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
       )
+
+      // Emit receipt if currently viewing this conversation
+      if (selectedConversation?._id === newMessage.conversationId && newMessage.senderId !== (user._id || user.id)) {
+        socketRef.current?.emit('message_read', {
+          conversationId: newMessage.conversationId,
+          userId: user._id || user.id
+        })
+      }
+    })
+
+    socketRef.current.on('sync_unread', (unreadMessages: any[]) => {
+      if (selectedConversation && unreadMessages.length > 0) {
+        const relevant = unreadMessages.filter(m => m.conversationId === selectedConversation._id);
+        if (relevant.length > 0) {
+          setMessages(prev => [...prev, ...relevant]);
+          socketRef.current?.emit('message_read', {
+            conversationId: selectedConversation._id,
+            userId: user._id || user.id
+          });
+        }
+      }
+    })
+
+    socketRef.current.on('message_read_receipt', ({ conversationId, readBy }) => {
+      setMessages(prev => prev.map(msg => 
+        (msg.senderId !== readBy) ? { ...msg, read: true } : msg
+      ));
+    })
+
+    socketRef.current.on('user_typing', (data: { userId: string, conversationId: string }) => {
+      if (data.conversationId === selectedConversation?._id) {
+        setTypingUsers(prev => prev.includes(data.userId) ? prev : [...prev, data.userId])
+      }
+    })
+
+    socketRef.current.on('user_stop_typing', (data: { userId: string }) => {
+      setTypingUsers(prev => prev.filter(id => id !== data.userId))
     })
 
     return () => {
       if (socketRef.current) socketRef.current.disconnect()
     }
-  }, [user])
+  }, [user, selectedConversation])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -66,6 +114,10 @@ export default function MessagingCenter() {
     setSelectedConversation(conv)
     if (socketRef.current) {
       socketRef.current.emit('join_conversation', conv._id)
+      socketRef.current.emit('message_read', {
+        conversationId: conv._id,
+        userId: user._id || user.id
+      })
     }
     try {
       const msgs = await chatApi.getMessages(conv._id)
@@ -86,8 +138,23 @@ export default function MessagingCenter() {
       text: messageText,
     }
 
+    const tempId = `temp-${Date.now()}`
+    
+    // Optimistic UI update
+    setMessages(prev => [...prev, {
+      ...messageData,
+      _id: tempId,
+      createdAt: new Date(),
+      read: false,
+      isPending: true
+    }])
+
     if (socketRef.current) {
-      socketRef.current.emit('send_message', messageData)
+      socketRef.current.emit('send_message', messageData, (response: any) => {
+        if (response?.success) {
+          setMessages(prev => prev.map(m => m._id === tempId ? response.message : m))
+        }
+      })
     }
     setMessageText("")
   }
@@ -224,14 +291,21 @@ export default function MessagingCenter() {
                             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         )}
-                        {isOwn && (
-                          <CheckCheck className="w-3 h-3 ml-1 opacity-70" />
+                        {isOwn && !message.isPending && (
+                          <span className={`ml-1 ${message.read ? 'text-blue-500' : 'opacity-70'}`}>
+                           {message.read ? <CheckCheck className="w-3 h-3 block" /> : <Check className="w-3 h-3 block" />}
+                          </span>
                         )}
                       </div>
                     </div>
                   </div>
                 )
               })}
+              {typingUsers.length > 0 && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground p-2">
+                   Someone is typing...
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
@@ -244,7 +318,25 @@ export default function MessagingCenter() {
               <Input
                 placeholder="Type a message..."
                 value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
+                onChange={(e) => {
+                  setMessageText(e.target.value)
+
+                  if (socketRef.current && selectedConversation && user) {
+                    socketRef.current.emit('start_typing', {
+                      conversationId: selectedConversation._id,
+                      senderId: user._id || user.id
+                    })
+                    
+                    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+                    
+                    typingTimeoutRef.current = setTimeout(() => {
+                      socketRef.current?.emit('stop_typing', {
+                        conversationId: selectedConversation._id,
+                        senderId: user._id || user.id
+                      })
+                    }, 1000)
+                  }
+                }}
                 className="flex-1"
               />
               <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90">
