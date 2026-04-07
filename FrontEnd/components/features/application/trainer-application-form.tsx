@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { trainerApplicationSchema, type TrainerApplicationFormData } from "@/lib/validation"
+import { usePersistentForm } from "@/hooks/use-persistent-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -51,32 +52,39 @@ export function TrainerApplicationForm({ onSubmit, savedData }: TrainerApplicati
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
+  const [persistentData, setPersistentData, clearPersistentData] = usePersistentForm<Partial<TrainerApplicationFormData>>("trainer-application-form", savedData || {})
+
   const form = useForm<TrainerApplicationFormData>({
     resolver: zodResolver(trainerApplicationSchema),
     defaultValues: {
-      fullName: savedData?.fullName || "",
-      email: savedData?.email || "",
-      phone: savedData?.phone || "",
-      city: savedData?.city || "",
-      country: savedData?.country || "",
-      yearsExperience: savedData?.yearsExperience || "0-1",
-      petExperience: savedData?.petExperience || [],
-      education: savedData?.education || "no-formal",
-      canHostPets: savedData?.canHostPets || false,
-      homeType: savedData?.homeType || "apartment",
-      hasPetsAtHome: savedData?.hasPetsAtHome || false,
-      maxPetsCapacity: savedData?.maxPetsCapacity || 1,
-      allowPetsOnFurniture: savedData?.allowPetsOnFurniture || false,
-      availableDays: savedData?.availableDays || [],
-      availableHours: savedData?.availableHours || [],
-      servicesOffered: savedData?.servicesOffered || [],
-      emergencyAvailability: savedData?.emergencyAvailability || false,
-      backgroundCheckConsent: savedData?.backgroundCheckConsent || false,
-      agreeToPlatformRules: savedData?.agreeToPlatformRules || false,
-      bio: savedData?.bio || "",
-      motivation: savedData?.motivation || "",
+      fullName: persistentData?.fullName || "",
+      email: persistentData?.email || "",
+      phone: persistentData?.phone || "",
+      city: persistentData?.city || "",
+      country: persistentData?.country || "",
+      yearsExperience: persistentData?.yearsExperience || "0-1",
+      petExperience: persistentData?.petExperience || [],
+      education: persistentData?.education || "no-formal",
+      canHostPets: persistentData?.canHostPets || false,
+      homeType: persistentData?.homeType || "apartment",
+      hasPetsAtHome: persistentData?.hasPetsAtHome || false,
+      maxPetsCapacity: persistentData?.maxPetsCapacity || 1,
+      allowPetsOnFurniture: persistentData?.allowPetsOnFurniture || false,
+      availableDays: persistentData?.availableDays || [],
+      availableHours: persistentData?.availableHours || [],
+      servicesOffered: persistentData?.servicesOffered || [],
+      emergencyAvailability: persistentData?.emergencyAvailability || false,
+      backgroundCheckConsent: persistentData?.backgroundCheckConsent || false,
+      agreeToPlatformRules: persistentData?.agreeToPlatformRules || false,
+      bio: persistentData?.bio || "",
+      motivation: persistentData?.motivation || "",
     },
     mode: "onChange",
+  })
+
+  // Watch for changes and save to persistent storage
+  form.watch((value) => {
+    setPersistentData(value as Partial<TrainerApplicationFormData>)
   })
 
   const {
@@ -130,6 +138,7 @@ export function TrainerApplicationForm({ onSubmit, savedData }: TrainerApplicati
         await onSubmit(data)
       }
       setIsSubmitted(true)
+      clearPersistentData()
     } catch (error) {
       console.error("Form submission error:", error)
       // Feedback is handled by the parent's toast

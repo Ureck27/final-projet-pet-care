@@ -6,8 +6,13 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/context/auth-context"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
-import { FloatingAiAssistant } from "@/components/ui/glowing-ai-chat-assistant"
 import { Toaster } from "sonner"
+import dynamic from "next/dynamic"
+
+const FloatingAiAssistant = dynamic(
+  () => import("@/components/ui/glowing-ai-chat-assistant").then((mod) => mod.FloatingAiAssistant),
+  { ssr: false }
+)
 import "./globals.css"
 
 const poppins = Poppins({ 

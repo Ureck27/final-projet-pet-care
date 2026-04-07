@@ -2,6 +2,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Pricing & Plans | PetCare",
+  description: "View our transparent pricing and membership plans. Choose the perfect plan for your pet care needs.",
+}
+
 import { Check, X, Zap, Crown, Building2, Clock, DollarSign, Dog, Cat, Scissors, Home } from "lucide-react"
 
 const plans = [

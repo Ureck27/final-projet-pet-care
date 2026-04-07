@@ -3,6 +3,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import Link from "next/link"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Services | PetCare",
+  description: "Explore our professional pet care services including basic training, behavioral modification, cat training, dog walking, pet sitting, and more.",
+}
+
 import {
   GraduationCap,
   Dog,

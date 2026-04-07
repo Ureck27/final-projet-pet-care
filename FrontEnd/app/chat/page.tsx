@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useOptimistic } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { io, Socket } from "socket.io-client"
@@ -36,6 +36,7 @@ interface Message {
     name: string
     avatar?: string
   }
+  isPending?: boolean
 }
 
 interface Conversation {
@@ -58,6 +59,13 @@ export default function ChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
+  
+  // React 19 Optimistic UI hook
+  const [optimisticMessages, addOptimisticMessage] = useOptimistic<Message[], Message>(
+    messages,
+    (state, newMessage) => [...state, newMessage]
+  )
+
   const [newMessage, setNewMessage] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [isConnected, setIsConnected] = useState(false)
@@ -187,16 +195,41 @@ export default function ChatPage() {
   }
 
   const sendMessage = () => {
-    if (!newMessage.trim() || !socket || !selectedConversation) return
+    if (!newMessage.trim() || !socket || !selectedConversation || !user) return
 
+    const tempId = `temp-${Date.now()}`
+    
     const messageData = {
       conversationId: selectedConversation._id,
-      senderId: user?.id,
+      senderId: (user as any).id || (user as any)._id,
       senderModel: user?.role === 'trainer' ? 'Trainer' : 'User',
       text: newMessage.trim()
     }
 
-    socket.emit('send_message', messageData)
+    const optimisticMsg: Message = {
+      _id: tempId,
+      ...messageData,
+      senderModel: messageData.senderModel as "User" | "Trainer" | "Admin",
+      read: false,
+      createdAt: new Date(),
+      sender: {
+        name: (user as any).name || (user as any).fullName || "You"
+      },
+      isPending: true
+    }
+
+    // Immediately update UI
+    addOptimisticMessage(optimisticMsg)
+
+    // Execute API request
+    try {
+      socket.emit('send_message', messageData)
+    } catch (err) {
+      console.error("Message failed to send:", err)
+      // If it's a standard mutation, we'd roll back state here. 
+      // Socket.io often fires without blocking errors unless ack is used.
+    }
+    
     setNewMessage("")
   }
 
@@ -355,18 +388,18 @@ export default function ChatPage() {
             {/* Messages */}
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
-                {messages.map((message) => (
+                {optimisticMessages.map((message) => (
                   <div
                     key={message._id}
                     className={`flex ${
-                      message.senderId === user?.id ? 'justify-end' : 'justify-start'
-                    }`}
+                      message.senderId === ((user as any)?.id || (user as any)?._id) ? 'justify-end' : 'justify-start'
+                    } ${message.isPending ? 'opacity-70' : ''}`}
                   >
                     <div className={`max-w-xs lg:max-w-md ${
-                      message.senderId === user?.id ? 'order-2' : 'order-1'
+                      message.senderId === ((user as any)?.id || (user as any)?._id) ? 'order-2' : 'order-1'
                     }`}>
                       <div className="flex items-center gap-2 mb-1">
-                        {message.senderId !== user?.id && (
+                        {message.senderId !== ((user as any)?.id || (user as any)?._id) && (
                           <Avatar className="h-6 w-6">
                             <AvatarImage src={message.sender?.avatar} />
                             <AvatarFallback className="text-xs">
@@ -379,7 +412,7 @@ export default function ChatPage() {
                         </span>
                       </div>
                       <div className={`rounded-lg p-3 ${
-                        message.senderId === user?.id
+                        message.senderId === ((user as any)?.id || (user as any)?._id)
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-muted'
                       }`}>
