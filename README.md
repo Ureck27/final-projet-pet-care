@@ -169,6 +169,7 @@ We maintain high code quality through automated linting and strict conventions:
 
 *   **Linter**: Fully migrated to **ESLint Flat Config** for both FrontEnd and BackEnd.
 *   **Formatting**: Automated Prettier integration ensuring consistent code style across the monorepo.
+*   **Git Hooks (Husky)**: Configured with `pre-commit` hooks to run `lint-staged`. This acts as a "Gatekeeper" to ensure all committed code passes linting and formatting rules automatically.
 *   **Conventions**: 
     *   Unused variables/parameters MUST be prefixed with an underscore (e.g., `_next`, `_res`) to pass linting.
     *   Modular logic architecture in the BackEnd for better testability and scalability.
