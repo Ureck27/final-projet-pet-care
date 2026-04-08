@@ -214,9 +214,13 @@ if (process.env.NODE_ENV !== 'test') {
       const { startReminderCron } = require('./cron/automatedReminders');
       startReminderCron();
 
-      // Attempting to require workers to start them (if BullMQ is installed)
-      require('./workers/jobWorker');
-      console.log('✅ Background workers initialized successfully.');
+      // Only start BullMQ workers if Redis is enabled
+      if (process.env.REDIS_ENABLED === 'true') {
+        require('./workers/jobWorker');
+        console.log('✅ Background workers initialized successfully.');
+      } else {
+        console.log('ℹ Redis disabled. Background workers skipped.');
+      }
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {
         console.warn(

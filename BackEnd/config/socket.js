@@ -19,8 +19,8 @@ const init = (httpServer) => {
     },
   });
 
-  // Setup Redis Adapter for horizontal scaling
-  if (process.env.NODE_ENV !== 'test') {
+  // Setup Redis Adapter for horizontal scaling (if enabled)
+  if (process.env.NODE_ENV !== 'test' && process.env.REDIS_ENABLED === 'true') {
     try {
       const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
       const redisOptions = {
@@ -47,6 +47,8 @@ const init = (httpServer) => {
         error.message,
       );
     }
+  } else if (process.env.REDIS_ENABLED !== 'true') {
+    console.log('ℹ Redis disabled. Socket.io running in memory mode.');
   }
 
   // Handle incoming connections using the centralized socket service

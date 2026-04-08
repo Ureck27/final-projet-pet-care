@@ -1,28 +1,32 @@
 const Redis = require('ioredis');
 
 const isTest = process.env.NODE_ENV === 'test';
+const isRedisDisabled = process.env.REDIS_ENABLED !== 'true';
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 
-// Mock Redis for tests to prevent hanging connections
-const redis = isTest
-  ? {
-      on: () => {},
-      get: async () => null,
-      set: async () => {},
-      del: async () => {},
-      keys: async () => [],
-    }
-  : new Redis(redisUrl, {
-      maxRetriesPerRequest: null,
-      retryStrategy: (times) => {
-        const delay = Math.min(times * 50, 2000);
-        return delay;
-      },
-    });
+// Mock Redis when disabled or in tests to prevent hanging connections
+const redis =
+  isTest || isRedisDisabled
+    ? {
+        on: () => {},
+        get: async () => null,
+        set: async () => {},
+        del: async () => {},
+        keys: async () => [],
+      }
+    : new Redis(redisUrl, {
+        maxRetriesPerRequest: null,
+        retryStrategy: (times) => {
+          // We now keep retrying indefinitely with a cap
+          return Math.min(times * 1000, 10000);
+        },
+      });
 
-if (!isTest) {
+if (!isTest && !isRedisDisabled) {
   redis.on('connect', () => console.log('✓ Redis Connected'));
   redis.on('error', (err) => console.warn('⚠ Redis Connection Error:', err.message));
+} else if (isRedisDisabled) {
+  console.log('ℹ Redis disabled. Cache service running in mock mode.');
 }
 
 /**
