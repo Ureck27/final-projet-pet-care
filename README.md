@@ -62,6 +62,7 @@ A comprehensive, full-stack pet care management platform designed to connect pet
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (v18 or higher)
 - [MongoDB](https://www.mongodb.com/) (Local instance or Atlas cluster)
+- [Redis](https://redis.io/) (**Optional** for local development; enables Chat and AI features)
 - [Git](https://git-scm.com/)
 
 ### 1. Clone the repository
@@ -119,6 +120,7 @@ NEXT_PUBLIC_AI_API_KEY=your-dev-key
 ### Backend (`BackEnd/.env`)
 ```env
 MONGO_URI=mongodb://localhost:27017/petcare
+REDIS_ENABLED=false
 JWT_SECRET=your-secret-key-here
 PORT=5000
 NODE_ENV=development
@@ -148,6 +150,30 @@ For the backend, running `npm start` executes `node server.js` which is the prod
 ---
 
 
+
+---
+
+## 🛡️ Development Resilience
+
+The platform is built with a "Resilient-First" approach to ensure a smooth developer experience even with missing local infrastructure:
+
+*   **Redis-Optional Mode**: The backend automatically detects if Redis is unavailable or disabled via `REDIS_ENABLED=false`. It gracefully falls back to memory-based adapters for Socket.io and mocks BullMQ queues to prevent startup crashes.
+*   **Robust MongoDB Connectivity**: Featuring advanced retry logic and forced IPv4 resolution to handle local network jitters and service lag.
+*   **Graceful Degeneracy**: Core platform features remain operational even if secondary services (like Chat or AI scanning) are temporarily disconnected.
+
+---
+
+## 📏 Code Standards & Quality
+
+We maintain high code quality through automated linting and strict conventions:
+
+*   **Linter**: Fully migrated to **ESLint Flat Config** for both FrontEnd and BackEnd.
+*   **Formatting**: Automated Prettier integration ensuring consistent code style across the monorepo.
+*   **Conventions**: 
+    *   Unused variables/parameters MUST be prefixed with an underscore (e.g., `_next`, `_res`) to pass linting.
+    *   Modular logic architecture in the BackEnd for better testability and scalability.
+
+---
 
 ## 📂 Folder Structure
 
