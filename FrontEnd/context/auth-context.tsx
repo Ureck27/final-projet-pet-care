@@ -37,17 +37,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        // Only attempt to fetch user if we might have a token
+        // Check if we're on an auth page or if there might be a cookie
+        const hasPossibleAuth = document.cookie.includes('token=');
+
+        if (!hasPossibleAuth) {
+          // No token cookie found, user is not authenticated
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+
         const userData = await authApi.getMe();
         setUser(userData as unknown as User);
       } catch (err: any) {
         // Handle 401 gracefully - user is not logged in
         if (err.status === 401) {
-          console.log('[Auth] User not authenticated');
+          // This is expected when user is not logged in, don't log as error
+          setUser(null);
         } else {
           console.error('[Auth] Failed to fetch user:', err.message);
+          setUser(null);
         }
-        // Clear user state on any auth error
-        setUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -79,12 +90,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
       return { success: true, role: loggedUser.role };
     } catch (err: any) {
-      const errorMessage = err.message || 'Login failed';
+      let errorMessage = 'Login failed';
+
+      // Handle specific error types
+      if (err.isRateLimit) {
+        errorMessage = `Rate limit exceeded. Please try again in ${err.retryAfter}.`;
+      } else if (err.message && err.message.includes('BACKEND_DOWN')) {
+        errorMessage = 'Server is currently unavailable. Please try again later.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
       console.error('[Auth Error] Login failed:', errorMessage);
       setIsLoading(false);
       return {
         success: false,
-        message: errorMessage || 'Login failed. Please check your credentials and connection.',
+        message: errorMessage,
       };
     }
   };
@@ -158,12 +179,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
       return { success: true, role: newUser.role };
     } catch (err: any) {
-      const errorMessage = err.message || 'Registration failed';
+      let errorMessage = 'Registration failed';
+
+      // Handle specific error types
+      if (err.isRateLimit) {
+        errorMessage = `Rate limit exceeded. Please try again in ${err.retryAfter}.`;
+      } else if (err.message && err.message.includes('BACKEND_DOWN')) {
+        errorMessage = 'Server is currently unavailable. Please try again later.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
       console.error('[Auth Error] Registration failed:', errorMessage);
       setIsLoading(false);
       return {
         success: false,
-        message: errorMessage || 'Registration failed. Please check your connection and try again.',
+        message: errorMessage,
       };
     }
   };

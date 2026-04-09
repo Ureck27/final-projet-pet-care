@@ -135,15 +135,17 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
 
         // Automatic token purge on 401 Unauthorized
         if (response.status === 401 && typeof window !== 'undefined') {
-          console.warn('[API Auth] 401 Unauthorized - Purging credentials');
+          // Check if this is an auth check - don't log as warning for expected failures
+          const isAuthCheck = endpoint === '/auth/me' || endpoint.includes('/auth/me');
+
+          if (!isAuthCheck) {
+            console.warn('[API Auth] 401 Unauthorized - Purging credentials');
+          }
 
           // Check if we're already on an auth page to avoid infinite reload loops
           const pathname = window.location.pathname;
           const isAuthPage =
             pathname === '/login' || pathname === '/admin-login' || pathname === '/register';
-
-          // Don't redirect on background session check which might fail normally
-          const isAuthCheck = endpoint === '/auth/me' || endpoint.includes('/auth/me');
 
           if (
             !isAuthPage &&
@@ -158,13 +160,19 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
         const errorMessage =
           errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
 
-        console.error(`[API Error] ${response.status} ${config.method} ${endpoint}:`, {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorData,
-          message: errorMessage,
-          attempt: attempt + 1,
-        });
+        // Reduce noise for auth check failures - only log real errors
+        const isAuthCheck = endpoint === '/auth/me' || endpoint.includes('/auth/me');
+        const shouldLogError = response.status !== 401 || !isAuthCheck;
+
+        if (shouldLogError) {
+          console.error(`[API Error] ${response.status} ${config.method} ${endpoint}:`, {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData,
+            message: errorMessage,
+            attempt: attempt + 1,
+          });
+        }
 
         // Don't retry on client errors (4xx) except for 408 (timeout)
         // Specifically don't retry 429 (rate limit) to avoid making it worse
