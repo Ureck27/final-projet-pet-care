@@ -136,9 +136,21 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
         // Automatic token purge on 401 Unauthorized
         if (response.status === 401 && typeof window !== 'undefined') {
           console.warn('[API Auth] 401 Unauthorized - Purging credentials');
-          // Important: We no longer clear token here as it's an HttpOnly cookie, but we clear the user state if needed.
-          // Optional: redirect to login if we have window.location
-          if (endpoint !== '/auth/login' && endpoint !== '/auth/admin-login') {
+
+          // Check if we're already on an auth page to avoid infinite reload loops
+          const pathname = window.location.pathname;
+          const isAuthPage =
+            pathname === '/login' || pathname === '/admin-login' || pathname === '/register';
+
+          // Don't redirect on background session check which might fail normally
+          const isAuthCheck = endpoint === '/auth/me' || endpoint.includes('/auth/me');
+
+          if (
+            !isAuthPage &&
+            !isAuthCheck &&
+            endpoint !== '/auth/login' &&
+            endpoint !== '/auth/admin-login'
+          ) {
             window.location.href = '/login';
           }
         }

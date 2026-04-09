@@ -1,53 +1,69 @@
-"use client"
+'use client';
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import type { User, UserRole } from "@/lib/types"
-import { authApi } from "@/lib/api"
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import type { User, UserRole } from '@/lib/types';
+import { authApi } from '@/lib/api';
 
 interface AuthContextType {
-  user: User | null
-  isLoading: boolean
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: string }>
-  adminLogin: (email: string, password: string) => Promise<{ success: boolean; message?: string; role?: string }>
-  register: (data: RegisterData) => Promise<{ success: boolean; message?: string; role?: string }>
-  logout: () => void
-  forgotPassword: (email: string) => Promise<boolean>
+  user: User | null;
+  isLoading: boolean;
+  login: (
+    email: string,
+    password: string,
+  ) => Promise<{ success: boolean; message?: string; role?: string }>;
+  adminLogin: (
+    email: string,
+    password: string,
+  ) => Promise<{ success: boolean; message?: string; role?: string }>;
+  register: (data: RegisterData) => Promise<{ success: boolean; message?: string; role?: string }>;
+  logout: () => void;
+  forgotPassword: (email: string) => Promise<boolean>;
 }
 
 interface RegisterData {
-  email: string
-  password: string
-  fullName: string
-  phone: string
-  role: UserRole
+  email: string;
+  password: string;
+  fullName: string;
+  phone: string;
+  role: UserRole;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const userData = await authApi.getMe();
         setUser(userData as unknown as User);
-      } catch (err) {
-        // Not logged in or error
+      } catch (err: any) {
+        // Handle 401 gracefully - user is not logged in
+        if (err.status === 401) {
+          console.log('[Auth] User not authenticated');
+        } else {
+          console.error('[Auth] Failed to fetch user:', err.message);
+        }
+        // Clear user state on any auth error
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
     };
-    
-    fetchUser();
-  }, [])
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; message?: string; role?: string }> => {
-    setIsLoading(true)
+    fetchUser();
+  }, []);
+
+  const login = async (
+    email: string,
+    password: string,
+  ): Promise<{ success: boolean; message?: string; role?: string }> => {
+    setIsLoading(true);
     try {
       const data = await authApi.login({ email, password });
-      
+
       const loggedUser: User = {
         _id: data._id,
         id: data._id,
@@ -56,28 +72,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fullName: data.name,
         phone: '',
         role: data.role as UserRole,
-        status: (data.status as any) || "accepted",
+        status: (data.status as any) || 'accepted',
         createdAt: new Date(),
-      }
-      setUser(loggedUser)
-      setIsLoading(false)
-      return { success: true, role: loggedUser.role }
+      };
+      setUser(loggedUser);
+      setIsLoading(false);
+      return { success: true, role: loggedUser.role };
     } catch (err: any) {
       const errorMessage = err.message || 'Login failed';
       console.error('[Auth Error] Login failed:', errorMessage);
-      setIsLoading(false)
-      return { 
-        success: false, 
-        message: errorMessage || 'Login failed. Please check your credentials and connection.' 
-      }
+      setIsLoading(false);
+      return {
+        success: false,
+        message: errorMessage || 'Login failed. Please check your credentials and connection.',
+      };
     }
-  }
+  };
 
-  const adminLogin = async (email: string, password: string): Promise<{ success: boolean; message?: string; role?: string }> => {
-    setIsLoading(true)
+  const adminLogin = async (
+    email: string,
+    password: string,
+  ): Promise<{ success: boolean; message?: string; role?: string }> => {
+    setIsLoading(true);
     try {
       const data = await authApi.adminLogin({ email, password });
-      
+
       const loggedUser: User = {
         _id: data._id,
         id: data._id,
@@ -86,15 +105,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fullName: data.name,
         phone: '',
         role: data.role as UserRole,
-        status: (data.status as any) || "accepted",
+        status: (data.status as any) || 'accepted',
         createdAt: new Date(),
-      }
-      setUser(loggedUser)
-      setIsLoading(false)
-      return { success: true, role: loggedUser.role }
+      };
+      setUser(loggedUser);
+      setIsLoading(false);
+      return { success: true, role: loggedUser.role };
     } catch (err: any) {
       let errorMessage = 'Admin Login failed';
-      
+
       // Handle rate limiting errors specifically
       if (err.isRateLimit) {
         errorMessage = `Rate limit exceeded. Please try again in ${err.retryAfter}.`;
@@ -103,25 +122,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else if (err.message) {
         errorMessage = err.message;
       }
-      
-      console.error('[Auth Error] Admin Login failed:', errorMessage);
-      setIsLoading(false)
-      return { 
-        success: false, 
-        message: errorMessage
-      }
-    }
-  }
 
-  const register = async (data: RegisterData): Promise<{ success: boolean; message?: string; role?: string }> => {
-    setIsLoading(true)
+      console.error('[Auth Error] Admin Login failed:', errorMessage);
+      setIsLoading(false);
+      return {
+        success: false,
+        message: errorMessage,
+      };
+    }
+  };
+
+  const register = async (
+    data: RegisterData,
+  ): Promise<{ success: boolean; message?: string; role?: string }> => {
+    setIsLoading(true);
     try {
-      const resData = await authApi.register({ 
-        name: data.fullName, 
-        email: data.email, 
-        password: data.password 
+      const resData = await authApi.register({
+        name: data.fullName,
+        email: data.email,
+        password: data.password,
       });
-      
+
       const newUser: User = {
         _id: resData._id,
         id: resData._id,
@@ -130,22 +151,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fullName: resData.name,
         phone: data.phone,
         role: resData.role as UserRole,
-        status: "pending", // All new users are pending
+        status: 'pending', // All new users are pending
         createdAt: new Date(),
-      }
-      setUser(newUser)
-      setIsLoading(false)
-      return { success: true, role: newUser.role }
+      };
+      setUser(newUser);
+      setIsLoading(false);
+      return { success: true, role: newUser.role };
     } catch (err: any) {
       const errorMessage = err.message || 'Registration failed';
       console.error('[Auth Error] Registration failed:', errorMessage);
-      setIsLoading(false)
-      return { 
-        success: false, 
-        message: errorMessage || 'Registration failed. Please check your connection and try again.' 
-      }
+      setIsLoading(false);
+      return {
+        success: false,
+        message: errorMessage || 'Registration failed. Please check your connection and try again.',
+      };
     }
-  }
+  };
 
   const logout = async () => {
     try {
@@ -156,29 +177,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       // Fallback cleanup if token is still cached somehow
     }
-  }
+  };
 
   const forgotPassword = async (email: string): Promise<boolean> => {
     try {
-      await authApi.forgotPassword(email)
-      return true
+      await authApi.forgotPassword(email);
+      return true;
     } catch (err: any) {
-      console.error('[Auth Error] Forgot password failed:', err.message)
-      return false
+      console.error('[Auth Error] Forgot password failed:', err.message);
+      return false;
     }
-  }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, adminLogin, register, logout, forgotPassword }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, login, adminLogin, register, logout, forgotPassword }}
+    >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context
+  return context;
 }
