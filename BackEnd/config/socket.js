@@ -21,34 +21,62 @@ const init = (httpServer) => {
 
   // Setup Redis Adapter for horizontal scaling (if enabled)
   if (process.env.NODE_ENV !== 'test' && process.env.REDIS_ENABLED === 'true') {
+    const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+    const isDev = process.env.NODE_ENV === 'development';
+
+    // In dev, we want to know quickly if Redis is down
+    const redisOptions = {
+      maxRetriesPerRequest: 3,
+      retryStrategy: (times) => {
+        if (times > (isDev ? 3 : 10)) {
+          console.error(
+            `✗ Redis connection failed after ${times} attempts. Falling back to Memory mode.`,
+          );
+          return null; // Stop retrying
+        }
+        const delay = Math.min(times * 1000, 5000);
+        if (isDev)
+          console.warn(`⚠ Redis connection attempt ${times} failed. Retrying in ${delay}ms...`);
+        return delay;
+      },
+      connectTimeout: 5000,
+    };
+
     try {
-      const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-      const redisOptions = {
-        maxRetriesPerRequest: null,
-        retryStrategy: (times) => {
-          if (times === 1) {
-            console.warn('⚠ Redis connection failure. Retrying...');
-          }
-          // Never give up (don't return null), just keep retrying with a cap
-          return Math.min(times * 1000, 10000);
-        },
-      };
       const pubClient = new Redis(redisUrl, redisOptions);
-      const subClient = pubClient.duplicate();
+      const subClient = new Redis(redisUrl, redisOptions);
 
-      pubClient.on('error', (err) => console.error('Redis Adapter Pub Error:', err));
-      subClient.on('error', (err) => console.error('Redis Adapter Sub Error:', err));
+      // Listen for connection events to safely mount adapter
+      let adapterMounted = false;
+      const mountAdapter = () => {
+        if (!adapterMounted && pubClient.status === 'ready' && subClient.status === 'ready') {
+          io.adapter(createAdapter(pubClient, subClient));
+          console.log('✅ Redis Adapter initialized for Socket.io');
+          adapterMounted = true;
+        }
+      };
 
-      io.adapter(createAdapter(pubClient, subClient));
-      console.log('✅ Redis Adapter initialized for Socket.io');
+      pubClient.on('ready', mountAdapter);
+      subClient.on('ready', mountAdapter);
+
+      pubClient.on('error', (err) => {
+        if (isDev && err.code === 'ECONNREFUSED') {
+          // Silent warning for connection refused in dev to avoid spam
+        } else {
+          console.error('Redis Adapter Pub Error:', err.message);
+        }
+      });
+
+      subClient.on('error', (err) => {
+        if (!isDev) console.error('Redis Adapter Sub Error:', err.message);
+      });
     } catch (error) {
-      console.error(
-        '⚠ Failed to initialize Redis Adapter. Falling back to memory adapter.',
-        error.message,
-      );
+      console.error('⚠ Failed to initialize Redis Adapter structure:', error.message);
     }
-  } else if (process.env.REDIS_ENABLED !== 'true') {
-    console.log('ℹ Redis disabled. Socket.io running in memory mode.');
+  } else {
+    console.log(
+      `ℹ Redis ${process.env.REDIS_ENABLED === 'true' ? 'enabled but in test mode' : 'disabled'}. Socket.io running in memory mode.`,
+    );
   }
 
   // Handle incoming connections using the centralized socket service

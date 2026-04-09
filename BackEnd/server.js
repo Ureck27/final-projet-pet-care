@@ -137,44 +137,66 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-// Health check and test endpoint
+// Health check and test endpoint with enhanced diagnostics
 app.get('/api/test', async (req, res) => {
+  const diagnostics = {
+    status: 'success',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    database: { connected: false },
+    redis: { enabled: process.env.REDIS_ENABLED === 'true', connected: false },
+  };
+
   try {
-    // Test database connection
+    // 1. Test database connection
     const db = require('mongoose').connection;
+    diagnostics.database = {
+      connected: db.readyState === 1,
+      readyState: db.readyState,
+      host: db.host,
+      name: db.name,
+    };
 
-    if (db.readyState !== 1) {
-      return res.status(503).json({
-        status: 'error',
-        message: 'Database not connected',
-        readyState: db.readyState,
-      });
-    }
-
-    // Test database operation
-    const adminCheck = await require('./models/User').findOne({ role: 'admin' });
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Backend and database are connected!',
-      timestamp: new Date().toISOString(),
-      database: {
-        connected: true,
-        host: db.host,
-        database: db.name,
-      },
-      admin: {
+    if (db.readyState === 1) {
+      // Test database operation (quick read)
+      const adminCheck = await require('./models/User')
+        .findOne({ role: 'admin' })
+        .select('email')
+        .lean();
+      diagnostics.admin = {
         exists: !!adminCheck,
         email: adminCheck?.email || 'No admin found',
-      },
-      environment: process.env.NODE_ENV || 'development',
-    });
+      };
+    }
+
+    // 2. Test Redis (if enabled)
+    if (diagnostics.redis.enabled) {
+      // In a real app, you'd check a global redis client
+      // For now, we'll just check if the adapter would have been initialized
+      diagnostics.redis.adapter = 'redis-adapter';
+    } else {
+      diagnostics.redis.adapter = 'memory';
+    }
+
+    // 3. DNS check for Atlas (if applicable)
+    if (db.host && db.host.includes('mongodb.net')) {
+      try {
+        const dns = require('dns').promises;
+        const lookup = await dns.lookup(db.host);
+        diagnostics.network = { dnsResolved: true, ip: lookup.address };
+      } catch (_e) {
+        diagnostics.network = { dnsResolved: false, error: 'DNS resolution failed for Atlas host' };
+      }
+    }
+
+    const statusCode = diagnostics.database.connected ? 200 : 503;
+    res.status(statusCode).json(diagnostics);
   } catch (error) {
     res.status(500).json({
       status: 'error',
       message: 'Test endpoint error',
       error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
-      timestamp: new Date().toISOString(),
+      diagnostics,
     });
   }
 });
