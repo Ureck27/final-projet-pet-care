@@ -505,20 +505,6 @@ export default function HomePage() {
                     </p>
                   </CardContent>
                 </Card>
-
-                {/* Vertically centered flex aligned arrow for Desktop */}
-                {index < howItWorks.length - 1 && (
-                  <div className="hidden lg:flex absolute top-0 bottom-0 -right-4 translate-x-1/2 items-center justify-center z-20 pointer-events-none">
-                    <div className="flex items-center justify-center rounded-full bg-card p-1.5 border border-border shadow-sm">
-                      <motion.div
-                        animate={{ x: [0, 4, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      >
-                        <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary" />
-                      </motion.div>
-                    </div>
-                  </div>
-                )}
               </StaggerItem>
             ))}
           </StaggerChildren>
@@ -602,38 +588,46 @@ export default function HomePage() {
             </p>
           </div>
 
-          <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 lg:gap-8">
-            <TimelineGridItem
-              icon={<Coffee className="h-4 w-4 icon-visible" />}
-              title="Morning Routine & Hydration"
-              description="Fresh water, breakfast, and a happy tail to start the day right."
-            />
-            <TimelineGridItem
-              icon={<PawPrint className="h-4 w-4 icon-visible" />}
-              title="Adventure Walk & Sniff Time"
-              description="Guided walk with GPS proof, photos, and mood check-ins from the trainer."
-            />
-            <TimelineGridItem
-              icon={<Video className="h-4 w-4 icon-visible" />}
-              title="Training & Enrichment Session"
-              description="Short videos, AI-verified progress, and badges earned for good behavior."
-            />
-            <TimelineGridItem
-              icon={<Moon className="h-4 w-4 icon-visible" />}
-              title="Cozy Nap & Calm Time"
-              description="Heart rate, mood, and comfort logged-see exactly how relaxed they are."
-            />
-            <TimelineGridItem
-              icon={<Sparkles className="h-4 w-4 icon-visible" />}
-              title="End-of-Day Story Recap"
-              description={
-                <>
-                  A sharable story with highlights and <strong>proof-backed memories</strong> you
-                  can revisit anytime.
-                </>
-              }
-            />
-          </ul>
+          {/* Modern Container with Background */}
+          <div className="relative bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 rounded-3xl p-8 md:p-12 shadow-soft-lg border border-border/50 backdrop-blur-sm">
+            {/* Decorative Elements */}
+            <div className="absolute top-4 left-4 w-20 h-20 bg-primary/10 rounded-full blur-xl opacity-50" />
+            <div className="absolute bottom-4 right-4 w-32 h-32 bg-secondary/10 rounded-full blur-xl opacity-50" />
+
+            {/* Cards Grid */}
+            <div className="relative z-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              <TimelineGridItem
+                icon={<Coffee className="h-4 w-4 icon-visible" />}
+                title="Morning Routine & Hydration"
+                description="Fresh water, breakfast, and a happy tail to start the day right."
+              />
+              <TimelineGridItem
+                icon={<PawPrint className="h-4 w-4 icon-visible" />}
+                title="Adventure Walk & Sniff Time"
+                description="Guided walk with GPS proof, photos, and mood check-ins from the trainer."
+              />
+              <TimelineGridItem
+                icon={<Video className="h-4 w-4 icon-visible" />}
+                title="Training & Enrichment Session"
+                description="Short videos, AI-verified progress, and badges earned for good behavior."
+              />
+              <TimelineGridItem
+                icon={<Moon className="h-4 w-4 icon-visible" />}
+                title="Cozy Nap & Calm Time"
+                description="Heart rate, mood, and comfort logged-see exactly how relaxed they are."
+              />
+              <TimelineGridItem
+                icon={<Sparkles className="h-4 w-4 icon-visible" />}
+                title="End-of-Day Story Recap"
+                description={
+                  <>
+                    A sharable story with highlights and <strong>proof-backed memories</strong> you
+                    can revisit anytime.
+                  </>
+                }
+              />
+            </div>
+          </div>
 
           <div className="mt-10 flex justify-center">
             <Button size="lg" className="shadow-soft" asChild>
