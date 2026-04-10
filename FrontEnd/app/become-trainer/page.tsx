@@ -1,116 +1,123 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/context/auth-context"
-import { trainerRequestApi } from "@/lib/api"
-import { Loader } from "@/components/common/loader"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
-import { ImageUpload } from "@/components/ui/image-upload"
-import { 
-  UserCheck, 
-  Star, 
-  Award, 
-  Clock, 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
+import { trainerRequestApi } from '@/lib/api';
+import { Loader } from '@/components/common/loader';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { ImageUpload } from '@/components/ui/image-upload';
+import {
+  UserCheck,
+  Star,
+  Award,
+  Clock,
   Users,
   CheckCircle,
   ArrowLeft,
   Upload,
   Phone,
-  FileText
-} from "lucide-react"
+  FileText,
+} from 'lucide-react';
 
 export default function BecomeTrainerPage() {
-  const router = useRouter()
-  const { user, isLoading } = useAuth()
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     phone: '',
     experience: '',
     certifications: '',
-    message: ''
-  })
-  const [profileImage, setProfileImage] = useState('')
-  const [certificateImages, setCertificateImages] = useState<string[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [error, setError] = useState('')
+    message: '',
+  });
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [certificateImages, setCertificateImages] = useState<(File | null)[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />
       </div>
-    )
+    );
   }
 
   if (!user) {
-    router.push('/login')
-    return null
+    router.push('/login');
+    return null;
   }
 
   if (user.role === 'trainer') {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <Badge variant="secondary" className="mb-4">Already a Trainer</Badge>
+          <Badge variant="secondary" className="mb-4">
+            Already a Trainer
+          </Badge>
           <h1 className="text-3xl font-bold mb-4">You're already a trainer!</h1>
           <p className="text-muted-foreground mb-6">
             You have already been approved as a trainer. You can access your trainer dashboard.
           </p>
-          <Button onClick={() => router.push('/trainer-dashboard')}>
-            Go to Trainer Dashboard
-          </Button>
+          <Button onClick={() => router.push('/trainer-dashboard')}>Go to Trainer Dashboard</Button>
         </div>
       </div>
-    )
+    );
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!formData.phone.trim() || !formData.experience.trim() || !formData.certifications.trim() || !formData.message.trim()) {
-      setError('Please fill in all fields')
-      return
+    e.preventDefault();
+
+    if (
+      !formData.phone.trim() ||
+      !formData.experience.trim() ||
+      !formData.certifications.trim() ||
+      !formData.message.trim()
+    ) {
+      setError('Please fill in all fields');
+      return;
     }
 
-    setIsSubmitting(true)
-    setError('')
+    setIsSubmitting(true);
+    setError('');
 
     try {
-      const formDataToSend = new FormData()
-      formDataToSend.append('phone', formData.phone)
-      formDataToSend.append('experience', formData.experience)
-      formDataToSend.append('certifications', formData.certifications)
-      formDataToSend.append('message', formData.message)
-      
-      if (profileImage) {
-        formDataToSend.append('profileImage', profileImage)
-      }
-      
-      certificateImages.forEach((cert, index) => {
-        formDataToSend.append(`certificateImage`, cert)
-      })
+      const formDataToSend = new FormData();
+      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('experience', formData.experience);
+      formDataToSend.append('certifications', formData.certifications);
+      formDataToSend.append('message', formData.message);
 
-      await trainerRequestApi.createRequest(formDataToSend)
-      
-      setSubmitted(true)
+      if (profileImage) {
+        formDataToSend.append('profileImage', profileImage);
+      }
+
+      certificateImages.forEach((cert, index) => {
+        if (cert) {
+          formDataToSend.append(`certificateImage`, cert);
+        }
+      });
+
+      await trainerRequestApi.createRequest(formDataToSend);
+
+      setSubmitted(true);
     } catch (error: any) {
-      setError(error.message || 'Failed to submit request')
+      setError(error.message || 'Failed to submit request');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-    if (error) setError('')
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (error) setError('');
+  };
 
   if (submitted) {
     return (
@@ -123,30 +130,25 @@ export default function BecomeTrainerPage() {
           </div>
           <h1 className="text-3xl font-bold mb-4">Request Submitted!</h1>
           <p className="text-muted-foreground mb-6">
-            Your trainer application has been submitted successfully. The admin team will review your application and get back to you soon.
+            Your trainer application has been submitted successfully. The admin team will review
+            your application and get back to you soon.
           </p>
           <div className="bg-muted/50 rounded-lg p-4 mb-6">
             <p className="text-sm text-muted-foreground">
-              You will receive an email notification once your request has been reviewed. 
-              You can check the status of your application in your profile.
+              You will receive an email notification once your request has been reviewed. You can
+              check the status of your application in your profile.
             </p>
           </div>
-          <Button onClick={() => router.push('/dashboard')}>
-            Back to Dashboard
-          </Button>
+          <Button onClick={() => router.push('/dashboard')}>Back to Dashboard</Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        <Button 
-          variant="outline" 
-          onClick={() => router.push('/dashboard')}
-          className="mb-6 gap-2"
-        >
+        <Button variant="outline" onClick={() => router.push('/dashboard')} className="mb-6 gap-2">
           <ArrowLeft className="h-4 w-4" />
           Back to Dashboard
         </Button>
@@ -160,7 +162,8 @@ export default function BecomeTrainerPage() {
                 Apply to Become a Trainer
               </CardTitle>
               <CardDescription>
-                Share your experience, upload your documents, and tell us why you'd be a great addition to our trainer community.
+                Share your experience, upload your documents, and tell us why you'd be a great
+                addition to our trainer community.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -223,8 +226,7 @@ export default function BecomeTrainerPage() {
                   <div className="space-y-2">
                     <Label>Profile Image</Label>
                     <ImageUpload
-                      value={profileImage}
-                      onChange={setProfileImage}
+                      onChange={(file) => setProfileImage(file)}
                       label="Upload Profile Photo"
                       placeholder="Click to upload or drag and drop"
                       accept="image/*"
@@ -240,11 +242,10 @@ export default function BecomeTrainerPage() {
                       {certificateImages.map((cert, index) => (
                         <ImageUpload
                           key={index}
-                          value={cert}
-                          onChange={(value) => {
-                            const newCerts = [...certificateImages]
-                            newCerts[index] = value
-                            setCertificateImages(newCerts)
+                          onChange={(file) => {
+                            const newCerts = [...certificateImages];
+                            newCerts[index] = file;
+                            setCertificateImages(newCerts);
                           }}
                           label={`Certificate ${index + 1}`}
                           placeholder="Click to upload or drag and drop"
@@ -255,7 +256,7 @@ export default function BecomeTrainerPage() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => setCertificateImages([...certificateImages, ''])}
+                          onClick={() => setCertificateImages([...certificateImages, null])}
                           className="w-full"
                         >
                           <Upload className="h-4 w-4 mr-2" />
@@ -266,11 +267,7 @@ export default function BecomeTrainerPage() {
                   </div>
                 </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isSubmitting}
-                >
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? (
                     <>
                       <Loader size="sm" className="mr-2" />
@@ -366,5 +363,5 @@ export default function BecomeTrainerPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
