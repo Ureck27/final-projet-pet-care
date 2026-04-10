@@ -2,7 +2,7 @@
 
 ![Pet Care Banner](https://via.placeholder.com/1200x400?text=Pet+Care+Platform+Banner)
 
-A comprehensive, full-stack pet care management platform designed to connect pet owners with caregivers and trainers. Featuring real-time chat, AI-powered pet health scanning, automated routines, and a full administrative dashboard.
+A comprehensive, full-stack pet care management platform designed to connect **Pet Owners**, **Caregivers**, and **Trainers**. It features multiple robust dashboards tailored by role, real-time messaging, AI-powered pet health scanning, automated daily activity tracking, and a comprehensive administrative portal.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
@@ -13,15 +13,17 @@ A comprehensive, full-stack pet care management platform designed to connect pet
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-* **Pet Profiles & Dashboard:** Manage health records, routines, and daily activities for multiple pets.
-* **Real-Time Messaging:** Built-in chat using Socket.io to connect pet owners with caregivers and trainers instantly.
-* **AI Pet Scanner:** Identify pet conditions or get recommendations through integrated AI vision services.
-* **Booking System:** Seamlessly schedule tasks and appointments with certified caregivers.
-* **Admin Dashboard:** A centralized port for platform owners to manage users, approve trainers, and oversee system metrics.
-* **Beautiful, Modern UI:** Fully responsive design built with Tailwind CSS, featuring subtle animations via GSAP and Framer Motion.
-* **Secure Authentication:** JWT-based secure login and registration with distinct User and Admin flows.
+* **Multi-Role Dashboards:** Distinct and secure dashboards crafted specifically for Pet Owners (`/dashboard`), Trainers (`/trainer-dashboard`), and Platform Admins (`/admin-dashboard`).
+* **Pet Profiles & Timelines:** Manage extensive pet health records, daily routines, care plans, and monitor activity timelines.
+* **AI Pet Assistant:** Features a built-in AI interface (`/ai-pet-assistant`) offering conversational assistance and behavior analysis tools.
+* **Real-Time Messaging:** Integrated chat using Socket.io to allow pet owners to instantly converse with caregivers and trainers.
+* **Booking & Scheduling:** Seamlessly schedule tasks, care packages, meet-and-greets, and routine schedules with certified trainers and caregivers.
+* **Onboarding Portals:** Unique application flows for users looking to become caregivers (`/caregiver-apply`) or trainers (`/become-trainer`), feeding directly into an Admin approval queue.
+* **Notifications Center:** Built-in push and contextual notifications to keep users alert on tasks, messages, and application statuses.
+* **Beautiful, Modern UI:** Fully accessible styling built with Tailwind CSS v4 and Radix UI components, enriched with fluid animations using Framer Motion and Anime.js.
+* **Secure Authentication:** JWT-based secure login algorithms supporting standard authentication and distinct Admin flows.
 
 ---
 
@@ -29,41 +31,55 @@ A comprehensive, full-stack pet care management platform designed to connect pet
 
 ### Frontend (Client)
 - **Framework**: Next.js 15 (App Router)
-- **UI Library**: React 19
-- **Styling**: Tailwind CSS v4, Radix UI components
+- **UI & Libraries**: React 19, Radix UI Primitives, Lucide Icons
+- **Styling**: Tailwind CSS v4
 - **Animations**: GSAP, Framer Motion, Anime.js
-- **Form Handling**: React Hook Form + Zod
-- **Networking**: Socket.io-client
+- **Forms & Validation**: React Hook Form + Zod
+- **Networking & Real-Time**: Socket.io-client, custom `apiFetch` interceptor logic
+- **Package Manager**: npm
 
 ### Backend (API)
 - **Runtime**: Node.js
 - **Framework**: Express.js
-- **Database**: MongoDB (Mongoose)
-- **Real-Time**: Socket.io
-- **Security**: Helmet, bcryptjs, express-rate-limit
-- **File Uploads**: Multer (Local storage)
+- **Database**: MongoDB (via Mongoose)
+- **Real-Time Layer**: Socket.io + Redis Adapter
+- **Jobs & Queues**: BullMQ
+- **Security & Validation**: Helmet, bcryptjs, express-rate-limit, Zod validators
+- **Uploads Configuration**: Multer + Cloudinary (remote) or local mapping
 
 ---
 
-## 📸 Screenshots
+## 📂 Project Architecture
 
-| Pet Dashboard | Real-Time Chat |
-|:---:|:---:|
-| ![Dashboard Placeholder](https://via.placeholder.com/400x250?text=Dashboard+UI) | ![Chat Placeholder](https://via.placeholder.com/400x250?text=Chat+Interface) |
-
-| AI Scanner | Mobile Responsive |
-|:---:|:---:|
-| ![Scanner Placeholder](https://via.placeholder.com/400x250?text=AI+Scanner) | ![Mobile Placeholder](https://via.placeholder.com/400x250?text=Mobile+View) |
+```text
+pet-care-platform/
+├── BackEnd/                 # Node.js + Express API
+│   ├── config/              # Environment & service configurations
+│   ├── controllers/         # Business logic mapping to API routes
+│   ├── middleware/          # Security, auth gating, & API middlewares
+│   ├── models/              # Mongoose DB schemas (Pets, Users, Bookings, etc.)
+│   ├── routes/              # Express endpoint groupings (auth, pets, trainers, etc.)
+│   ├── services/            # Extracted single-responsibility logic (emails, AI processing)
+│   ├── workers/             # Background BullMQ job workers
+│   └── server.js            # Main backend entry point
+│
+└── FrontEnd/                # Next.js Application
+    ├── app/                 # Next.js App Router (pages/layouts per route)
+    ├── components/          # Reusable UI parts & complex features (dashboards, modals)
+    ├── hooks/               # Custom React hooks abstraction
+    ├── lib/                 # Core API integrations (`api.ts`), TS Definitions (`types.ts`)
+    ├── tailwind.config.ts   # Advanced Tailwind theming config
+    └── package.json         # Project dependency map
+```
 
 ---
 
 ## 🚀 Installation & Local Setup
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [MongoDB](https://www.mongodb.com/) (Local instance or Atlas cluster)
-- [Redis](https://redis.io/) (**Optional** for local development; enables Chat and AI features)
-- [Git](https://git-scm.com/)
+- Node.js (v18 or higher)
+- MongoDB (running locally or a remote Atlas connection)
+- Redis (*Optional*, used for BullMQ and distributed websockets)
 
 ### 1. Clone the repository
 ```bash
@@ -72,135 +88,75 @@ cd pet-care-platform
 ```
 
 ### 2. Backend Setup
+Navigate to the API folder and install dependencies:
 ```bash
 cd BackEnd
 npm install
 ```
-Copy the `.env.example` file to create your local `.env`:
+Prepare the environment:
 ```bash
 cp .env.example .env
 ```
-*Edit the `.env` file to match your local MongoDB URI and desired port.*
+*(Open `.env` and fill in necessary elements like `MONGO_URI`, `JWT_SECRET`, and `CLOUDINARY` credentials)*.
 
-Start the backend development server:
+Start the backend:
 ```bash
 npm run dev
 ```
-*(The backend runs on `http://localhost:5000` by default).*
+*(The backend typically listens on `http://localhost:5000`)*
 
 ### 3. Frontend Setup
-Open a new terminal window and navigate to the frontend directory:
+In a new terminal window, initialize the Next.js client:
 ```bash
 cd FrontEnd
 npm install
 ```
-Copy the `.env.example` file to create your local environment:
+Link up your frontend configuration:
 ```bash
 cp .env.example .env.local
 ```
+*(Ensure `NEXT_PUBLIC_API_URL` aligns with your backend's URL)*.
+
 Start the frontend development server:
 ```bash
 npm run dev
 ```
-*(The frontend runs on `http://localhost:3000` by default).*
+*(Access the app at `http://localhost:3000`)*
 
 ---
 
-## ⚙️ Environment Variables Setup
+## ⚙️ Environment Variables Example
 
-### Frontend (`FrontEnd/.env.local`)
+**Frontend (`FrontEnd/.env.local`)**
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 NEXT_PUBLIC_FRONTEND_URL=http://localhost:3000
 NEXT_PUBLIC_DEV_MODE=true
-NEXT_PUBLIC_AI_API_URL=https://api.petcare-ai.com/v1
-NEXT_PUBLIC_AI_API_KEY=your-dev-key
 ```
 
-### Backend (`BackEnd/.env`)
+**Backend (`BackEnd/.env`)**
 ```env
 MONGO_URI=mongodb://localhost:27017/petcare
 REDIS_ENABLED=false
-JWT_SECRET=your-secret-key-here
+JWT_SECRET=super_secret_jwt_signature
 PORT=5000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
-BACKEND_URL=http://localhost:5000
-EMAIL_USER=your-email@gmail.com
+EMAIL_USER=your-email@example.com
 EMAIL_PASS=your-app-password
-EMAIL_SERVICE=gmail
-ADMIN_EMAIL=admin@petcare.com
-ADMIN_DASHBOARD_URL=http://localhost:3000/admin-dashboard
 ```
 
 ---
 
-## 🏗 How to Build for Production
+## 🛡️ Best Practices & Quality Control
 
-To build the Next.js application for production manually:
+We strive for enterprise-grade standardization inside this monorepo approach:
 
-```bash
-cd FrontEnd
-npm run build
-npm start
-```
-
-For the backend, running `npm start` executes `node server.js` which is the production process.
-
----
-
-
-
----
-
-## 🛡️ Development Resilience
-
-The platform is built with a "Resilient-First" approach to ensure a smooth developer experience even with missing local infrastructure:
-
-*   **Redis-Optional Mode**: The backend automatically detects if Redis is unavailable or disabled via `REDIS_ENABLED=false`. It gracefully falls back to memory-based adapters for Socket.io and mocks BullMQ queues to prevent startup crashes.
-*   **Robust MongoDB Connectivity**: Featuring advanced retry logic and forced IPv4 resolution to handle local network jitters and service lag.
-*   **Graceful Degeneracy**: Core platform features remain operational even if secondary services (like Chat or AI scanning) are temporarily disconnected.
-
----
-
-## 📏 Code Standards & Quality
-
-We maintain high code quality through automated linting and strict conventions:
-
-*   **Linter**: Fully migrated to **ESLint Flat Config** for both FrontEnd and BackEnd.
-*   **Formatting**: Automated Prettier integration ensuring consistent code style across the monorepo.
-*   **Git Hooks (Husky)**: Configured with `pre-commit` hooks to run `lint-staged`. This acts as a "Gatekeeper" to ensure all committed code passes linting and formatting rules automatically.
-*   **Conventions**: 
-    *   Unused variables/parameters MUST be prefixed with an underscore (e.g., `_next`, `_res`) to pass linting.
-    *   Modular logic architecture in the BackEnd for better testability and scalability.
-
----
-
-## 📂 Folder Structure
-
-```text
-pet-care-platform/
-├── BackEnd/                 # Node.js + Express API
-│   ├── config/              # Database & service configurations
-│   ├── controllers/         # Business logic & request handling
-│   ├── middleware/          # Security, auth, & file upload middleware
-│   ├── models/              # Mongoose DB schemas
-│   ├── routes/              # Express API endpoints mapping
-│   ├── services/            # Reusable services (Email, AI, Notifications)
-│   ├── uploads/             # Temporary/Local storage for image uploads
-│   └── server.js            # Main backend entry point
-│
-└── FrontEnd/                # Next.js Application
-    ├── app/                 # Next.js App Router pages & layouts
-    ├── components/          # Reusable UI components (Features & UI)
-    ├── hooks/               # Custom React hooks
-    ├── lib/                 # Utility functions & API clients
-    ├── public/              # Static frontend assets
-    └── tailwind.config.ts   # Tailwind CSS configuration
-```
-
----
+*   **Resiliency Design:** The Backend gracefully scales backward—disabling Realtime sockets or AI queues if Redis isn't configured, thus keeping core functions alive locally without heavy ops prerequisites.
+*   **Strong Typing Data Integrity:** From Mongoose models dynamically aligned with frontend TypeScript interfaces (`lib/types.ts`) guaranteeing 1:1 parity between Backend and UI states.
+*   **Linting & Style Checks:** Protected by robust ESLint Flat Configuration on both sides, ensuring conventions (such as standardizing module imports and using TS best practices) remain consistent on commit.
+*   **Production Handshaking:** Intelligent API request utilities that actively suppress React strict mode duplication loops and properly bubble network disconnect errors up to global boundary handlers to render fallbacks.
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This repository is licensed under the [MIT License](LICENSE).
