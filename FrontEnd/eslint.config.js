@@ -1,6 +1,5 @@
 const js = require('@eslint/js');
 const nextPlugin = require('@next/eslint-plugin-next');
-const prettierRecommended = require('eslint-plugin-prettier/recommended');
 const globals = require('globals');
 
 module.exports = [
@@ -23,16 +22,21 @@ module.exports = [
     rules: {
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs['core-web-vitals'].rules,
-      '@next/next/no-html-link-for-pages': ['error', 'FrontEnd/app'],
+      '@next/next/no-html-link-for-pages': ['error', 'app'],
     },
   },
-  prettierRecommended,
   {
     languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
       globals: {
         ...globals.browser,
         ...globals.node,
       },
+    },
+    rules: {
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-console': 'warn',
     },
   },
 ];
