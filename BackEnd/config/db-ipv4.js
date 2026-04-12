@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
-// Force IPv4 before any other imports
+// Force IPv4 and use public DNS servers (bypasses router DNS that blocks SRV records)
 const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
+// Use Google & Cloudflare DNS to resolve MongoDB Atlas SRV records
+// (local router DNS often blocks SRV record lookups required by mongodb+srv://)
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1', '1.0.0.1']);
 
 // Now load other modules
 const mongoose = require('mongoose');
