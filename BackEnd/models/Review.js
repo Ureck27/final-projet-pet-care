@@ -35,11 +35,10 @@ const reviewSchema = new mongoose.Schema(
 // Avoid duplicate reviews from the same user to the same trainer
 reviewSchema.index({ userId: 1, trainerId: 1 }, { unique: true });
 
-reviewSchema.pre(/^find/, function (next) {
+reviewSchema.pre(/^find/, function () {
   if (this.getQuery().isDeleted === undefined) {
     this.find({ isDeleted: { $ne: true } });
   }
-  next();
 });
 
 const Review = mongoose.model('Review', reviewSchema);

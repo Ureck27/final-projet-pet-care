@@ -1,51 +1,63 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/context/auth-context"
-import { mockTrainers } from "@/lib/mock-data"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { TrainerServicesManager } from "@/components/features/trainers/trainer-services-manager"
-import { Camera, Mail, Phone, Calendar, Award, Star, Briefcase, Clock, Save, Loader2 } from "lucide-react"
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
+import { mockTrainers } from '@/lib/mock-data';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TrainerServicesManager } from '@/components/features/trainers/trainer-services-manager';
+import {
+  Camera,
+  Mail,
+  Phone,
+  Calendar,
+  Award,
+  Star,
+  Briefcase,
+  Clock,
+  Save,
+  Loader2,
+} from 'lucide-react';
 
 export default function ProfilePage() {
-  const { user } = useAuth()
-  const router = useRouter()
-  const [isEditing, setIsEditing] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
+  const { user } = useAuth();
+  const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: user?.fullName || "",
-    email: user?.email || "",
-    phone: user?.phone || "",
-    bio: "",
-  })
+    fullName: user?.fullName || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    bio: '',
+  });
 
   if (!user) {
-    router.push("/login")
-    return null
+    router.push('/login');
+    return null;
   }
 
-  const trainerProfile = user.role === "trainer" ? mockTrainers.find((t) => t.userId === user.id) : null
+  const trainerProfile =
+    user.role === 'trainer' ? mockTrainers.find((t) => t.userId === user.id) : null;
 
   const handleSave = async () => {
-    setIsSaving(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsSaving(false)
-    setIsEditing(false)
-  }
+    setIsSaving(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setIsSaving(false);
+    setIsEditing(false);
+  };
 
   const initials = user.fullName
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('');
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -56,10 +68,16 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
               <div className="relative">
                 <Avatar className="h-32 w-32 border-4 border-primary/20">
-                  <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.fullName} />
-                  <AvatarFallback className="bg-primary text-2xl text-primary-foreground">{initials}</AvatarFallback>
+                  <AvatarImage src={user.avatar || '/placeholder.svg'} alt={user.fullName} />
+                  <AvatarFallback className="bg-primary text-2xl text-primary-foreground">
+                    {initials}
+                  </AvatarFallback>
                 </Avatar>
-                <Button size="icon" variant="secondary" className="absolute bottom-0 right-0 h-8 w-8 rounded-full">
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="absolute bottom-0 right-0 h-8 w-8 rounded-full"
+                >
                   <Camera className="h-4 w-4" />
                 </Button>
               </div>
@@ -69,11 +87,14 @@ export default function ProfilePage() {
                   <div>
                     <h1 className="text-2xl font-bold">{user.fullName}</h1>
                     <Badge variant="secondary" className="mt-1 capitalize">
-                      {user.role === "user" ? "Pet Owner" : user.role}
+                      {user.role === 'owner' ? 'Pet Owner' : user.role}
                     </Badge>
                   </div>
-                  <Button variant={isEditing ? "outline" : "default"} onClick={() => setIsEditing(!isEditing)}>
-                    {isEditing ? "Cancel" : "Edit Profile"}
+                  <Button
+                    variant={isEditing ? 'outline' : 'default'}
+                    onClick={() => setIsEditing(!isEditing)}
+                  >
+                    {isEditing ? 'Cancel' : 'Edit Profile'}
                   </Button>
                 </div>
 
@@ -88,7 +109,11 @@ export default function ProfilePage() {
                   </span>
                   <span className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    Joined {new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                    Joined{' '}
+                    {new Date(user.createdAt).toLocaleDateString('en-US', {
+                      month: 'long',
+                      year: 'numeric',
+                    })}
                   </span>
                 </div>
 
@@ -103,7 +128,8 @@ export default function ProfilePage() {
                       {trainerProfile.experience} Years Experience
                     </span>
                     <span className="flex items-center gap-1 text-sm">
-                      <Clock className="h-4 w-4 text-muted-foreground" />${trainerProfile.pricing}/hour
+                      <Clock className="h-4 w-4 text-muted-foreground" />${trainerProfile.pricing}
+                      /hour
                     </span>
                   </div>
                 )}
@@ -116,7 +142,9 @@ export default function ProfilePage() {
         <Tabs defaultValue="info" className="w-full">
           <TabsList className="w-full justify-start">
             <TabsTrigger value="info">Personal Info</TabsTrigger>
-            {user.role === "trainer" && <TabsTrigger value="professional">Professional</TabsTrigger>}
+            {user.role === 'trainer' && (
+              <TabsTrigger value="professional">Professional</TabsTrigger>
+            )}
             <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
 
@@ -179,7 +207,7 @@ export default function ProfilePage() {
             </Card>
           </TabsContent>
 
-          {user.role === "trainer" && trainerProfile && (
+          {user.role === 'trainer' && trainerProfile && (
             <TabsContent value="professional" className="mt-4">
               <Card>
                 <CardHeader>
@@ -189,7 +217,12 @@ export default function ProfilePage() {
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="bio">Bio</Label>
-                    <Textarea id="bio" rows={4} defaultValue={trainerProfile.bio} disabled={!isEditing} />
+                    <Textarea
+                      id="bio"
+                      rows={4}
+                      defaultValue={trainerProfile.bio}
+                      disabled={!isEditing}
+                    />
                   </div>
 
                   <div className="space-y-2">
@@ -231,7 +264,12 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="pricing">Hourly Rate ($)</Label>
-                      <Input id="pricing" type="number" defaultValue={trainerProfile.pricing} disabled={!isEditing} />
+                      <Input
+                        id="pricing"
+                        type="number"
+                        defaultValue={trainerProfile.pricing}
+                        disabled={!isEditing}
+                      />
                     </div>
                   </div>
 
@@ -287,5 +325,5 @@ export default function ProfilePage() {
         </Tabs>
       </div>
     </main>
-  )
+  );
 }

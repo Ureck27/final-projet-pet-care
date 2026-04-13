@@ -162,6 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: data.fullName,
         email: data.email,
         password: data.password,
+        role: data.role,
       });
 
       const newUser: User = {

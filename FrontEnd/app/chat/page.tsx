@@ -17,7 +17,7 @@ interface Message {
   _id: string;
   conversationId: string;
   senderId: string;
-  senderModel: 'User' | 'Trainer' | 'Admin';
+  senderModel: 'Owner' | 'Trainer' | 'Admin';
   text: string;
   image?: string;
   video?: string;
@@ -165,7 +165,7 @@ export default function ChatPage() {
         {
           _id: '1',
           participants: [
-            { userId: '1', name: 'John Doe', avatar: '', role: 'user' },
+            { userId: '1', name: 'John Doe', avatar: '', role: 'owner' },
             { userId: '2', name: 'Jane Smith', avatar: '', role: 'trainer' },
           ],
           lastMessage: 'Hi, how can I help with your pet?',
@@ -192,7 +192,7 @@ export default function ChatPage() {
           _id: '1',
           conversationId,
           senderId: '1',
-          senderModel: 'User',
+          senderModel: 'Owner',
           text: 'Hi, I need help with my dog',
           read: true,
           createdAt: new Date(Date.now() - 3600000),
@@ -238,14 +238,14 @@ export default function ChatPage() {
     const messageData = {
       conversationId: selectedConversation._id,
       senderId: (user as any).id || (user as any)._id,
-      senderModel: user?.role === 'trainer' ? 'Trainer' : 'User',
+      senderModel: user?.role === 'trainer' ? 'Trainer' : 'Owner',
       text: newMessage.trim(),
     };
 
     const optimisticMsg: Message = {
       _id: tempId,
       ...messageData,
-      senderModel: messageData.senderModel as 'User' | 'Trainer' | 'Admin',
+      senderModel: messageData.senderModel as 'Owner' | 'Trainer' | 'Admin',
       read: false,
       createdAt: new Date(),
       sender: {

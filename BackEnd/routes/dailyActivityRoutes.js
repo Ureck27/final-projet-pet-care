@@ -6,12 +6,17 @@ const {
   updateActivity,
   deleteActivity,
 } = require('../controllers/dailyActivityController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, authorizeRole } = require('../middleware/authMiddleware');
 
-router.route('/').post(protect, createActivity);
+router.route('/').post(protect, authorizeRole('caregiver', 'trainer', 'admin'), createActivity);
 
-router.route('/pet/:petId').get(protect, getActivities);
+router
+  .route('/pet/:petId')
+  .get(protect, authorizeRole('owner', 'caregiver', 'trainer', 'admin'), getActivities);
 
-router.route('/:id').put(protect, updateActivity).delete(protect, deleteActivity);
+router
+  .route('/:id')
+  .put(protect, authorizeRole('caregiver', 'trainer', 'admin'), updateActivity)
+  .delete(protect, authorizeRole('caregiver', 'trainer', 'admin'), deleteActivity);
 
 module.exports = router;

@@ -19,8 +19,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin', 'trainer'],
-      default: 'user',
+      enum: ['owner', 'caregiver', 'admin', 'trainer'],
+      default: 'owner',
     },
     status: {
       type: String,
@@ -49,11 +49,10 @@ const userSchema = new mongoose.Schema(
 );
 
 // Soft delete query middleware
-userSchema.pre(/^find/, function (next) {
+userSchema.pre(/^find/, async function () {
   if (this.getQuery().isDeleted === undefined) {
     this.find({ isDeleted: { $ne: true } });
   }
-  next();
 });
 
 // Method to check if entered password matches hashed password in DB

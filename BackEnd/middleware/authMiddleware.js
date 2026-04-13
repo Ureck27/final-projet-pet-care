@@ -41,4 +41,20 @@ const authorizeRole = (...roles) => {
   };
 };
 
-module.exports = { protect, authorizeRole };
+const authorizeOwnerOrAdmin = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Not authorized, user not found' });
+  }
+  // Check if user is admin, or if the ID requested matches the logged-in user
+  if (
+    req.user.role === 'admin' ||
+    req.user._id.toString() === req.params.userId ||
+    req.user._id.toString() === req.params.id
+  ) {
+    next();
+  } else {
+    return res.status(403).json({ message: 'Not authorized for this action' });
+  }
+};
+
+module.exports = { protect, authorizeRole, authorizeOwnerOrAdmin };

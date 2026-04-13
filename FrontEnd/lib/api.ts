@@ -279,8 +279,8 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'user' | 'admin' | 'trainer';
-  status?: 'pending' | 'accepted' | 'rejected';
+  role: 'owner' | 'caregiver' | 'trainer' | 'admin';
+  status?: 'pending' | 'accepted' | 'rejected' | 'suspended';
   createdAt: Date;
   updatedAt: string;
 }
@@ -289,15 +289,15 @@ export interface Pet {
   _id: string;
   id: string;
   userId: string;
-  ownerId?: string; // Consistent with lib/types.ts
+  ownerId?: string;
   name: string;
-  type: string;
-  breed?: string; // Consistent with lib/types.ts
+  type: 'dog' | 'cat' | 'bird' | 'rabbit' | 'other';
+  breed: string;
   age: number;
   description?: string;
   image: string;
   weight?: number;
-  status: 'pending' | 'accepted' | 'rejected' | 'approved';
+  status: 'pending' | 'accepted' | 'rejected';
   createdAt: Date;
   updatedAt: string;
 }
@@ -396,7 +396,7 @@ export interface DashboardStats {
 export const authApi = {
   getMe: () => api.get<User>('/auth/me'),
 
-  register: (userData: { name: string; email: string; password: string }) =>
+  register: (userData: { name: string; email: string; password: string; role?: string }) =>
     api.post<AuthResponse>('/auth/register', userData),
 
   login: (credentials: { email: string; password: string }) =>

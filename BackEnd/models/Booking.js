@@ -39,11 +39,10 @@ const bookingSchema = new mongoose.Schema(
 );
 
 // Soft delete query middleware
-bookingSchema.pre(/^find/, function (next) {
+bookingSchema.pre(/^find/, function () {
   if (this.getQuery().isDeleted === undefined) {
     this.find({ isDeleted: { $ne: true } });
   }
-  next();
 });
 
 // Indexes for faster queries

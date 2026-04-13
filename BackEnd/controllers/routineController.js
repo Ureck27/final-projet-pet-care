@@ -48,9 +48,9 @@ const completeRoutine = async (req, res) => {
       return res.status(404).json({ message: 'Routine not found' });
     }
 
-    // Security check: Only assigned caregiver (trainer/worker) or admin can complete the routine
+    // Security check: Only assigned caregiver (trainer/caregiver) or admin can complete the routine
     if (
-      (req.user.role === 'trainer' || req.user.role === 'worker') &&
+      (req.user.role === 'trainer' || req.user.role === 'caregiver') &&
       routine.trainerId.toString() !== req.user._id.toString()
     ) {
       return res.status(403).json({

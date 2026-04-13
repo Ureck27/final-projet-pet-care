@@ -60,11 +60,10 @@ const petSchema = new mongoose.Schema(
 );
 
 // Soft delete query middleware
-petSchema.pre(/^find/, function (next) {
+petSchema.pre(/^find/, function () {
   if (this.getQuery().isDeleted === undefined) {
     this.find({ isDeleted: { $ne: true } });
   }
-  next();
 });
 
 // Index for faster queries
