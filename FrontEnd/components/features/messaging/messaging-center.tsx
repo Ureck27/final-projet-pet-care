@@ -1,196 +1,209 @@
-"use client"
+'use client';
 
-import { useState, useEffect, useRef } from "react"
-import { formatDistanceToNow } from "date-fns"
-import { io, Socket } from "socket.io-client"
-import { useAuth } from "@/context/auth-context"
-import { chatApi } from "@/lib/api"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, Send, Phone, Video, MoreVertical, Check, CheckCheck, Plus } from "lucide-react"
-import { toast } from "sonner"
+import { useState, useEffect, useRef } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import { io, Socket } from 'socket.io-client';
+import { useAuth } from '@/context/auth-context';
+import { chatApi } from '@/lib/api';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Search, Send, Phone, Video, MoreVertical, Check, CheckCheck, Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function MessagingCenter() {
-  const { user } = useAuth()
-  const [conversations, setConversations] = useState<any[]>([])
-  const [messages, setMessages] = useState<any[]>([])
-  const [selectedConversation, setSelectedConversation] = useState<any>(null)
-  const [messageText, setMessageText] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [typingUsers, setTypingUsers] = useState<string[]>([])
-  const [isLoadingConversations, setIsLoadingConversations] = useState(true)
-  const [isLoadingMessages, setIsLoadingMessages] = useState(false)
-  const socketRef = useRef<Socket | null>(null)
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const { user } = useAuth();
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<any>(null);
+  const [messageText, setMessageText] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
+  const [isLoadingConversations, setIsLoadingConversations] = useState(true);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const socketRef = useRef<Socket | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!user) return
-    fetchConversations()
+    if (!user) return;
+    fetchConversations();
 
     // Init Socket
     socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
       withCredentials: true,
       auth: {
         token: localStorage.getItem('petcare_token'),
-        userId: user._id || user.id
-      }
-    })
+        userId: user._id || user.id,
+      },
+    });
 
     socketRef.current.on('receive_message', (newMessage) => {
       setMessages((prev) => {
         // Prevent dupes
-        if (prev.some(m => m._id === newMessage._id)) return prev;
+        if (prev.some((m) => m._id === newMessage._id)) return prev;
         return [...prev, newMessage];
-      })
-      
-      setConversations((prev) => 
-        prev.map(c => c._id === newMessage.conversationId 
-          ? { ...c, lastMessage: newMessage, updatedAt: new Date() } 
-          : c
-        ).sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-      )
+      });
+
+      setConversations((prev) =>
+        prev
+          .map((c) =>
+            c._id === newMessage.conversationId
+              ? { ...c, lastMessage: newMessage, updatedAt: new Date() }
+              : c,
+          )
+          .sort(
+            (a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+          ),
+      );
 
       // Emit receipt if currently viewing this conversation
-      if (selectedConversation?._id === newMessage.conversationId && newMessage.senderId !== (user._id || user.id)) {
+      if (
+        selectedConversation?._id === newMessage.conversationId &&
+        newMessage.senderId !== (user._id || user.id)
+      ) {
         socketRef.current?.emit('message_read', {
           conversationId: newMessage.conversationId,
-          userId: user._id || user.id
-        })
+          userId: user._id || user.id,
+        });
       }
-    })
+    });
 
     socketRef.current.on('sync_unread', (unreadMessages: any[]) => {
       if (selectedConversation && unreadMessages.length > 0) {
-        const relevant = unreadMessages.filter(m => m.conversationId === selectedConversation._id);
+        const relevant = unreadMessages.filter(
+          (m) => m.conversationId === selectedConversation._id,
+        );
         if (relevant.length > 0) {
-          setMessages(prev => [...prev, ...relevant]);
+          setMessages((prev) => [...prev, ...relevant]);
           socketRef.current?.emit('message_read', {
             conversationId: selectedConversation._id,
-            userId: user._id || user.id
+            userId: user._id || user.id,
           });
         }
       }
-    })
+    });
 
     socketRef.current.on('message_read_receipt', ({ conversationId, readBy }) => {
-      setMessages(prev => prev.map(msg => 
-        (msg.senderId !== readBy) ? { ...msg, read: true } : msg
-      ));
-    })
+      setMessages((prev) =>
+        prev.map((msg) => (msg.senderId !== readBy ? { ...msg, read: true } : msg)),
+      );
+    });
 
-    socketRef.current.on('user_typing', (data: { userId: string, conversationId: string }) => {
+    socketRef.current.on('user_typing', (data: { userId: string; conversationId: string }) => {
       if (data.conversationId === selectedConversation?._id) {
-        setTypingUsers(prev => prev.includes(data.userId) ? prev : [...prev, data.userId])
+        setTypingUsers((prev) => (prev.includes(data.userId) ? prev : [...prev, data.userId]));
       }
-    })
+    });
 
     socketRef.current.on('user_stop_typing', (data: { userId: string }) => {
-      setTypingUsers(prev => prev.filter(id => id !== data.userId))
-    })
+      setTypingUsers((prev) => prev.filter((id) => id !== data.userId));
+    });
 
     return () => {
-      if (socketRef.current) socketRef.current.disconnect()
-    }
-  }, [user, selectedConversation])
+      if (socketRef.current) socketRef.current.disconnect();
+    };
+  }, [user, selectedConversation]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const fetchConversations = async () => {
-    setIsLoadingConversations(true)
+    setIsLoadingConversations(true);
     try {
-      const data = await chatApi.getConversations()
-      setConversations(data || [])
+      const data = await chatApi.getConversations();
+      setConversations(data || []);
       if (data && data.length > 0 && !selectedConversation) {
-        handleSelectConversation(data[0])
+        handleSelectConversation(data[0]);
       }
     } catch (error) {
-      console.error('Failed to load conversations:', error)
-      toast.error("Failed to load conversations")
+      console.error('Failed to load conversations:', error);
+      toast.error('Failed to load conversations');
     } finally {
-      setIsLoadingConversations(false)
+      setIsLoadingConversations(false);
     }
-  }
+  };
 
   const handleSelectConversation = async (conv: any) => {
-    setSelectedConversation(conv)
+    setSelectedConversation(conv);
     if (socketRef.current) {
-      socketRef.current.emit('join_conversation', conv._id)
+      socketRef.current.emit('join_conversation', conv._id);
       if (user) {
         socketRef.current.emit('message_read', {
           conversationId: conv._id,
-          userId: user._id || user.id
-        })
+          userId: user._id || user.id,
+        });
       }
     }
-    setIsLoadingMessages(true)
+    setIsLoadingMessages(true);
     try {
-      const msgs = await chatApi.getMessages(conv._id)
-      setMessages(msgs || [])
+      const msgs = await chatApi.getMessages(conv._id);
+      setMessages(msgs || []);
     } catch (error) {
-      console.error('Failed to fetch messages:', error)
-      toast.error("Failed to fetch messages")
+      console.error('Failed to fetch messages:', error);
+      toast.error('Failed to fetch messages');
     } finally {
-      setIsLoadingMessages(false)
+      setIsLoadingMessages(false);
     }
-  }
+  };
 
   const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!messageText.trim() || !selectedConversation || !user) return
+    e.preventDefault();
+    if (!messageText.trim() || !selectedConversation || !user) return;
 
     const messageData = {
       conversationId: selectedConversation._id,
       senderId: user._id || user.id,
-      senderModel: user.role === 'admin' ? 'Admin' : user.role === 'trainer' ? 'Trainer' : 'User',
+      senderModel: user.role === 'admin' ? 'Admin' : user.role === 'trainer' ? 'Trainer' : 'Owner',
       text: messageText,
-    }
+    };
 
-    const tempId = `temp-${Date.now()}`
-    
+    const tempId = `temp-${Date.now()}`;
+
     // Optimistic UI update
-    setMessages(prev => [...prev, {
-      ...messageData,
-      _id: tempId,
-      createdAt: new Date(),
-      read: false,
-      isPending: true
-    }])
+    setMessages((prev) => [
+      ...prev,
+      {
+        ...messageData,
+        _id: tempId,
+        createdAt: new Date(),
+        read: false,
+        isPending: true,
+      },
+    ]);
 
     if (socketRef.current) {
       socketRef.current.emit('send_message', messageData, (response: any) => {
         if (response?.success) {
-          setMessages(prev => prev.map(m => m._id === tempId ? response.message : m))
+          setMessages((prev) => prev.map((m) => (m._id === tempId ? response.message : m)));
         } else {
-          toast.error("Failed to send message")
-          setMessages(prev => prev.filter(m => m._id !== tempId)) // Optimistic rollback
+          toast.error('Failed to send message');
+          setMessages((prev) => prev.filter((m) => m._id !== tempId)); // Optimistic rollback
         }
-      })
+      });
     }
-    setMessageText("")
-  }
+    setMessageText('');
+  };
 
   const getOtherUser = (conv: any) => {
-    if (!user) return null
-    return user.role === 'trainer' ? conv.userId : conv.trainerId
-  }
+    if (!user) return null;
+    return user.role === 'trainer' ? conv.userId : conv.trainerId;
+  };
 
   const filteredConversations = conversations.filter((conv) => {
-    if (!searchQuery) return true
-    const otherUser = getOtherUser(conv)
-    return otherUser?.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  })
+    if (!searchQuery) return true;
+    const otherUser = getOtherUser(conv);
+    return otherUser?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   // Determine if it's my message
   const isMessageOwn = (messageSenderId: string) => {
     if (!user) return false;
     return messageSenderId === String(user._id) || messageSenderId === String(user.id);
-  }
+  };
 
   return (
     <div className="flex h-[calc(100dvh-80px)] gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
@@ -217,7 +230,10 @@ export default function MessagingCenter() {
           <div className="space-y-2 p-4">
             {isLoadingConversations ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <div key={`skel-conv-${i}`} className="flex gap-3 p-3 rounded-lg border border-border bg-slate-50 dark:bg-slate-900/50">
+                <div
+                  key={`skel-conv-${i}`}
+                  className="flex gap-3 p-3 rounded-lg border border-border bg-slate-50 dark:bg-slate-900/50"
+                >
                   <div className="h-10 w-10 bg-muted animate-pulse rounded-full shrink-0"></div>
                   <div className="flex-1 space-y-2 py-1">
                     <div className="h-4 bg-muted animate-pulse w-1/3 rounded"></div>
@@ -231,16 +247,16 @@ export default function MessagingCenter() {
               </p>
             ) : (
               filteredConversations.map((conv) => {
-                const otherUser = getOtherUser(conv)
-                const isSelected = selectedConversation && conv._id === selectedConversation._id
+                const otherUser = getOtherUser(conv);
+                const isSelected = selectedConversation && conv._id === selectedConversation._id;
                 return (
                   <button
                     key={conv._id}
                     onClick={() => handleSelectConversation(conv)}
                     className={`w-full text-left p-3 rounded-lg transition-all ${
                       isSelected
-                        ? "bg-primary/10 border-2 border-primary/30"
-                        : "hover:bg-slate-100 dark:hover:bg-slate-800"
+                        ? 'bg-primary/10 border-2 border-primary/30'
+                        : 'hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     <div className="flex items-start justify-between">
@@ -249,7 +265,7 @@ export default function MessagingCenter() {
                           {otherUser?.name || 'Unknown User'}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {conv.lastMessage?.text || "No messages yet"}
+                          {conv.lastMessage?.text || 'No messages yet'}
                         </p>
                       </div>
                     </div>
@@ -261,7 +277,7 @@ export default function MessagingCenter() {
                       </p>
                     )}
                   </button>
-                )
+                );
               })
             )}
           </div>
@@ -274,7 +290,7 @@ export default function MessagingCenter() {
           <CardHeader className="border-b py-4">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>{getOtherUser(selectedConversation)?.name || "Chat"}</CardTitle>
+                <CardTitle>{getOtherUser(selectedConversation)?.name || 'Chat'}</CardTitle>
                 <p className="text-sm text-muted-foreground capitalize">
                   {user?.role === 'trainer' ? 'Client' : 'Trainer'}
                 </p>
@@ -292,50 +308,66 @@ export default function MessagingCenter() {
 
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
-              {isLoadingMessages ? (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <div key={`skel-msg-${i}`} className={`flex ${i % 2 === 0 ? "justify-start" : "justify-end"}`}>
-                    <div className={`w-[60%] h-16 rounded-lg bg-muted animate-pulse ${i % 2 === 0 ? "rounded-bl-none" : "rounded-br-none"}`}></div>
-                  </div>
-                ))
-              ) : messages.map((message) => {
-                const isOwn = isMessageOwn(message.senderId)
-                return (
-                  <div
-                    key={message._id}
-                    className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
-                  >
+              {isLoadingMessages
+                ? Array.from({ length: 4 }).map((_, i) => (
                     <div
-                      className={`max-w-[75%] px-4 py-2 rounded-lg ${
-                        isOwn
-                          ? "bg-primary text-primary-foreground rounded-br-none"
-                          : "bg-slate-200 dark:bg-slate-700 text-foreground rounded-bl-none"
-                      }`}
+                      key={`skel-msg-${i}`}
+                      className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}
                     >
-                      <p className="text-sm whitespace-pre-wrap flex-wrap break-words">{message.text}</p>
                       <div
-                        className={`flex items-center gap-1 mt-1 text-xs ${
-                          isOwn ? "text-primary-foreground/80" : "text-muted-foreground"
-                        }`}
-                      >
-                        {message.createdAt && (
-                          <span>
-                            {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        )}
-                        {isOwn && !message.isPending && (
-                          <span className={`ml-1 ${message.read ? 'text-blue-500' : 'opacity-70'}`}>
-                           {message.read ? <CheckCheck className="w-3 h-3 block" /> : <Check className="w-3 h-3 block" />}
-                          </span>
-                        )}
-                      </div>
+                        className={`w-[60%] h-16 rounded-lg bg-muted animate-pulse ${i % 2 === 0 ? 'rounded-bl-none' : 'rounded-br-none'}`}
+                      ></div>
                     </div>
-                  </div>
-                )
-              })}
+                  ))
+                : messages.map((message) => {
+                    const isOwn = isMessageOwn(message.senderId);
+                    return (
+                      <div
+                        key={message._id}
+                        className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-[75%] px-4 py-2 rounded-lg ${
+                            isOwn
+                              ? 'bg-primary text-primary-foreground rounded-br-none'
+                              : 'bg-slate-200 dark:bg-slate-700 text-foreground rounded-bl-none'
+                          }`}
+                        >
+                          <p className="text-sm whitespace-pre-wrap flex-wrap break-words">
+                            {message.text}
+                          </p>
+                          <div
+                            className={`flex items-center gap-1 mt-1 text-xs ${
+                              isOwn ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                            }`}
+                          >
+                            {message.createdAt && (
+                              <span>
+                                {new Date(message.createdAt).toLocaleTimeString([], {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
+                              </span>
+                            )}
+                            {isOwn && !message.isPending && (
+                              <span
+                                className={`ml-1 ${message.read ? 'text-blue-500' : 'opacity-70'}`}
+                              >
+                                {message.read ? (
+                                  <CheckCheck className="w-3 h-3 block" />
+                                ) : (
+                                  <Check className="w-3 h-3 block" />
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
               {typingUsers.length > 0 && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground p-2">
-                   Someone is typing...
+                  Someone is typing...
                 </div>
               )}
               <div ref={messagesEndRef} />
@@ -344,29 +376,35 @@ export default function MessagingCenter() {
 
           <div className="border-t p-4 sticky bottom-0 bg-card z-10 pb-[env(safe-area-inset-bottom,1rem)]">
             <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
-              <Button type="button" variant="ghost" size="icon" className="shrink-0" title="Attach file">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="shrink-0"
+                title="Attach file"
+              >
                 <Plus className="w-5 h-5 text-muted-foreground" />
               </Button>
               <Input
                 placeholder="Type a message..."
                 value={messageText}
                 onChange={(e) => {
-                  setMessageText(e.target.value)
+                  setMessageText(e.target.value);
 
                   if (socketRef.current && selectedConversation && user) {
                     socketRef.current.emit('start_typing', {
                       conversationId: selectedConversation._id,
-                      senderId: user._id || user.id
-                    })
-                    
-                    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
-                    
+                      senderId: user._id || user.id,
+                    });
+
+                    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
                     typingTimeoutRef.current = setTimeout(() => {
                       socketRef.current?.emit('stop_typing', {
                         conversationId: selectedConversation._id,
-                        senderId: user._id || user.id
-                      })
-                    }, 1000)
+                        senderId: user._id || user.id,
+                      });
+                    }, 1000);
                   }
                 }}
                 className="flex-1"
@@ -386,5 +424,5 @@ export default function MessagingCenter() {
         </Card>
       )}
     </div>
-  )
+  );
 }

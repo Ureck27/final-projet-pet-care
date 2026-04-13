@@ -8,7 +8,7 @@ const {
 const { protect, authorizeRole } = require('../middleware/authMiddleware');
 
 // POST /api/reviews - Add review
-router.post('/', protect, authorizeRole('user'), createReview);
+router.post('/', protect, authorizeRole('owner'), createReview);
 
 // GET /api/reviews/trainer/:trainerId - Get reviews for trainer
 router.get('/trainer/:trainerId', getTrainerReviews);

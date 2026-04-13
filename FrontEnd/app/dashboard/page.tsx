@@ -1,117 +1,130 @@
-"use client"
+'use client';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/context/auth-context"
-import { api, petApi } from "@/lib/api"
-import type { Pet } from "@/lib/types"
-import { 
-  mockPetStatuses, mockTasks, mockDailyActivities, mockMoodEntries
-} from "@/lib/mock-data"
-import { StatsCard } from "@/components/features/dashboard/stats-card"
-import { StatusTimeline } from "@/components/features/dashboard/status-timeline"
-import { NotificationsCenter } from "@/components/features/dashboard/notifications-center"
-import { CalendarView } from "@/components/features/schedule/calendar-view"
-import { PetCard } from "@/components/features/pets/pet-card"
-import { TaskDashboard } from "@/components/features/dashboard/task-dashboard"
-import { ActivityTimeline } from "@/components/features/dashboard/activity-timeline"
-import { EmotionDashboard } from "@/components/features/dashboard/emotion-dashboard"
-import { MessagesWidget } from "@/components/features/messaging/messages-widget"
-import { Loader } from "@/components/common/loader"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { PawPrint, Calendar, TrendingUp, Plus, MessageCircle, RefreshCw, AlertTriangle } from "lucide-react"
-import Link from "next/link"
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
+import { api, petApi } from '@/lib/api';
+import type { Pet } from '@/lib/types';
+import { mockPetStatuses, mockTasks, mockDailyActivities, mockMoodEntries } from '@/lib/mock-data';
+import { StatsCard } from '@/components/features/dashboard/stats-card';
+import { StatusTimeline } from '@/components/features/dashboard/status-timeline';
+import { NotificationsCenter } from '@/components/features/dashboard/notifications-center';
+import { CalendarView } from '@/components/features/schedule/calendar-view';
+import { PetCard } from '@/components/features/pets/pet-card';
+import { TaskDashboard } from '@/components/features/dashboard/task-dashboard';
+import { ActivityTimeline } from '@/components/features/dashboard/activity-timeline';
+import { EmotionDashboard } from '@/components/features/dashboard/emotion-dashboard';
+import { MessagesWidget } from '@/components/features/messaging/messages-widget';
+import { Loader } from '@/components/common/loader';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  PawPrint,
+  Calendar,
+  TrendingUp,
+  Plus,
+  MessageCircle,
+  RefreshCw,
+  AlertTriangle,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const { user, isLoading: isAuthLoading } = useAuth()
-  const [selectedPetId, setSelectedPetId] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState("overview")
-  const [pets, setPets] = useState<Pet[]>([])
-  const [notifications, setNotifications] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [isRetrying, setIsRetrying] = useState(false)
+  const router = useRouter();
+  const { user, isLoading: isAuthLoading } = useAuth();
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   useEffect(() => {
     if (!isAuthLoading && !user) {
-      router.push("/login")
+      router.push('/login');
     } else if (!isAuthLoading) {
-      if (user?.role === "trainer") {
-        router.push("/trainer-dashboard")
-      } else if (user?.role === "admin") {
-        router.push("/admin-dashboard")
+      if (user?.role === 'trainer') {
+        router.push('/trainer-dashboard');
+      } else if (user?.role === 'admin') {
+        router.push('/admin-dashboard');
+      } else if (user?.role === 'caregiver') {
+        router.push('/caregiver-dashboard');
+      } else if (user?.role === 'owner') {
+        // Option 1: Redirect to owner-dashboard
+        // Option 2: Keep using this page as the owner dashboard
+        // I will redirect for consistency with other roles
+        router.push('/owner-dashboard');
       } else {
-        fetchDashboardData()
+        fetchDashboardData();
       }
     }
-  }, [user, isAuthLoading, router])
+  }, [user, isAuthLoading, router]);
 
   const fetchDashboardData = async (isRetry = false) => {
-    if (!user) return
-    setIsLoading(true)
-    setError(null)
-    if (isRetry) setIsRetrying(true)
-    
+    if (!user) return;
+    setIsLoading(true);
+    setError(null);
+    if (isRetry) setIsRetrying(true);
+
     try {
       const [petsData, notificationsData] = await Promise.all([
         petApi.getUserPets(),
-        api.get<any[]>('/notifications').catch(() => []) // Catch error if router isn't fully ready
-      ])
-      
-      setPets(petsData || [])
-      
+        api.get<any[]>('/notifications').catch(() => []), // Catch error if router isn't fully ready
+      ]);
+
+      setPets(petsData || []);
+
       // Map sentAt strings to Date objects for NotificationsCenter
-      const formattedNotifs = (notificationsData || []).map(n => ({
+      const formattedNotifs = (notificationsData || []).map((n) => ({
         ...n,
-        sentAt: new Date(n.sentAt)
-      }))
-      setNotifications(formattedNotifs)
-      
-      setError(null)
+        sentAt: new Date(n.sentAt),
+      }));
+      setNotifications(formattedNotifs);
+
+      setError(null);
     } catch (err: any) {
-      console.error("Failed to fetch dashboard data", err)
-      
+      console.error('Failed to fetch dashboard data', err);
+
       // Handle specific backend down error
       if (err.message && err.message.startsWith('BACKEND_DOWN')) {
-        setError('The server is currently unavailable. Please try again later or contact support if the problem persists.')
+        setError(
+          'The server is currently unavailable. Please try again later or contact support if the problem persists.',
+        );
       } else if (err.message && err.message.includes('timed out')) {
-        setError('Request timed out. The server may be slow to respond. Please try again.')
+        setError('Request timed out. The server may be slow to respond. Please try again.');
       } else {
-        setError(err.message || 'Failed to load dashboard data. Please try again.')
+        setError(err.message || 'Failed to load dashboard data. Please try again.');
       }
     } finally {
-      setIsLoading(false)
-      setIsRetrying(false)
+      setIsLoading(false);
+      setIsRetrying(false);
     }
-  }
+  };
 
   const handleRetry = () => {
-    fetchDashboardData(true)
-  }
-
-
+    fetchDashboardData(true);
+  };
 
   const handleMarkAsRead = async (id: string) => {
     try {
-      await api.patch(`/notifications/${id}/read`, {})
-      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
+      await api.patch(`/notifications/${id}/read`, {});
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
     } catch (err) {
-      console.error(err)
+      console.error(err);
     }
-  }
+  };
 
   if (isAuthLoading || (!isLoading && !error && !user)) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />
       </div>
-    )
+    );
   }
 
   // Error state
@@ -121,17 +134,11 @@ export default function DashboardPage() {
         <div className="max-w-2xl mx-auto">
           <Alert className="mb-6 border-red-200 bg-red-50">
             <AlertTriangle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-800">
-              {error}
-            </AlertDescription>
+            <AlertDescription className="text-red-800">{error}</AlertDescription>
           </Alert>
-          
+
           <div className="flex gap-4 justify-center">
-            <Button 
-              onClick={handleRetry} 
-              disabled={isRetrying}
-              className="min-w-[120px]"
-            >
+            <Button onClick={handleRetry} disabled={isRetrying} className="min-w-[120px]">
               {isRetrying ? (
                 <>
                   <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
@@ -144,17 +151,14 @@ export default function DashboardPage() {
                 </>
               )}
             </Button>
-            
-            <Button 
-              variant="outline" 
-              onClick={() => router.push('/')}
-            >
+
+            <Button variant="outline" onClick={() => router.push('/')}>
               Go Home
             </Button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   // Loading state
@@ -168,29 +172,38 @@ export default function DashboardPage() {
           </p>
         </div>
       </div>
-    )
+    );
   }
 
-  const userPets = pets
-  
+  const userPets = pets;
+
   // Debug duplicate IDs:
-  console.log("userPets IDs:", userPets.map(p => p.id || (p as any)._id))
-  
+  console.log(
+    'userPets IDs:',
+    userPets.map((p) => p.id || (p as any)._id),
+  );
+
   // Set default pet if none selected
-  const currentPet = selectedPetId 
-    ? userPets.find(p => p.id === selectedPetId || (p as any)._id?.toString() === selectedPetId)
-    : userPets[0]
-  
-  const petTasks = currentPet ? (mockTasks?.filter((t) => t.petId === currentPet.id) || []) : []
-  const petActivities = currentPet ? (mockDailyActivities?.filter((a) => a.petId === currentPet.id) || []) : []
-  const petMood = currentPet ? (typeof mockMoodEntries !== "undefined" && Array.isArray(mockMoodEntries) ? mockMoodEntries.filter((m) => m.petId === currentPet.id) : []) : [];
+  const currentPet = selectedPetId
+    ? userPets.find((p) => p.id === selectedPetId || (p as any)._id?.toString() === selectedPetId)
+    : userPets[0];
+
+  const petTasks = currentPet ? mockTasks?.filter((t) => t.petId === currentPet.id) || [] : [];
+  const petActivities = currentPet
+    ? mockDailyActivities?.filter((a) => a.petId === currentPet.id) || []
+    : [];
+  const petMood = currentPet
+    ? typeof mockMoodEntries !== 'undefined' && Array.isArray(mockMoodEntries)
+      ? mockMoodEntries.filter((m) => m.petId === currentPet.id)
+      : []
+    : [];
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Welcome back, {user.name.split(" ")[0]}!</h1>
+          <h1 className="text-3xl font-bold">Welcome back, {user.name.split(' ')[0]}!</h1>
           <p className="text-muted-foreground">{"Here's what's happening with your pets today."}</p>
         </div>
         <Button asChild data-testid="dashboard-add-pet">
@@ -206,10 +219,14 @@ export default function DashboardPage() {
         <StatsCard title="Total Pets" value={userPets.length} icon={PawPrint} />
         <StatsCard
           title="Pending Pets"
-          value={userPets.filter(p => p.status === 'pending').length}
+          value={userPets.filter((p) => p.status === 'pending').length}
           icon={Calendar}
         />
-        <StatsCard title="Active Pets" value={userPets.filter(p => p.status === 'accepted').length} icon={TrendingUp} />
+        <StatsCard
+          title="Active Pets"
+          value={userPets.filter((p) => p.status === 'accepted').length}
+          icon={TrendingUp}
+        />
       </div>
 
       {/* Tabbed Interface for different views */}
@@ -225,7 +242,7 @@ export default function DashboardPage() {
           </TabsTrigger>
           <TabsTrigger value="notifications" className="relative">
             Notifications
-            {notifications.filter(n => !n.read).length > 0 && (
+            {notifications.filter((n) => !n.read).length > 0 && (
               <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
             )}
           </TabsTrigger>
@@ -246,18 +263,19 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {userPets?.length > 0 && userPets.slice(0, 2).map((pet, index) => {
-                      const petId = pet.id || (pet as any)._id?.toString();
-                      return (
-                        <div
-                          key={petId || index}
-                          className="cursor-pointer"
-                          onClick={() => setSelectedPetId(petId)}
-                        >
-                          <PetCard pet={pet} />
-                        </div>
-                      );
-                    })}
+                    {userPets?.length > 0 &&
+                      userPets.slice(0, 2).map((pet, index) => {
+                        const petId = pet.id || (pet as any)._id?.toString();
+                        return (
+                          <div
+                            key={petId || index}
+                            className="cursor-pointer"
+                            onClick={() => setSelectedPetId(petId)}
+                          >
+                            <PetCard pet={pet} />
+                          </div>
+                        );
+                      })}
                   </div>
                 </CardContent>
               </Card>
@@ -280,7 +298,12 @@ export default function DashboardPage() {
                   <CardTitle className="text-lg">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start bg-transparent" asChild data-testid="dashboard-book-session">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-transparent"
+                    asChild
+                    data-testid="dashboard-book-session"
+                  >
                     <Link href="/trainers">
                       <Calendar className="mr-2 h-4 w-4" />
                       Book a Session
@@ -320,9 +343,7 @@ export default function DashboardPage() {
           ) : (
             <Card>
               <CardContent className="py-8">
-                <p className="text-center text-muted-foreground">
-                  No activities recorded yet.
-                </p>
+                <p className="text-center text-muted-foreground">No activities recorded yet.</p>
               </CardContent>
             </Card>
           )}
@@ -335,9 +356,7 @@ export default function DashboardPage() {
           ) : (
             <Card>
               <CardContent className="py-8">
-                <p className="text-center text-muted-foreground">
-                  No mood data available yet.
-                </p>
+                <p className="text-center text-muted-foreground">No mood data available yet.</p>
               </CardContent>
             </Card>
           )}
@@ -350,13 +369,9 @@ export default function DashboardPage() {
 
         {/* Notifications Tab */}
         <TabsContent value="notifications">
-          <NotificationsCenter 
-            notifications={notifications} 
-            onMarkAsRead={handleMarkAsRead} 
-          />
+          <NotificationsCenter notifications={notifications} onMarkAsRead={handleMarkAsRead} />
         </TabsContent>
-
       </Tabs>
     </div>
-  )
+  );
 }

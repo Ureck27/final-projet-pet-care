@@ -14,7 +14,7 @@ const { uploadSingle, handleUploadError } = require('../middleware/uploadMiddlew
 router.post(
   '/upload',
   protect,
-  authorizeRole('trainer', 'worker', 'admin'),
+  authorizeRole('trainer', 'caregiver', 'admin'),
   uploadSingle('photo'),
   handleUploadError,
   uploadPhoto,
@@ -24,14 +24,14 @@ router.post(
 router.post(
   '/complete',
   protect,
-  authorizeRole('trainer', 'worker', 'admin'),
+  authorizeRole('trainer', 'caregiver', 'admin'),
   uploadSingle('photo'),
   handleUploadError,
   completeRoutine,
 );
 
 // GET /api/routine/my-routines - Get routines for current caregiver
-router.get('/my-routines', protect, authorizeRole('trainer', 'worker'), getMyRoutines);
+router.get('/my-routines', protect, authorizeRole('trainer', 'caregiver'), getMyRoutines);
 
 // GET /api/routine/pet/:petId/logs - Get routine logs for a specific pet
 router.get('/pet/:petId/logs', protect, getPetRoutineLogs);

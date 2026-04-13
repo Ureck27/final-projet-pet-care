@@ -1,63 +1,81 @@
-"use client"
+'use client';
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useTheme } from "next-themes"
-import { useAuth } from "@/context/auth-context"
-import { Button } from "@/components/ui/button"
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { useAuth } from '@/context/auth-context';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { PawPrint, Menu, X, LogOut, User, Settings, Shield, Moon, Sun, Sparkles } from "lucide-react"
-import { useState, useEffect } from "react"
-import { cn } from "@/lib/utils"
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  PawPrint,
+  Menu,
+  X,
+  LogOut,
+  User,
+  Settings,
+  Shield,
+  Moon,
+  Sun,
+  Sparkles,
+} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 
 export function Navbar() {
-  const { user, logout } = useAuth()
-  const { theme, setTheme } = useTheme()
-  const pathname = usePathname()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
+  const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
-  const isAuthPage = ["/login", "/register", "/forgot-password"].includes(pathname)
+  const isAuthPage = ['/login', '/register', '/forgot-password'].includes(pathname);
 
-  if (isAuthPage) return null
+  if (isAuthPage) return null;
 
   const navLinks = user
-    ? user.role === "admin"
+    ? user.role === 'admin'
       ? [
-          { href: "/admin-dashboard", label: "Dashboard" },
-          { href: "/users", label: "Users" },
-          { href: "/trainers", label: "Trainers" },
+          { href: '/admin-dashboard', label: 'Dashboard' },
+          { href: '/admin/users', label: 'Users' },
+          { href: '/admin/pets', label: 'Pets' },
+          { href: '/admin/trainers', label: 'Trainers' },
         ]
-      : user.role === "user"
-      ? [
-          { href: "/dashboard", label: "Dashboard" },
-          { href: "/pets", label: "My Pets" },
-          { href: "/trainers", label: "Find Caregivers" },
-          { href: "/bookings", label: "Bookings" },
-          { href: "/schedule", label: "Schedule" },
-          { href: "/become-trainer", label: "Become Trainer" },
-        ]
-      : [
-          { href: "/trainer-dashboard", label: "Dashboard" },
-          { href: "/assigned-pets", label: "Assigned Pets" },
-          { href: "/schedule", label: "Schedule" },
-        ]
+      : user.role === 'owner'
+        ? [
+            { href: '/owner-dashboard', label: 'Dashboard' },
+            { href: '/pets', label: 'My Pets' },
+            { href: '/trainers', label: 'Find Care' },
+            { href: '/bookings', label: 'Bookings' },
+          ]
+        : user.role === 'caregiver'
+          ? [
+              { href: '/caregiver-dashboard', label: 'Dashboard' },
+              { href: '/assigned-pets', label: 'Assigned' },
+              { href: '/schedule', label: 'Schedule' },
+            ]
+          : user.role === 'trainer'
+            ? [
+                { href: '/trainer-dashboard', label: 'Dashboard' },
+                { href: '/assigned-pets', label: 'Clients' },
+                { href: '/schedule', label: 'Programs' },
+              ]
+            : [{ href: '/services', label: 'Services' }]
     : [
-        { href: "/services", label: "Services" },
-        { href: "/pricing", label: "Pricing" },
-        { href: "/about", label: "About" },
-      ]
+        { href: '/services', label: 'Services' },
+        { href: '/pricing', label: 'Pricing' },
+        { href: '/about', label: 'About' },
+      ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/30 glass-effect shadow-medium backdrop-blur-lg">
@@ -67,8 +85,12 @@ export function Navbar() {
             <PawPrint className="h-7 w-7 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-2xl font-heading font-bold text-primary group-hover:text-primary/80 transition-all duration-300">PetCare</span>
-            <span className="text-xs text-muted-foreground font-body font-medium">Professional Pet Services</span>
+            <span className="text-2xl font-heading font-bold text-primary group-hover:text-primary/80 transition-all duration-300">
+              PetCare
+            </span>
+            <span className="text-xs text-muted-foreground font-body font-medium">
+              Professional Pet Services
+            </span>
           </div>
         </Link>
 
@@ -78,10 +100,10 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               className={cn(
-                "rounded-xl px-4 py-2.5 text-sm font-body font-medium transition-all duration-300 hover-lift tracking-tight",
+                'rounded-xl px-4 py-2.5 text-sm font-body font-medium transition-all duration-300 hover-lift tracking-tight',
                 pathname === link.href
-                  ? "bg-primary text-white shadow-medium glow-primary"
-                  : "text-muted-foreground hover:bg-primary/10 hover:text-primary hover:shadow-soft",
+                  ? 'bg-primary text-white shadow-medium glow-primary'
+                  : 'text-muted-foreground hover:bg-primary/10 hover:text-primary hover:shadow-soft',
               )}
             >
               {link.label}
@@ -94,11 +116,11 @@ export function Navbar() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="hover-scale rounded-xl shadow-soft border border-border/30"
-              title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              {theme === "dark" ? (
+              {theme === 'dark' ? (
                 <Sun className="h-5 w-5 text-yellow-500" />
               ) : (
                 <Moon className="h-5 w-5 text-primary" />
@@ -111,12 +133,12 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                     <Avatar className="h-9 w-9">
-                      <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.fullName} />
+                      <AvatarImage src={user.avatar || '/placeholder.svg'} alt={user.fullName} />
                       <AvatarFallback className="bg-primary text-primary-foreground">
                         {user.fullName
-                          .split(" ")
+                          .split(' ')
                           .map((n) => n[0])
-                          .join("")}
+                          .join('')}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -158,7 +180,12 @@ export function Navbar() {
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="hidden text-muted-foreground md:flex" asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden text-muted-foreground md:flex"
+                asChild
+              >
                 <Link href="/apply">
                   <Shield className="mr-1 h-4 w-4" />
                   Become a Caregiver
@@ -192,10 +219,10 @@ export function Navbar() {
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "rounded-lg px-3 py-2 text-sm font-body font-medium transition-colors tracking-tight",
+                  'rounded-lg px-3 py-2 text-sm font-body font-medium transition-colors tracking-tight',
                   pathname === link.href
-                    ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                    ? 'bg-secondary text-foreground'
+                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
                 )}
               >
                 {link.label}
@@ -215,5 +242,5 @@ export function Navbar() {
         </div>
       )}
     </header>
-  )
+  );
 }

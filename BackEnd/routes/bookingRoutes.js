@@ -7,14 +7,21 @@ const {
   updateBooking,
   deleteBooking,
 } = require('../controllers/bookingController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, authorizeRole } = require('../middleware/authMiddleware');
 
-router.route('/').get(protect, getBookings).post(protect, createBooking);
+// GET /api/bookings - Get bookings (filtered by role in controller)
+router.get('/', protect, authorizeRole('owner', 'trainer', 'caregiver', 'admin'), getBookings);
+
+// POST /api/bookings - Create a booking (owner or admin)
+router.post('/', protect, authorizeRole('owner', 'admin'), createBooking);
 
 router
   .route('/:id')
-  .get(protect, getBookingById)
-  .put(protect, updateBooking)
-  .delete(protect, deleteBooking);
+  // GET /api/bookings/:id - Get specific booking
+  .get(protect, authorizeRole('owner', 'trainer', 'caregiver', 'admin'), getBookingById)
+  // PUT /api/bookings/:id - Update booking (owner or admin)
+  .put(protect, authorizeRole('owner', 'admin'), updateBooking)
+  // DELETE /api/bookings/:id - Delete booking (admin only for security)
+  .delete(protect, authorizeRole('admin'), deleteBooking);
 
 module.exports = router;

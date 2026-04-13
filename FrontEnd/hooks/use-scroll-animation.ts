@@ -9,12 +9,23 @@ export interface AnimationOptions {
   delay?: number;
 }
 
+const presets: Record<string, anime.AnimeParams> = {
+  fadeIn: { opacity: [0, 1], duration: 1000, easing: 'easeOutQuad' },
+  slideInLeft: { translateX: [-50, 0], opacity: [0, 1], duration: 1000, easing: 'easeOutQuad' },
+  slideInRight: { translateX: [50, 0], opacity: [0, 1], duration: 1000, easing: 'easeOutQuad' },
+  scaleIn: { scale: [0.9, 1], opacity: [0, 1], duration: 1000, easing: 'easeOutQuad' },
+};
+
 export function useScrollAnimation<T extends HTMLElement = HTMLElement>(
-  animation: anime.AnimeParams,
+  animation: anime.AnimeParams | keyof typeof presets,
   options?: AnimationOptions,
 ) {
   const ref = useRef<T>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  // Normalize animation to AnimeParams
+  const animeParams =
+    typeof animation === 'string' ? presets[animation] || { opacity: [0, 1] } : animation;
 
   useEffect(() => {
     const element = ref.current;
@@ -44,12 +55,12 @@ export function useScrollAnimation<T extends HTMLElement = HTMLElement>(
     const timer = setTimeout(() => {
       anime({
         targets: ref.current,
-        ...animation,
+        ...animeParams,
       });
     }, options?.delay || 0);
 
     return () => clearTimeout(timer);
-  }, [isVisible, animation, options?.delay]);
+  }, [isVisible, animeParams, options?.delay]);
 
   return ref;
 }

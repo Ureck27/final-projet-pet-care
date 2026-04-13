@@ -41,6 +41,21 @@ const createTrainer = async (req, res) => {
   }
 };
 
+// @desc    Get current trainer profile
+// @route   GET /api/trainers/profile
+const getTrainerProfile = async (req, res) => {
+  try {
+    const trainer = await Trainer.findOne({ userId: req.user._id });
+    if (!trainer) {
+      return res.status(404).json({ message: 'Trainer profile not found' });
+    }
+    res.json(trainer);
+  } catch (error) {
+    console.error('Error fetching trainer profile:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Get trainer by ID
 // @route   GET /api/trainers/:id
 const getTrainerById = async (req, res) => {
@@ -59,5 +74,6 @@ const getTrainerById = async (req, res) => {
 module.exports = {
   getTrainers,
   getTrainerById,
+  getTrainerProfile,
   createTrainer,
 };

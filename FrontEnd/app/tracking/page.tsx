@@ -1,78 +1,78 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/context/auth-context"
-import { petApi, trainerApi, type Pet, TrainerRequest } from "@/lib/api"
-import { Loader } from "@/components/common/loader"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
-import { 
-  Search, 
-  FileText, 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
+import { petApi, trainerApi, trainerRequestApi, type Pet, TrainerRequest } from '@/lib/api';
+import { Loader } from '@/components/common/loader';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
+import {
+  Search,
+  FileText,
   UserCheck,
   Clock,
   CheckCircle,
   XCircle,
   AlertCircle,
   Calendar,
-  Eye
-} from "lucide-react"
+  Eye,
+} from 'lucide-react';
 
 interface TrackingItem {
-  id: string
-  type: 'pet' | 'trainer'
-  title: string
-  status: 'pending' | 'accepted' | 'rejected'
-  createdAt: Date
-  updatedAt: Date
-  description?: string
-  rejectionReason?: string
-  progress: number
-  timeline: TimelineEvent[]
+  id: string;
+  type: 'pet' | 'trainer';
+  title: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  createdAt: Date;
+  updatedAt: Date;
+  description?: string;
+  rejectionReason?: string;
+  progress: number;
+  timeline: TimelineEvent[];
 }
 
 interface TimelineEvent {
-  status: string
-  date: Date
-  description: string
-  icon: React.ReactNode
+  status: string;
+  date: Date;
+  description: string;
+  icon: React.ReactNode;
 }
 
 export default function TrackingPage() {
-  const router = useRouter()
-  const { user, isLoading } = useAuth()
-  const [trackingItems, setTrackingItems] = useState<TrackingItem[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [loading, setLoading] = useState(true)
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+  const [trackingItems, setTrackingItems] = useState<TrackingItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push('/login')
-      return
+      router.push('/login');
+      return;
     }
 
     if (user) {
-      fetchTrackingData()
+      fetchTrackingData();
     }
-  }, [user, isLoading, router])
+  }, [user, isLoading, router]);
 
   const fetchTrackingData = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const [petsData, trainerRequestData] = await Promise.all([
         petApi.getUserPets(),
-        trainerRequestApi.getUserRequest()
-      ])
+        trainerRequestApi.getUserRequest(),
+      ]);
 
-      const items: TrackingItem[] = []
+      const items: TrackingItem[] = [];
 
       // Process pet applications
       petsData.forEach((pet: Pet) => {
-        const timeline = generatePetTimeline(pet)
+        const timeline = generatePetTimeline(pet);
         items.push({
           id: pet._id || pet.id,
           type: 'pet',
@@ -82,14 +82,14 @@ export default function TrackingPage() {
           updatedAt: new Date(pet.updatedAt || Date.now()),
           description: `${pet.type} - ${pet.age} years old`,
           progress: calculateProgress(pet.status),
-          timeline
-        })
-      })
+          timeline,
+        });
+      });
 
       // Process trainer application (only if exists)
       if (trainerRequestData?.data) {
-        const request = trainerRequestData.data
-        const timeline = generateTrainerTimeline(request)
+        const request = trainerRequestData.data;
+        const timeline = generateTrainerTimeline(request);
         items.push({
           id: request._id || request.id,
           type: 'trainer',
@@ -100,19 +100,19 @@ export default function TrackingPage() {
           description: `${request.experience} experience`,
           rejectionReason: request.rejectionReason,
           progress: calculateProgress(request.status),
-          timeline
-        })
+          timeline,
+        });
       }
 
       // Sort by creation date (newest first)
-      items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      setTrackingItems(items)
+      items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      setTrackingItems(items);
     } catch (error) {
-      console.error('Failed to fetch tracking data:', error)
+      console.error('Failed to fetch tracking data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const generatePetTimeline = (pet: Pet): TimelineEvent[] => {
     const timeline: TimelineEvent[] = [
@@ -120,25 +120,27 @@ export default function TrackingPage() {
         status: 'submitted',
         date: new Date(pet.createdAt || Date.now()),
         description: 'Pet application submitted',
-        icon: <FileText className="h-4 w-4" />
-      }
-    ]
+        icon: <FileText className="h-4 w-4" />,
+      },
+    ];
 
     if (pet.status !== 'pending') {
       timeline.push({
         status: pet.status,
         date: new Date(pet.updatedAt || Date.now()),
-        description: pet.status === 'accepted' 
-          ? 'Pet application approved' 
-          : 'Pet application rejected',
-        icon: pet.status === 'accepted' 
-          ? <CheckCircle className="h-4 w-4" />
-          : <XCircle className="h-4 w-4" />
-      })
+        description:
+          pet.status === 'accepted' ? 'Pet application approved' : 'Pet application rejected',
+        icon:
+          pet.status === 'accepted' ? (
+            <CheckCircle className="h-4 w-4" />
+          ) : (
+            <XCircle className="h-4 w-4" />
+          ),
+      });
     }
 
-    return timeline
-  }
+    return timeline;
+  };
 
   const generateTrainerTimeline = (request: TrainerRequest): TimelineEvent[] => {
     const timeline: TimelineEvent[] = [
@@ -146,76 +148,81 @@ export default function TrackingPage() {
         status: 'submitted',
         date: new Date(request.createdAt || Date.now()),
         description: 'Trainer application submitted',
-        icon: <FileText className="h-4 w-4" />
-      }
-    ]
+        icon: <FileText className="h-4 w-4" />,
+      },
+    ];
 
     if (request.status !== 'pending') {
       timeline.push({
         status: request.status,
         date: new Date(request.updatedAt || Date.now()),
-        description: request.status === 'accepted' 
-          ? 'Trainer application approved' 
-          : `Trainer application rejected${request.rejectionReason ? ': ' + request.rejectionReason : ''}`,
-        icon: request.status === 'accepted' 
-          ? <CheckCircle className="h-4 w-4" />
-          : <XCircle className="h-4 w-4" />
-      })
+        description:
+          request.status === 'accepted'
+            ? 'Trainer application approved'
+            : `Trainer application rejected${request.rejectionReason ? ': ' + request.rejectionReason : ''}`,
+        icon:
+          request.status === 'accepted' ? (
+            <CheckCircle className="h-4 w-4" />
+          ) : (
+            <XCircle className="h-4 w-4" />
+          ),
+      });
     }
 
-    return timeline
-  }
+    return timeline;
+  };
 
   const calculateProgress = (status: string): number => {
     switch (status) {
       case 'pending':
-        return 33
+        return 33;
       case 'accepted':
-        return 100
+        return 100;
       case 'rejected':
-        return 100
+        return 100;
       default:
-        return 0
+        return 0;
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'accepted':
-        return 'default'
+        return 'default';
       case 'rejected':
-        return 'destructive'
+        return 'destructive';
       case 'pending':
-        return 'secondary'
+        return 'secondary';
       default:
-        return 'secondary'
+        return 'secondary';
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'accepted':
-        return <CheckCircle className="h-4 w-4" />
+        return <CheckCircle className="h-4 w-4" />;
       case 'rejected':
-        return <XCircle className="h-4 w-4" />
+        return <XCircle className="h-4 w-4" />;
       case 'pending':
-        return <Clock className="h-4 w-4" />
+        return <Clock className="h-4 w-4" />;
       default:
-        return <AlertCircle className="h-4 w-4" />
+        return <AlertCircle className="h-4 w-4" />;
     }
-  }
+  };
 
-  const filteredItems = trackingItems.filter(item =>
-    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredItems = trackingItems.filter(
+    (item) =>
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   if (isLoading || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />
       </div>
-    )
+    );
   }
 
   if (!user) {
@@ -226,7 +233,7 @@ export default function TrackingPage() {
           <p className="text-muted-foreground">Please log in to track your requests.</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -236,7 +243,9 @@ export default function TrackingPage() {
           <Search className="h-8 w-8" />
           Request Tracking
         </h1>
-        <p className="text-muted-foreground">Track the status of your pet and trainer applications</p>
+        <p className="text-muted-foreground">
+          Track the status of your pet and trainer applications
+        </p>
       </div>
 
       {/* Search Bar */}
@@ -267,7 +276,7 @@ export default function TrackingPage() {
             <p className="text-xs text-muted-foreground">All submitted requests</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending</CardTitle>
@@ -275,12 +284,12 @@ export default function TrackingPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {trackingItems.filter(item => item.status === 'pending').length}
+              {trackingItems.filter((item) => item.status === 'pending').length}
             </div>
             <p className="text-xs text-muted-foreground">Awaiting review</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Approved</CardTitle>
@@ -288,7 +297,7 @@ export default function TrackingPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {trackingItems.filter(item => item.status === 'accepted').length}
+              {trackingItems.filter((item) => item.status === 'accepted').length}
             </div>
             <p className="text-xs text-muted-foreground">Successfully approved</p>
           </CardContent>
@@ -303,10 +312,9 @@ export default function TrackingPage() {
               <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">No applications found</h3>
               <p className="text-muted-foreground">
-                {searchTerm 
+                {searchTerm
                   ? 'No applications match your search criteria.'
-                  : 'You haven\'t submitted any applications yet.'
-                }
+                  : "You haven't submitted any applications yet."}
               </p>
             </CardContent>
           </Card>
@@ -329,14 +337,17 @@ export default function TrackingPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={getStatusColor(item.status)} className="flex items-center gap-1">
+                    <Badge
+                      variant={getStatusColor(item.status)}
+                      className="flex items-center gap-1"
+                    >
                       {getStatusIcon(item.status)}
                       {item.status?.toUpperCase()}
                     </Badge>
                   </div>
                 </div>
               </CardHeader>
-              
+
               <CardContent>
                 {/* Progress Bar */}
                 <div className="mb-6">
@@ -360,12 +371,12 @@ export default function TrackingPage() {
                         {index < item.timeline.length - 1 && (
                           <div className="absolute left-0 top-6 w-px h-full bg-border" />
                         )}
-                        
+
                         {/* Timeline dot */}
                         <div className="absolute left-0 top-1 w-4 h-4 rounded-full bg-background border-2 border-border flex items-center justify-center">
                           <div className="w-2 h-2 rounded-full bg-primary" />
                         </div>
-                        
+
                         {/* Timeline content */}
                         <div className="ml-6">
                           <div className="flex items-center gap-2 mb-1">
@@ -392,14 +403,14 @@ export default function TrackingPage() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2 mt-6">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => {
                       if (item.type === 'pet') {
-                        router.push(`/pet-profile/${item.id}`)
+                        router.push(`/pet-profile/${item.id}`);
                       } else {
-                        router.push('/trainer-dashboard')
+                        router.push('/trainer-dashboard');
                       }
                     }}
                   >
@@ -407,14 +418,14 @@ export default function TrackingPage() {
                     View Details
                   </Button>
                   {item.status === 'rejected' && (
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => {
                         if (item.type === 'pet') {
-                          router.push('/add-pet')
+                          router.push('/add-pet');
                         } else {
-                          router.push('/become-trainer')
+                          router.push('/become-trainer');
                         }
                       }}
                     >
@@ -428,5 +439,5 @@ export default function TrackingPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -45,7 +45,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 const registerUser = async (req, res) => {
   try {
     console.log('Registration request body:', req.body);
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     // Input validation
     if (!name || !email || !password) {
@@ -63,6 +63,10 @@ const registerUser = async (req, res) => {
       });
     }
 
+    // Determine role - prevent registering as admin
+    const allowedRoles = ['owner', 'caregiver', 'trainer'];
+    const assignedRole = role && allowedRoles.includes(role) ? role : 'owner';
+
     const normalizedEmail = email.toLowerCase();
     const userExists = await User.findOne({ email: normalizedEmail });
 
@@ -70,12 +74,17 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    console.log('Creating user with data:', { name, email: normalizedEmail, password: '***' });
+    console.log('Creating user with data:', {
+      name,
+      email: normalizedEmail,
+      password: '***',
+      role: assignedRole,
+    });
     const user = await User.create({
       name,
       email: normalizedEmail,
       password, // Pre-save hook will hash this
-      role: 'user', // Force role to 'user' for registration
+      role: assignedRole,
     });
     console.log('User created successfully:', user);
 

@@ -1,26 +1,26 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useAuth } from "@/context/auth-context"
-import { loginSchema, type LoginFormData } from "@/lib/validation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, AlertCircle } from "lucide-react"
-import { toast } from "sonner"
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAuth } from '@/context/auth-context';
+import { loginSchema, type LoginFormData } from '@/lib/validation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function LoginForm() {
-  const router = useRouter()
-  const { login } = useAuth()
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const { login } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -33,29 +33,37 @@ export function LoginForm() {
     defaultValues: {
       rememberMe: false,
     },
-  })
+  });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
 
-    const result = await login(data.email, data.password)
+    const result = await login(data.email, data.password);
 
     if (result.success) {
-      toast.success("Welcome back!")
-      if (result.role === 'admin') {
-        router.push("/admin-dashboard")
-      } else if (result.role === 'trainer') {
-        router.push("/trainer-dashboard")
-      } else {
-        router.push("/dashboard")
+      toast.success('Welcome back!');
+      switch (result.role) {
+        case 'admin':
+          router.push('/admin-dashboard');
+          break;
+        case 'trainer':
+          router.push('/trainer-dashboard');
+          break;
+        case 'caregiver':
+          router.push('/caregiver-dashboard');
+          break;
+        case 'owner':
+        default:
+          router.push('/owner-dashboard');
+          break;
       }
     } else {
-      setError(result.message || "Invalid email or password. Try: john@example.com")
+      setError(result.message || 'Invalid email or password. Try: john@example.com');
     }
 
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   return (
     <Card className="w-full max-w-md border-border shadow-lg">
@@ -78,8 +86,8 @@ export function LoginForm() {
               id="email"
               type="email"
               placeholder="john@example.com"
-              {...register("email")}
-              className={errors.email ? "border-destructive" : ""}
+              {...register('email')}
+              className={errors.email ? 'border-destructive' : ''}
               data-testid="login-email"
             />
             {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
@@ -96,18 +104,20 @@ export function LoginForm() {
               id="password"
               type="password"
               placeholder="••••••••"
-              {...register("password")}
-              className={errors.password ? "border-destructive" : ""}
+              {...register('password')}
+              className={errors.password ? 'border-destructive' : ''}
               data-testid="login-password"
             />
-            {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-xs text-destructive">{errors.password.message}</p>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">
             <Checkbox
               id="rememberMe"
-              checked={watch("rememberMe")}
-              onCheckedChange={(checked) => setValue("rememberMe", checked as boolean)}
+              checked={watch('rememberMe')}
+              onCheckedChange={(checked) => setValue('rememberMe', checked as boolean)}
             />
             <Label htmlFor="rememberMe" className="text-sm font-normal">
               Remember me
@@ -121,7 +131,7 @@ export function LoginForm() {
                 Signing in...
               </>
             ) : (
-              "Sign in"
+              'Sign in'
             )}
           </Button>
         </form>
@@ -134,5 +144,5 @@ export function LoginForm() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
