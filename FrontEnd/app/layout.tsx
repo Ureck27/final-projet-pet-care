@@ -4,6 +4,7 @@ import { Poppins, Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/context/auth-context';
+import { SocketProvider } from '@/context/socket-context';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from 'sonner';
@@ -48,13 +49,15 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
-            <div className="flex min-h-screen flex-col">
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            <ClientFloatingAssistant />
-            <Toaster position="top-right" richColors />
+            <SocketProvider>
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+              <ClientFloatingAssistant />
+              <Toaster position="top-right" richColors />
+            </SocketProvider>
           </AuthProvider>
         </ThemeProvider>
         <Analytics debug={false} />

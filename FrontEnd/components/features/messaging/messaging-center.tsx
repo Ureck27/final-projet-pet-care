@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { io, Socket } from 'socket.io-client';
+import { useSocket } from '@/context/socket-context';
 import { useAuth } from '@/context/auth-context';
 import { chatApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,26 +23,17 @@ export default function MessagingCenter() {
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
-  const socketRef = useRef<Socket | null>(null);
+  const { socket, isConnected } = useSocket();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !socket || !isConnected) return;
+
     fetchConversations();
 
-    // Init Socket
-    socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
-      withCredentials: true,
-      auth: {
-        token: localStorage.getItem('petcare_token'),
-        userId: user._id || user.id,
-      },
-    });
-
-    socketRef.current.on('receive_message', (newMessage) => {
+    const handleReceiveMessage = (newMessage: any) => {
       setMessages((prev) => {
-        // Prevent dupes
         if (prev.some((m) => m._id === newMessage._id)) return prev;
         return [...prev, newMessage];
       });
@@ -59,53 +50,62 @@ export default function MessagingCenter() {
           ),
       );
 
-      // Emit receipt if currently viewing this conversation
       if (
         selectedConversation?._id === newMessage.conversationId &&
         newMessage.senderId !== (user._id || user.id)
       ) {
-        socketRef.current?.emit('message_read', {
+        socket.emit('message_read', {
           conversationId: newMessage.conversationId,
           userId: user._id || user.id,
         });
       }
-    });
+    };
 
-    socketRef.current.on('sync_unread', (unreadMessages: any[]) => {
+    const handleSyncUnread = (unreadMessages: any[]) => {
       if (selectedConversation && unreadMessages.length > 0) {
         const relevant = unreadMessages.filter(
           (m) => m.conversationId === selectedConversation._id,
         );
         if (relevant.length > 0) {
           setMessages((prev) => [...prev, ...relevant]);
-          socketRef.current?.emit('message_read', {
+          socket.emit('message_read', {
             conversationId: selectedConversation._id,
             userId: user._id || user.id,
           });
         }
       }
-    });
+    };
 
-    socketRef.current.on('message_read_receipt', ({ conversationId, readBy }) => {
+    const handleMessageReadReceipt = ({ readBy }: any) => {
       setMessages((prev) =>
         prev.map((msg) => (msg.senderId !== readBy ? { ...msg, read: true } : msg)),
       );
-    });
+    };
 
-    socketRef.current.on('user_typing', (data: { userId: string; conversationId: string }) => {
+    const handleUserTyping = (data: { userId: string; conversationId: string }) => {
       if (data.conversationId === selectedConversation?._id) {
         setTypingUsers((prev) => (prev.includes(data.userId) ? prev : [...prev, data.userId]));
       }
-    });
+    };
 
-    socketRef.current.on('user_stop_typing', (data: { userId: string }) => {
+    const handleUserStopTyping = (data: { userId: string }) => {
       setTypingUsers((prev) => prev.filter((id) => id !== data.userId));
-    });
+    };
+
+    socket.on('receive_message', handleReceiveMessage);
+    socket.on('sync_unread', handleSyncUnread);
+    socket.on('message_read_receipt', handleMessageReadReceipt);
+    socket.on('user_typing', handleUserTyping);
+    socket.on('user_stop_typing', handleUserStopTyping);
 
     return () => {
-      if (socketRef.current) socketRef.current.disconnect();
+      socket.off('receive_message', handleReceiveMessage);
+      socket.off('sync_unread', handleSyncUnread);
+      socket.off('message_read_receipt', handleMessageReadReceipt);
+      socket.off('user_typing', handleUserTyping);
+      socket.off('user_stop_typing', handleUserStopTyping);
     };
-  }, [user, selectedConversation]);
+  }, [user, socket, isConnected, selectedConversation]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -129,10 +129,10 @@ export default function MessagingCenter() {
 
   const handleSelectConversation = async (conv: any) => {
     setSelectedConversation(conv);
-    if (socketRef.current) {
-      socketRef.current.emit('join_conversation', conv._id);
+    if (socket) {
+      socket.emit('join_conversation', conv._id);
       if (user) {
-        socketRef.current.emit('message_read', {
+        socket.emit('message_read', {
           conversationId: conv._id,
           userId: user._id || user.id,
         });
@@ -175,8 +175,8 @@ export default function MessagingCenter() {
       },
     ]);
 
-    if (socketRef.current) {
-      socketRef.current.emit('send_message', messageData, (response: any) => {
+    if (socket) {
+      socket.emit('send_message', messageData, (response: any) => {
         if (response?.success) {
           setMessages((prev) => prev.map((m) => (m._id === tempId ? response.message : m)));
         } else {
@@ -189,8 +189,8 @@ export default function MessagingCenter() {
   };
 
   const getOtherUser = (conv: any) => {
-    if (!user) return null;
-    return user.role === 'trainer' ? conv.userId : conv.trainerId;
+    if (!user || !conv?.participants) return null;
+    return conv.participants.find((p: any) => String(p._id) !== String(user._id || user.id));
   };
 
   const filteredConversations = conversations.filter((conv) => {
@@ -391,8 +391,8 @@ export default function MessagingCenter() {
                 onChange={(e) => {
                   setMessageText(e.target.value);
 
-                  if (socketRef.current && selectedConversation && user) {
-                    socketRef.current.emit('start_typing', {
+                  if (socket && selectedConversation && user) {
+                    socket.emit('start_typing', {
                       conversationId: selectedConversation._id,
                       senderId: user._id || user.id,
                     });
@@ -400,7 +400,7 @@ export default function MessagingCenter() {
                     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
                     typingTimeoutRef.current = setTimeout(() => {
-                      socketRef.current?.emit('stop_typing', {
+                      socket.emit('stop_typing', {
                         conversationId: selectedConversation._id,
                         senderId: user._id || user.id,
                       });

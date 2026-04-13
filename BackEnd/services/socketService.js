@@ -173,7 +173,7 @@ const deliverUnreadMessages = async (io, socket, userId) => {
     // where user is a participant, then finding unread messages.
     // For simplicity, we find conversations this user is part of:
     const userConversations = await Conversation.find({
-      $or: [{ userId }, { trainerId: userId }],
+      participants: userId,
     }).select('_id');
 
     const conversationIds = userConversations.map((c) => c._id);

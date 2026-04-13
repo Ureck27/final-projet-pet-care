@@ -10,12 +10,7 @@ const messageSchema = new mongoose.Schema(
     senderId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      refPath: 'senderModel',
-    },
-    senderModel: {
-      type: String,
-      required: true,
-      enum: ['User', 'Trainer', 'Admin'],
+      ref: 'User',
     },
     text: {
       type: String,
