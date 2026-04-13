@@ -530,6 +530,12 @@ export const adminApi = {
   acceptRequest: (type: string, id: string) => api.patch<any>(`/admin/accept/${type}/${id}`, {}),
 
   rejectRequest: (type: string, id: string) => api.patch<any>(`/admin/reject/${type}/${id}`, {}),
+
+  getApplications: () => api.get<SystemApplication[]>('/admin/applications'),
+  approveApplication: (id: string) =>
+    api.patch<SystemApplication>(`/admin/applications/${id}/approve`, {}),
+  rejectApplication: (id: string) =>
+    api.patch<SystemApplication>(`/admin/applications/${id}/reject`, {}),
 };
 
 // Trainer API
@@ -621,6 +627,21 @@ export const caregiverApi = {
       approvedCaregivers: number;
       rejectedApplications: number;
     }>('/caregiver/stats'),
+};
+
+export interface SystemApplication {
+  _id?: string;
+  name: string;
+  email: string;
+  role: 'owner' | 'caregiver' | 'trainer';
+  message: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt?: string;
+}
+
+export const applicationApi = {
+  submitApplication: (data: Partial<SystemApplication>) =>
+    api.post<SystemApplication>('/applications', data),
 };
 
 // Chat API

@@ -1,117 +1,124 @@
-"use client"
+'use client';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/context/auth-context"
-import { adminApi, petApi, trainerApi, getMediaUrl, type User, Pet, Trainer } from "@/lib/api"
-import { Loader } from "@/components/common/loader"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { 
-  Users, 
-  PawPrint, 
-  UserCheck, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
+import { adminApi, petApi, trainerApi, getMediaUrl, type User, Pet, Trainer } from '@/lib/api';
+import { Loader } from '@/components/common/loader';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Users,
+  PawPrint,
+  UserCheck,
+  Clock,
+  CheckCircle,
+  XCircle,
   Shield,
   Plus,
   ServerCrash,
-  RefreshCw
-} from "lucide-react"
+  RefreshCw,
+} from 'lucide-react';
 
 export default function AdminDashboardPage() {
-  const router = useRouter()
-  const { user, isLoading } = useAuth()
-  const [pets, setPets] = useState<Pet[]>([])
-  const [trainers, setTrainers] = useState<Trainer[]>([])
-  const [users, setUsers] = useState<User[]>([])
-  const [requests, setRequests] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [backendError, setBackendError] = useState<{ message: string; url?: string } | null>(null)
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [backendError, setBackendError] = useState<{ message: string; url?: string } | null>(null);
 
   useEffect(() => {
     if (!isLoading && (!user || user.role !== 'admin')) {
-      router.push('/login')
-      return
+      router.push('/login');
+      return;
     }
 
     if (user && user.role === 'admin') {
-      fetchDashboardData()
+      fetchDashboardData();
     }
-  }, [user, isLoading, router])
+  }, [user, isLoading, router]);
 
   const fetchDashboardData = async () => {
     try {
-      setLoading(true)
-      setBackendError(null)
+      setLoading(true);
+      setBackendError(null);
       const [petsData, trainersData, usersData, requestsData] = await Promise.all([
         petApi.getAllPets(),
         trainerApi.getTrainers(),
         adminApi.getUsers(),
-        adminApi.getPendingRequests()
-      ])
+        adminApi.getPendingRequests(),
+      ]);
 
-      setPets(petsData)
-      setTrainers(trainersData)
-      setUsers(usersData)
-      setRequests(requestsData)
+      setPets(Array.isArray(petsData) ? petsData : []);
+      setTrainers(Array.isArray(trainersData) ? trainersData : []);
+      setUsers(Array.isArray(usersData) ? usersData : []);
+      setRequests(Array.isArray(requestsData) ? requestsData : []);
     } catch (error: any) {
-      console.error('Failed to fetch dashboard data:', error)
+      console.error('Failed to fetch dashboard data:', error);
       if (error.isBackendDown || error.message?.includes('BACKEND_OFFLINE')) {
-        setBackendError({ 
+        setBackendError({
           message: error.message || 'Cannot reach backend server',
-          url: error.url 
-        })
+          url: error.url,
+        });
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleAcceptRequest = async (type: string, id: string) => {
     try {
-      await adminApi.acceptRequest(type, id)
-      fetchDashboardData()
+      await adminApi.acceptRequest(type, id);
+      fetchDashboardData();
     } catch (error) {
-      console.error('Failed to accept request:', error)
+      console.error('Failed to accept request:', error);
     }
-  }
+  };
 
   const handleRejectRequest = async (type: string, id: string) => {
     try {
-      await adminApi.rejectRequest(type, id)
-      fetchDashboardData()
+      await adminApi.rejectRequest(type, id);
+      fetchDashboardData();
     } catch (error) {
-      console.error('Failed to reject request:', error)
+      console.error('Failed to reject request:', error);
     }
-  }
+  };
 
   const handleDeleteUser = async (id: string) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
     try {
-      await adminApi.deleteUser(id)
-      fetchDashboardData()
+      await adminApi.deleteUser(id);
+      fetchDashboardData();
     } catch (error) {
-      console.error('Failed to delete user:', error)
+      console.error('Failed to delete user:', error);
     }
-  }
+  };
 
   const handleAddTrainer = async () => {
-    router.push('/admin/add-trainer')
-  }
+    router.push('/admin/add-trainer');
+  };
 
   if (isLoading || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader size="lg" />
       </div>
-    )
+    );
   }
 
   if (!user || user.role !== 'admin') {
@@ -122,7 +129,7 @@ export default function AdminDashboardPage() {
           <p className="text-muted-foreground">You need admin privileges to access this page.</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (backendError) {
@@ -133,32 +140,23 @@ export default function AdminDashboardPage() {
             <ServerCrash className="h-12 w-12 text-destructive" />
           </div>
           <h1 className="text-3xl font-bold mb-2">Backend Connection Error</h1>
-          <p className="text-muted-foreground mb-8">
-            {backendError.message}
-          </p>
+          <p className="text-muted-foreground mb-8">{backendError.message}</p>
           <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-md text-left mb-8 text-sm font-mono break-all">
             <p className="text-muted-foreground mb-2">Technical Details:</p>
             <p>API Endpoint: {backendError.url || 'Internal Request'}</p>
           </div>
           <div className="flex flex-col gap-3">
-            <Button 
-              size="lg" 
-              className="w-full"
-              onClick={() => fetchDashboardData()}
-            >
+            <Button size="lg" className="w-full" onClick={() => fetchDashboardData()}>
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry Connection
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => window.location.reload()}
-            >
+            <Button variant="outline" onClick={() => window.location.reload()}>
               Reload Page
             </Button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -183,11 +181,11 @@ export default function AdminDashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{pets.length}</div>
             <p className="text-xs text-muted-foreground">
-              {pets.filter(p => p.status === 'pending').length} pending
+              {pets.filter((p) => p.status === 'pending').length} pending
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Trainers</CardTitle>
@@ -198,14 +196,16 @@ export default function AdminDashboardPage() {
             <p className="text-xs text-muted-foreground">Registered trainers</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Pets</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pets.filter(p => p.status === 'pending').length}</div>
+            <div className="text-2xl font-bold">
+              {pets.filter((p) => p.status === 'pending').length}
+            </div>
             <p className="text-xs text-muted-foreground">Awaiting approval</p>
           </CardContent>
         </Card>
@@ -224,7 +224,9 @@ export default function AdminDashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle>Pending Requests</CardTitle>
-              <CardDescription>Review and approve pending users, pets, and trainers</CardDescription>
+              <CardDescription>
+                Review and approve pending users, pets, and trainers
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -244,22 +246,26 @@ export default function AdminDashboardPage() {
                       <TableCell>{req.name}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {req.requestType === 'user' && <p>{req.email}</p>}
-                        {req.requestType === 'pet' && <p>{req.type} - {(req.userId as any)?.name}</p>}
+                        {req.requestType === 'pet' && (
+                          <p>
+                            {req.type} - {(req.userId as any)?.name}
+                          </p>
+                        )}
                         {req.requestType === 'trainer' && <p>{req.email}</p>}
                       </TableCell>
                       <TableCell>{new Date(req.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             onClick={() => handleAcceptRequest(req.requestType, req._id || req.id)}
                             title="Accept"
                           >
                             <CheckCircle className="h-4 w-4 text-green-600" />
                           </Button>
-                          <Button 
-                            variant="destructive" 
+                          <Button
+                            variant="destructive"
                             size="sm"
                             onClick={() => handleRejectRequest(req.requestType, req._id || req.id)}
                             title="Reject"
@@ -304,39 +310,58 @@ export default function AdminDashboardPage() {
                   {users.map((u, index) => {
                     const status = u.status || 'accepted';
                     return (
-                    <TableRow key={u._id || u.id || `user-${index}`}>
-                      <TableCell className="font-medium">{u.name}</TableCell>
-                      <TableCell>{u.email}</TableCell>
-                      <TableCell className="capitalize">{u.role}</TableCell>
-                      <TableCell>
-                         <Badge variant={status === 'accepted' ? 'default' : status === 'rejected' ? 'destructive' : 'secondary'}>
-                          {status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          {status === 'pending' && (
-                            <>
-                              <Button variant="outline" size="sm" onClick={() => handleAcceptRequest('user', u._id || u.id)}>
-                                Accept
-                              </Button>
-                              <Button variant="outline" size="sm" onClick={() => handleRejectRequest('user', u._id || u.id)}>
-                                Reject
-                              </Button>
-                            </>
-                          )}
-                          <Button 
-                            variant="destructive" 
-                            size="sm" 
-                            onClick={() => handleDeleteUser(u._id || u.id)}
-                            disabled={user?._id === (u._id || u.id) || user?.id === (u._id || u.id)}
+                      <TableRow key={u._id || u.id || `user-${index}`}>
+                        <TableCell className="font-medium">{u.name}</TableCell>
+                        <TableCell>{u.email}</TableCell>
+                        <TableCell className="capitalize">{u.role}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              status === 'accepted'
+                                ? 'default'
+                                : status === 'rejected'
+                                  ? 'destructive'
+                                  : 'secondary'
+                            }
                           >
-                            Delete
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )})}
+                            {status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            {status === 'pending' && (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleAcceptRequest('user', u._id || u.id)}
+                                >
+                                  Accept
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleRejectRequest('user', u._id || u.id)}
+                                >
+                                  Reject
+                                </Button>
+                              </>
+                            )}
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteUser(u._id || u.id)}
+                              disabled={
+                                user?._id === (u._id || u.id) || user?.id === (u._id || u.id)
+                              }
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -364,13 +389,25 @@ export default function AdminDashboardPage() {
                   {pets.map((pet, index) => (
                     <TableRow key={pet._id || pet.id || `pet-${index}`}>
                       <TableCell>
-                        <img src={getMediaUrl(pet.image)} alt={pet.name} className="h-10 w-10 rounded object-cover" />
+                        <img
+                          src={getMediaUrl(pet.image)}
+                          alt={pet.name}
+                          className="h-10 w-10 rounded object-cover"
+                        />
                       </TableCell>
                       <TableCell className="font-medium">{pet.name}</TableCell>
                       <TableCell>{pet.type}</TableCell>
                       <TableCell>{(pet as any).userId?.name || 'Unknown'}</TableCell>
                       <TableCell>
-                         <Badge variant={pet.status === 'accepted' ? 'default' : pet.status === 'rejected' ? 'destructive' : 'secondary'}>
+                        <Badge
+                          variant={
+                            pet.status === 'accepted'
+                              ? 'default'
+                              : pet.status === 'rejected'
+                                ? 'destructive'
+                                : 'secondary'
+                          }
+                        >
                           {pet.status}
                         </Badge>
                       </TableCell>
@@ -410,7 +447,15 @@ export default function AdminDashboardPage() {
                       <TableCell className="font-medium">{trainer.name}</TableCell>
                       <TableCell>{trainer.email}</TableCell>
                       <TableCell>
-                        <Badge variant={trainer.status === 'accepted' ? 'default' : trainer.status === 'rejected' ? 'destructive' : 'secondary'}>
+                        <Badge
+                          variant={
+                            trainer.status === 'accepted'
+                              ? 'default'
+                              : trainer.status === 'rejected'
+                                ? 'destructive'
+                                : 'secondary'
+                          }
+                        >
                           {trainer.status}
                         </Badge>
                       </TableCell>
@@ -432,5 +477,5 @@ export default function AdminDashboardPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const User = require('./models/User');
 
-// Connect to database
-require('./config/db-ipv4');
+require('dotenv').config();
+const { connectDB } = require('./config/db-ipv4');
 
 async function checkAdminUsers() {
   try {
+    await connectDB();
     console.log('🔍 Checking for existing admin users...');
 
     // Find all admin users

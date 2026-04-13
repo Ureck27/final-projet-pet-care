@@ -14,6 +14,9 @@ const {
   getPendingRequests,
   acceptRequest,
   rejectRequest,
+  getApplications,
+  approveApplication,
+  rejectApplication,
 } = require('../controllers/adminController');
 const {
   approveTrainerRequest,
@@ -40,5 +43,9 @@ router.put('/trainer-requests/:id/reject', rejectTrainerRequest);
 router.get('/requests', getPendingRequests);
 router.patch('/accept/:type/:id', acceptRequest);
 router.patch('/reject/:type/:id', rejectRequest);
+
+router.get('/applications', getApplications);
+router.patch('/applications/:id/approve', approveApplication);
+router.patch('/applications/:id/reject', rejectApplication);
 
 module.exports = router;

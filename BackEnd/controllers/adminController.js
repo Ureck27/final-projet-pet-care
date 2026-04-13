@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Pet = require('../models/Pet');
 const Trainer = require('../models/Trainer');
 const TrainerRequest = require('../models/TrainerRequest');
+const Application = require('../models/Application');
 
 // @desc    Get all users
 // @route   GET /api/admin/users
@@ -266,6 +267,64 @@ const rejectRequest = async (req, res) => {
   }
 };
 
+// @desc    Get all applications
+// @route   GET /api/admin/applications
+const getApplications = async (req, res) => {
+  try {
+    const applications = await Application.find({}).sort({ createdAt: -1 });
+    res.json(applications);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Approve application
+// @route   PATCH /api/admin/applications/:id/approve
+const approveApplication = async (req, res) => {
+  try {
+    const application = await Application.findByIdAndUpdate(
+      req.params.id,
+      { status: 'approved' },
+      { new: true },
+    );
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+
+    // Auto-update user role if user matches email
+    if (application.email) {
+      const user = await User.findOne({ email: application.email });
+      if (user) {
+        user.role = application.role;
+        user.status = 'accepted';
+        await user.save();
+      }
+    }
+
+    res.json(application);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Reject application
+// @route   PATCH /api/admin/applications/:id/reject
+const rejectApplication = async (req, res) => {
+  try {
+    const application = await Application.findByIdAndUpdate(
+      req.params.id,
+      { status: 'rejected' },
+      { new: true },
+    );
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+    res.json(application);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getPendingPets,
@@ -280,4 +339,7 @@ module.exports = {
   getPendingRequests,
   acceptRequest,
   rejectRequest,
+  getApplications,
+  approveApplication,
+  rejectApplication,
 };

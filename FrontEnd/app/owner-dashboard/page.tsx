@@ -58,8 +58,9 @@ export default function OwnerDashboardPage() {
         petApi.getUserPets(),
         bookingApi.getBookings(),
       ]);
-      setPets(petsData);
-      setBookings(bookingsData);
+
+      setPets(Array.isArray(petsData) ? petsData : petsData?.data || []);
+      setBookings(Array.isArray(bookingsData) ? bookingsData : bookingsData?.data || []);
     } catch (error) {
       console.error('Failed to fetch user data:', error);
     } finally {
